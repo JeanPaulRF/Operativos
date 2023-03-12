@@ -4,10 +4,11 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <netdb.h>
 
 int main(int argc, char *argv[])
 {
-    if (argc > 1)
+    if (argc < 2)
     {
         printf("Error! No se ingreso el puerto por parametro\n");
     }
