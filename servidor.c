@@ -1,68 +1,91 @@
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
-#include <sys/types.h>
+#include <unistd.h>
 #include <sys/socket.h>
-#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <pthread.h>
 
-int main(int argc, char *argv[])
+#define PORT 8080
+
+void *handle_client(void *arg);
+
+int main(int argc, char const *argv[])
 {
-    if (argc < 2)
+    int server_fd, new_socket;
+    struct sockaddr_in address;
+    int opt = 1;
+    int addrlen = sizeof(address);
+    pthread_t tid;
+
+    // Creating socket file descriptor
+    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
     {
-        printf("Error! No se ingreso el puerto por parametro\n");
+        perror("socket failed");
+        exit(EXIT_FAILURE);
     }
-    else
+
+    // Forcefully attaching socket to the port 8080
+    if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)))
     {
-        // Definir variables
-        int fd, fd2, longitud_cliente, puerto;
-        puerto = atoi(argv[1]);
+        perror("setsockopt");
+        exit(EXIT_FAILURE);
+    }
+    address.sin_family = AF_INET;
+    address.sin_addr.s_addr = INADDR_ANY;
+    address.sin_port = htons(PORT);
 
-        // Se necesitan dos estructuras de tipo sockaddr_in
-        // Una para el servidor y otra para el cliente
-        struct sockaddr_in servidor, cliente;
+    // Bind the socket to the address and port
+    if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0)
+    {
+        perror("bind failed");
+        exit(EXIT_FAILURE);
+    }
 
-        // Configurar la estructura del servidor
-        servidor.sin_family = AF_INET;         // Familia de direcciones TCP/IP
-        servidor.sin_port = htons(puerto);     // Puerto
-        servidor.sin_addr.s_addr = INADDR_ANY; // Cualquier direccion IP
-        bzero(&(servidor.sin_zero), 8);        // Rellenar con ceros el resto de la estructura
+    // Start listening for incoming connections
+    if (listen(server_fd, 3) < 0)
+    {
+        perror("listen");
+        exit(EXIT_FAILURE);
+    }
 
-        // Definir el socket
-        if ((fd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+    while (1)
+    {
+        // Accept incoming connection
+        if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen)) < 0)
         {
-            printf("Error al abrir el socket\n");
-            exit(-1);
+            perror("accept");
+            exit(EXIT_FAILURE);
         }
 
-        // Asociar el socket a una direccion IP y puerto
-        if (bind(fd, (struct sockaddr *)&servidor, sizeof(struct sockaddr)) == -1)
+        // Create a new thread to handle the client
+        if (pthread_create(&tid, NULL, handle_client, (void *)&new_socket) != 0)
         {
-            printf("Error al asociar el socket a la direccion IP y puerto\n");
-            exit(-1);
-        }
-
-        // Poner al socket en modo escucha
-        if (listen(fd, 5) == -1)
-        {
-            printf("Error al poner al socket en modo escucha\n");
-            exit(-1);
-        }
-
-        // Aceptar conexiones
-        while (1)
-        {
-            longitud_cliente = sizeof(struct sockaddr_in);
-            if ((fd2 = accept(fd, (struct sockaddr *)&cliente, &longitud_cliente)) == -1)
-            {
-                printf("Error al aceptar conexiones\n");
-                exit(-1);
-            }
-            printf("Se obtuvo una conexion desde %s\n", inet_ntoa(cliente.sin_addr));
-            // Enviar y recibir datos
-            send(fd2, "Hola Cliente\n", 13, 0);
-            close(fd2);
+            perror("pthread_create");
+            exit(EXIT_FAILURE);
         }
     }
 
     return 0;
+}
+
+void *handle_client(void *arg)
+{
+    int sock = *(int *)arg;
+    char buffer[1024] = {0};
+    int valread;
+
+    // Read incoming message from the client
+    valread = read(sock, buffer, 1024);
+    printf("Received message: %s\n", buffer);
+
+    // Send response message to the client
+    char *response = "Hello from server";
+    send(sock, response, strlen(response), 0);
+    printf("Response sent\n");
+
+    // Close the socket
+    close(sock);
+
+    return NULL;
 }
