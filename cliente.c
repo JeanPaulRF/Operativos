@@ -1,123 +1,72 @@
-//
-/*
-    C socket server example, handles multiple clients using threads
-    Compile
-    gcc server.c -lpthread -o server
-*/
-
+#include <stdlib.h>
 #include <stdio.h>
-#include <string.h> //strlen
-#include <stdlib.h> //strlen
+#include <string.h>
+#include <sys/types.h>
 #include <sys/socket.h>
-#include <arpa/inet.h> //inet_addr
-#include <unistd.h>    //write
-#include <pthread.h>   //for threading , link with lpthread
-
-// the thread function
-void *connection_handler(void *);
+#include <netinet/in.h>
 
 int main(int argc, char *argv[])
 {
-    int socket_desc, client_sock, c;
-    struct sockaddr_in server, client;
-
-    // Create socket
-    socket_desc = socket(AF_INET, SOCK_STREAM, 0);
-    if (socket_desc == -1)
+    if (argc > 1)
     {
-        printf("Could not create socket");
+        printf("Error! No se ingreso el puerto por parametro\n");
     }
-    puts("Socket created");
-
-    // Prepare the sockaddr_in structure
-    server.sin_family = AF_INET;
-    server.sin_addr.s_addr = INADDR_ANY;
-    server.sin_port = htons(8888);
-
-    // Bind
-    if (bind(socket_desc, (struct sockaddr *)&server, sizeof(server)) < 0)
+    else
     {
-        // print the error message
-        perror("bind failed. Error");
-        return 1;
-    }
-    puts("bind done");
+        // Definir variables
+        char *ip;
+        int fd, puerto, numbytes;
+        char buf[100];
+        puerto = atoi(argv[2]);
+        ip = argv[1];
 
-    // Listen
-    listen(socket_desc, 3);
+        struct hostent *he;
+        // Estrucutra que contiene informacion sobre un host en internet
+        struct sockaddr_in servidor;
+        // Estructura que contiene la direccion del servidor
 
-    // Accept and incoming connection
-    puts("Waiting for incoming connections...");
-    c = sizeof(struct sockaddr_in);
-
-    // Accept and incoming connection
-    puts("Waiting for incoming connections...");
-    c = sizeof(struct sockaddr_in);
-    pthread_t thread_id;
-
-    while ((client_sock = accept(socket_desc, (struct sockaddr *)&client, (socklen_t *)&c)))
-    {
-        puts("Connection accepted");
-
-        if (pthread_create(&thread_id, NULL, connection_handler, (void *)&client_sock) < 0)
+        if ((he = gethostbyname(ip)) == NULL)
         {
-            perror("could not create thread");
-            return 1;
+            // gethostbyname() devuelve informacion sobre el host cuyo nombre es
+            // pasado como parametro. La estructura hostent es definida en el archivo
+            // netdb.h
+            printf("Error al obtener informacion del host\n");
+            exit(-1);
         }
 
-        // Now join the thread , so that we dont terminate before the thread
-        // pthread_join( thread_id , NULL);
-        puts("Handler assigned");
+        // Definir el socket
+        if ((fd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
+        {
+            printf("Error al abrir el socket\n");
+            exit(-1);
+        }
+
+        // Datos del servidor
+        servidor.sin_family = AF_INET;     // Familia de direcciones TCP/IP
+        servidor.sin_port = htons(puerto); // Puerto
+        servidor.sin_addr = *((struct in_addr *)he->h_addr);
+        // La funcion inet_addr() convierte una direccion IP en formato
+        bzero(&(servidor.sin_zero), 8); // Rellenar con ceros el resto de la estructura
+
+        // Conectar al servidor
+        if (connect(fd, (struct sockaddr *)&servidor, sizeof(struct sockaddr)) == -1)
+        {
+            printf("Error al conectar al servidor\n");
+            exit(-1);
+        }
+
+        if ((numbytes = recv(fd, buf, 100, 0)) == -1)
+        {
+            printf("Error al recibir datos del servidor\n");
+            exit(-1);
+        }
+
+        buf[numbytes] = '\0';
+
+        printf("Mensaje del servidor: %s\n", buf);
+        // Muestra el mensaje del servidor
+
+        close(fd);
     }
-
-    if (client_sock < 0)
-    {
-        perror("accept failed");
-        return 1;
-    }
-
-    return 0;
-}
-
-/*
- * This will handle connection for each client
- * */
-void *connection_handler(void *socket_desc)
-{
-    // Get the socket descriptor
-    int sock = *(int *)socket_desc;
-    int read_size;
-    char *message, client_message[2000];
-
-    // Send some messages to the client
-    message = "Greetings! I am your connection handler\n";
-    write(sock, message, strlen(message));
-
-    message = "Now type something and i shall repeat what you type \n";
-    write(sock, message, strlen(message));
-
-    // Receive a message from client
-    while ((read_size = recv(sock, client_message, 2000, 0)) > 0)
-    {
-        // end of string marker
-        client_message[read_size] = '\0';
-
-        // Send the message back to client
-        write(sock, client_message, strlen(client_message));
-
-        // clear the message buffer
-        memset(client_message, 0, 2000);
-    }
-
-    if (read_size == 0)
-    {
-        puts("Client disconnected");
-        fflush(stdout);
-    }
-    else if (read_size == -1)
-    {
-        perror("recv failed");
-    }
-
     return 0;
 }
