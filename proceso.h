@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-struct Proceso
+typedef struct
 {
     int pid;
     int burst;
@@ -12,4 +12,4 @@ struct Proceso
     int wt;
     int estado; // 0: listo, 1: ejecutando, 2: terminado
     int burstRestante;
-};
+} Proceso;
