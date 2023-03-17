@@ -1,9 +1,9 @@
 #include "proceso.h"
 #include <string.h>
 #include <unistd.h>
-// #include <sys/socket.h>
-// #include <arpa/inet.h>
-// #include <pthread.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <pthread.h>
 #include <time.h>
 
 #define PORT 8080
@@ -62,6 +62,8 @@ int main(int argc, char const *argv[])
         return -1;
     }
 
+    // Cerrar socket
+    close(sock);
     return 0;
 }
 
@@ -84,6 +86,8 @@ void *cicloProcesos(void *arg)
         // crear thread del proceso
         pthread_create(&thread, NULL, &funcionProceso, (void *)(&sock, proceso));
     }
+
+    return;
 }
 
 Proceso *crearProceso()
@@ -134,4 +138,6 @@ void *funcionProceso(void *arg)
     {
         printf("CPU no recibida\n");
     }
+
+    return;
 }
