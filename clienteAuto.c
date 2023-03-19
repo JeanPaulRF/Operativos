@@ -12,7 +12,6 @@ int min, max;
 
 int getRandom(int minimo, int maximo);
 void *cicloProcesos(void *arg);
-Proceso *crearProceso();
 void *funcionProceso(void *arg);
 
 int main(int argc, char const *argv[])
@@ -80,40 +79,26 @@ void *cicloProcesos(void *arg)
     while (1)
     {
         sleep(getRandom(3, 8));
-        // Crear proceso
-        Proceso *proceso = crearProceso();
 
         // crear thread del proceso
-        pthread_create(&thread, NULL, &funcionProceso, (void *)(&sock, proceso));
+        pthread_create(&thread, NULL, &funcionProceso, (void *)(&sock));
     }
 
     return;
 }
 
-Proceso *crearProceso()
-{
-    // crear proceso
-    int burst = getRandom(min, max);
-    int prioridad = getRandom(min, max);
-    Proceso proceso;
-    proceso.burst = burst;
-    proceso.prioridad = prioridad;
-    proceso.estado = 0;
-    proceso.burstRestante = burst;
-
-    printf("Proceso creado: burst = %d, prioridad = %d\n", burst, prioridad);
-
-    return &proceso;
-}
-
 void *funcionProceso(void *arg)
 {
     int sock = *(int *)arg;
-    Proceso proceso = *(Proceso *)arg;
 
-    // Solicitar PCB
-    send(sock, 0, sizeof(int), 0);
-    printf("PCB solicitada\n");
+    // Crear proceso
+    int burst = getRandom(min, max);
+    int prioridad = getRandom(min, max);
+
+    // Envia datos de proceso
+    send(sock, burst, sizeof(int), 0);
+
+    send(sock, prioridad, sizeof(int), 0);
 
     // Recibir PCB
     recv(sock, &proceso.pid, sizeof(int), 0);
