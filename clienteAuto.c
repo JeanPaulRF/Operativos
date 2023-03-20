@@ -92,6 +92,7 @@ void *funcionProceso(void *arg)
     int sock = *(int *)arg;
 
     // Crear proceso
+    int pid;
     int burst = getRandom(min, max);
     int prioridad = getRandom(min, max);
 
@@ -101,10 +102,11 @@ void *funcionProceso(void *arg)
     send(sock, prioridad, sizeof(int), 0);
 
     // Recibir PCB
-    recv(sock, &proceso.pid, sizeof(int), 0);
+    recv(sock, &pid, sizeof(int), 0);
     printf("PCB recibida: %d\n", proceso.pid);
 
     // Solicitar CPU
+    /*
     send(sock, 1, sizeof(int), 0);
     printf("PCB solicitada\n");
 
@@ -123,6 +125,7 @@ void *funcionProceso(void *arg)
     {
         printf("CPU no recibida\n");
     }
+    */
 
     return;
 }
