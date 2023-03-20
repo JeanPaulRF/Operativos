@@ -57,7 +57,7 @@ int main(int argc, char const *argv[])
     // thread Crear procesos
     if (pthread_create(&thread, NULL, &cicloProcesos, (void *)(&sock)) != 0)
     {
-        printf("\nError al crear el thread\n");
+        printf("\nError al crear el thread de creacion de procesos\n");
         return -1;
     }
 
@@ -81,7 +81,10 @@ void *cicloProcesos(void *arg)
         sleep(getRandom(3, 8));
 
         // crear thread del proceso
-        pthread_create(&thread, NULL, &funcionProceso, (void *)(&sock));
+        if(pthread_create(&thread, NULL, &funcionProceso, (void *)(&sock))){
+        	printf("\nError al crear el thread del proceso\n");
+        	return -1;
+        }
     }
 
     return;
@@ -103,7 +106,7 @@ void *funcionProceso(void *arg)
 
     // Recibir PCB
     recv(sock, &pid, sizeof(int), 0);
-    printf("PCB recibida: %d\n", proceso.pid);
+    printf("PCB recibida: %d\n", pid);
 
     // Solicitar CPU
     /*
