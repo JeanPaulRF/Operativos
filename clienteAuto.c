@@ -57,19 +57,15 @@ int main(int argc, char const *argv[])
         return -1;
     }
 
-
     // thread Crear procesos
-    if (pthread_create(&thread, NULL, cicloProcesos, (void *)(&sock)) != 0)
+    if (pthread_create(&thread, NULL, cicloProcesos, (void *)&sock) < 0)
     {
         printf("\nError al crear el thread de creacion de procesos\n");
         return -1;
     }
-    
-    //Esperar a que el thread termine
-    pthread_join(thread, NULL);
 
     // Cerrar socket
-    close(sock);
+    // close(sock);
     return 0;
 }
 
@@ -84,15 +80,16 @@ void *cicloProcesos(void *arg)
 
     while (1)
     {
-        sleep(getRandom(3, 8));
-        
         pthread_t thread;
 
         // crear thread del proceso
-        if(pthread_create(&thread, NULL, funcionProceso, (void *)(&sock)) != 0){
-        	printf("\nError al crear el thread del proceso\n");
-        	return NULL;
+        if (pthread_create(&thread, NULL, funcionProceso, (void *)&sock) < 0)
+        {
+            printf("\nError al crear el thread del proceso\n");
+            return NULL;
         }
+
+        sleep(getRandom(3, 8));
     }
 
     return NULL;
@@ -108,15 +105,17 @@ void *funcionProceso(void *arg)
     int prioridad = getRandom(min, max);
 
     // Envia datos de proceso
-    if(send(sock, &burst, sizeof(burst), 0) == -1){
-    	perror("Error al enviar el burst");
-    	exit(EXIT_FAILURE);
+    if (send(sock, &burst, sizeof(burst), 0) == -1)
+    {
+        perror("Error al enviar el burst");
+        exit(EXIT_FAILURE);
     }
 
-    if(send(sock, &prioridad, sizeof(prioridad), 0) == -1){
-    	perror("Error al enviar la prioridad");
-    	exit(EXIT_FAILURE);
-    }	
+    if (send(sock, &prioridad, sizeof(prioridad), 0) == -1)
+    {
+        perror("Error al enviar la prioridad");
+        exit(EXIT_FAILURE);
+    }
 
     // Recibir PCB
     recv(sock, &pid, sizeof(pid), 0);
@@ -146,7 +145,3 @@ void *funcionProceso(void *arg)
 
     return NULL;
 }
-
-
-
-
