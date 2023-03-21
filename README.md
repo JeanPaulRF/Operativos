@@ -71,4 +71,6 @@ El Planificador de CPU no debe dejar de funcionar hasta que uno se lo indique. A
       - Promedio de Turn Around Time
     - Puede ser que necesiten otros threads, para llevar tiempos, o para obtener comandos (despliegue cola / detener) de la simulación o para lo que ocupen. No hay problema, pero debe haber al menos los de los Scheduler.
 - Diseñe bien la información que debe contener de cada proceso. Piense que tendrá un tipo de PCB para que el CPU Scheduler sepa a quien seleccionar.
-- Dependiendo de cómo guarde la información de los procesos, pudiera necesitar un semáforo.
+- ~Dependiendo de cómo guarde la información de los procesos, pudiera necesitar un semáforo.~
+
+Enlace a la documentación : https://docs.google.com/document/d/1VFjvgt5YmsJe_snunHGSWW_PE-PiR8DsU9gOijt_uzA/edit?usp=sharing
