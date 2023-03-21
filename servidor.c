@@ -19,7 +19,7 @@ int main(int argc, char const *argv[])
     pthread_t tid;
 
     // Creating socket file descriptor
-    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
+    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
     {
         perror("socket failed");
         exit(EXIT_FAILURE);
@@ -36,53 +36,61 @@ int main(int argc, char const *argv[])
     address.sin_port = htons(PORT);
 
     // Bind the socket to the address and port
-    if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0)
+    if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) == -1)
     {
         perror("bind failed");
         exit(EXIT_FAILURE);
     }
 
     // Start listening for incoming connections
-    if (listen(server_fd, 3) < 0)
+    if (listen(server_fd, 5) == -1)
     {
-        perror("listen");
+        perror("Error al escuchar");
         exit(EXIT_FAILURE);
     }
 
     while (1)
     {
         // Accept incoming connection
-        if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen)) < 0)
+        if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen)) == -1)
         {
-            perror("accept");
+            perror("Error al aceptar la conexion");
             exit(EXIT_FAILURE);
         }
 
         // Create a new thread to handle the client
         if (pthread_create(&tid, NULL, handle_client, (void *)&new_socket) != 0)
         {
-            perror("pthread_create");
+            perror("Error al crear el pthread");
             exit(EXIT_FAILURE);
         }
+        
+        // Liberar el pthread
+        pthread_detach(tid);
     }
 
+	close(server_fd);
     return 0;
 }
 
 void *handle_client(void *arg)
 {
     int sock = *(int *)arg;
-    char buffer[1024] = {0};
-    int valread;
+    int burst;
+    int prioridad;
+    int pid = 0;
 
-    // Read incoming message from the client
-    valread = read(sock, buffer, 1024);
-    printf("Received message: %s\n", buffer);
+    // Read incoming message from the client (burst)
+    recv(sock, &burst, sizeof(int), 0);
+    printf("Burst: %d\n", burst);
+    
+    // Read incoming message from the client (prioridad)
+    recv(sock, &prioridad, sizeof(int), 0);
+    printf("Prioridad: %d\n", prioridad);
 
     // Send response message to the client
-    char *response = "Hello from server";
-    send(sock, response, strlen(response), 0);
-    printf("Response sent\n");
+    send(sock, &pid, sizeof(int), 0);
+    printf("PID sent\n");
 
     // Close the socket
     close(sock);
