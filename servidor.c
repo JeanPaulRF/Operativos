@@ -64,12 +64,12 @@ int main(int argc, char const *argv[])
             perror("Error al crear el pthread");
             exit(EXIT_FAILURE);
         }
-        
+
         // Liberar el pthread
         pthread_detach(tid);
     }
 
-	close(server_fd);
+    close(server_fd);
     return 0;
 }
 
@@ -83,7 +83,7 @@ void *handle_client(void *arg)
     // Read incoming message from the client (burst)
     recv(sock, &burst, sizeof(int), 0);
     printf("Burst: %d\n", burst);
-    
+
     // Read incoming message from the client (prioridad)
     recv(sock, &prioridad, sizeof(int), 0);
     printf("Prioridad: %d\n", prioridad);
