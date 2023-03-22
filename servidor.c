@@ -19,7 +19,7 @@ int main(int argc, char const *argv[])
     pthread_t tid;
 
     // Creating socket file descriptor
-    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
+    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
     {
         perror("socket failed");
         exit(EXIT_FAILURE);
@@ -36,32 +36,32 @@ int main(int argc, char const *argv[])
     address.sin_port = htons(PORT);
 
     // Bind the socket to the address and port
-    if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) == -1)
+    if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0)
     {
         perror("bind failed");
         exit(EXIT_FAILURE);
     }
 
     // Start listening for incoming connections
-    if (listen(server_fd, 5) == -1)
+    if (listen(server_fd, 3) < 0)
     {
-        perror("Error al escuchar");
+        perror("listen");
         exit(EXIT_FAILURE);
     }
 
     while (1)
     {
         // Accept incoming connection
-        if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen)) == -1)
+        if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen)) < 0)
         {
-            perror("Error al aceptar la conexion");
+            perror("accept");
             exit(EXIT_FAILURE);
         }
 
         // Create a new thread to handle the client
         if (pthread_create(&tid, NULL, handle_client, (void *)&new_socket) != 0)
         {
-            perror("Error al crear el pthread");
+            perror("pthread_create");
             exit(EXIT_FAILURE);
         }
 
@@ -76,9 +76,8 @@ int main(int argc, char const *argv[])
 void *handle_client(void *arg)
 {
     int sock = *(int *)arg;
-    int burst;
-    int prioridad;
-    int pid = 0;
+    char buffer[1024] = {0};
+    int valread;
 
     // Read incoming message from the client (burst)
     recv(sock, &burst, sizeof(int), 0);
@@ -89,8 +88,9 @@ void *handle_client(void *arg)
     printf("Prioridad: %d\n", prioridad);
 
     // Send response message to the client
-    send(sock, &pid, sizeof(int), 0);
-    printf("PID sent\n");
+    char *response = "Hello from server";
+    send(sock, response, strlen(response), 0);
+    printf("Response sent\n");
 
     // Close the socket
     close(sock);

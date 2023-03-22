@@ -6,9 +6,7 @@
 #include <pthread.h>
 #include <time.h>
 
-#define SERVER_ADDRESS "127.0.0.1"
 #define PORT 8080
-#define NUM_THREAD 200
 
 int min, max;
 
@@ -31,7 +29,7 @@ int main(int argc, char const *argv[])
     pthread_t thread;
 
     // Create socket file descriptor
-    if ((sock = socket(AF_INET, SOCK_STREAM, 0)) == -1)
+    if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
     {
         printf("\n Socket creation error \n");
         return -1;
@@ -40,7 +38,6 @@ int main(int argc, char const *argv[])
     memset(&serv_addr, '0', sizeof(serv_addr));
 
     serv_addr.sin_family = AF_INET;
-    serv_addr.sin_addr.s_addr = inet_addr(SERVER_ADDRESS);
     serv_addr.sin_port = htons(PORT);
 
     // Convert IPv4 and IPv6 addresses from text to binary form
@@ -51,7 +48,7 @@ int main(int argc, char const *argv[])
     }
 
     // Connect to server
-    if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) == -1)
+    if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
     {
         printf("\nConnection Failed \n");
         return -1;
@@ -77,6 +74,7 @@ int getRandom(int minimo, int maximo)
 void *cicloProcesos(void *arg)
 {
     int sock = *(int *)arg;
+    pthread_t thread;
 
     while (1)
     {
@@ -92,7 +90,7 @@ void *cicloProcesos(void *arg)
         sleep(getRandom(3, 8));
     }
 
-    return NULL;
+    return;
 }
 
 void *funcionProceso(void *arg)
@@ -118,7 +116,7 @@ void *funcionProceso(void *arg)
     }
 
     // Recibir PCB
-    recv(sock, &pid, sizeof(pid), 0);
+    recv(sock, &pid, sizeof(int), 0);
     printf("PCB recibida: %d\n", pid);
 
     // Solicitar CPU
@@ -143,5 +141,5 @@ void *funcionProceso(void *arg)
     }
     */
 
-    return NULL;
+    return;
 }
