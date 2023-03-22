@@ -77,12 +77,40 @@ void *handle_client(void *arg)
     int burst, prioridad, pid = 99;
 
     // Read incoming message from the client (burst)
-    recv(sock, &burst, sizeof(burst), 0);
+
+    // Configurar el socket para que sea no bloqueante
+    fcntl(sock, F_SETFL, O_NONBLOCK);
+
+    // Recibir un entero del servidor
+    int bytes_recv = 0;
+    while (bytes_recv != sizeof(burst))
+    {
+        bytes_recv = recv(sock, &burst, sizeof(burst), 0);
+        if (bytes_recv < 0)
+        {
+            // Si no hay datos disponibles, esperar un poco y volver a intentar
+            usleep(1000);
+        }
+    }
     printf("Burst: %d\n", burst);
 
     // Read incoming message from the client (prioridad)
-    recv(sock, &prioridad, sizeof(prioridad), 0);
-    printf("Prioridad: %d\n", prioridad);
+
+    // Configurar el socket para que sea no bloqueante
+    fcntl(sock, F_SETFL, O_NONBLOCK);
+
+    // Recibir un entero del servidor
+    int bytes_recv = 0;
+    while (bytes_recv != sizeof(prioridad))
+    {
+        bytes_recv = recv(sock, &prioridad, sizeof(prioridad), 0);
+        if (bytes_recv < 0)
+        {
+            // Si no hay datos disponibles, esperar un poco y volver a intentar
+            usleep(1000);
+        }
+    }
+    printf("Burst: %d\n", prioridad);
 
     // Send response message to the client
     send(sock, &pid, sizeof(pid), 0);

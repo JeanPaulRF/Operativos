@@ -129,7 +129,6 @@ void *funcionProceso(void *arg)
     fcntl(sock, F_SETFL, O_NONBLOCK);
 
     // Recibir un entero del servidor
-    int pid;
     int bytes_recv = 0;
     while (bytes_recv != sizeof(pid))
     {
