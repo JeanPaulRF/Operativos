@@ -49,22 +49,22 @@ int main(int argc, char const *argv[])
         exit(EXIT_FAILURE);
     }
 
-        // Accept incoming connection
-        if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen)) < 0)
-        {
-            perror("accept");
-            exit(EXIT_FAILURE);
-        }
+    // Accept incoming connection
+    if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen)) < 0)
+    {
+        perror("accept");
+        exit(EXIT_FAILURE);
+    }
 
-        // Create a new thread to handle the client
-        if (pthread_create(&tid, NULL, handle_client, (void *)&new_socket) != 0)
-        {
-            perror("pthread_create");
-            exit(EXIT_FAILURE);
-        }
+    // Create a new thread to handle the client
+    if (pthread_create(&tid, NULL, handle_client, (void *)&new_socket) != 0)
+    {
+        perror("pthread_create");
+        exit(EXIT_FAILURE);
+    }
 
-        // Liberar el pthread
-        //pthread_detach(tid);
+    // Liberar el pthread
+    // pthread_detach(tid);
 
     close(server_fd);
     return 0;
@@ -73,7 +73,7 @@ int main(int argc, char const *argv[])
 void *handle_client(void *arg)
 {
 
-	int sock = *(int *)arg;
+    int sock = *(int *)arg;
     int burst, prioridad, pid = 99;
 
     // Read incoming message from the client (burst)

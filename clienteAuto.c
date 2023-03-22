@@ -60,11 +60,12 @@ int main(int argc, char const *argv[])
         printf("\nError al crear el thread de creacion de procesos\n");
         return -1;
     }
-    
-    //Esperar a que el hilo termine(no deberia suceder)
-    if(pthread_join(thread, NULL) < 0){
-    	perror("Error al esperar el thread");
-    	exit(1);
+
+    // Esperar a que el hilo termine(no deberia suceder)
+    if (pthread_join(thread, NULL) < 0)
+    {
+        perror("Error al esperar el thread");
+        exit(1);
     }
 
     // Cerrar socket
@@ -93,7 +94,6 @@ void *cicloProcesos(void *arg)
         }
 
         sleep(getRandom(3, 8));
-        
     }
 
     return NULL;
@@ -102,7 +102,7 @@ void *cicloProcesos(void *arg)
 void *funcionProceso(void *arg)
 {
     int sock = *(int *)arg;
-    
+
     // Crear proceso
     int pid;
     int burst = getRandom(min, max);
@@ -111,20 +111,35 @@ void *funcionProceso(void *arg)
     // Envia datos de proceso
     if (send(sock, &burst, sizeof(burst), 0) == -1)
     {
-    	printf("Error al enviar el burst");
+        printf("Error al enviar el burst");
         perror("Error al enviar el burst");
         exit(EXIT_FAILURE);
     }
 
     if (send(sock, &prioridad, sizeof(prioridad), 0) == -1)
     {
-    	printf("Error al enviar la prioridad");
+        printf("Error al enviar la prioridad");
         perror("Error al enviar la prioridad");
         exit(EXIT_FAILURE);
     }
 
-    // Recibir PCB
-    recv(sock, &pid, sizeof(int), 0);
+    // Recibir PID
+
+    // Configurar el socket para que sea no bloqueante
+    fcntl(sock, F_SETFL, O_NONBLOCK);
+
+    // Recibir un entero del servidor
+    int pid;
+    int bytes_recv = 0;
+    while (bytes_recv != sizeof(pid))
+    {
+        bytes_recv = recv(sock, &pid, sizeof(pid), 0);
+        if (bytes_recv < 0)
+        {
+            // Si no hay datos disponibles, esperar un poco y volver a intentar
+            usleep(1000);
+        }
+    }
     printf("PCB recibida: %d\n", pid);
 
     // Solicitar CPU
