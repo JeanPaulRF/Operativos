@@ -5,6 +5,7 @@
 #include <arpa/inet.h>
 #include <pthread.h>
 #include <time.h>
+#include <fcntl.h>
 
 #define PORT 8080
 
@@ -26,7 +27,6 @@ int main(int argc, char const *argv[])
     int sock = 0, valread;
     struct sockaddr_in serv_addr;
     char buffer[1024] = {0};
-    pthread_t thread;
 
     // Create socket file descriptor
     if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
@@ -54,19 +54,21 @@ int main(int argc, char const *argv[])
         return -1;
     }
 
-    // thread Crear procesos
-    if (pthread_create(&thread, NULL, cicloProcesos, (void *)&sock) < 0)
+    while (1)
     {
-        printf("\nError al crear el thread de creacion de procesos\n");
-        return -1;
-    }
+        pthread_t thread;
 
-    // Esperar a que el hilo termine(no deberia suceder)
-    if (pthread_join(thread, NULL) < 0)
-    {
-        perror("Error al esperar el thread");
-        exit(1);
+        // crear thread del proceso
+        if (pthread_create(&thread, NULL, funcionProceso, (void *)&sock) < 0)
+        {
+            printf("\nError al crear el thread del proceso\n");
+            return -1;
+        }
+
+        sleep(getRandom(2, 5));
     }
+    
+    printf("\n\n--Fin del programa--\n");
 
     // Cerrar socket
     close(sock);
@@ -124,22 +126,11 @@ void *funcionProceso(void *arg)
     }
 
     // Recibir PID
-
-    // Configurar el socket para que sea no bloqueante
-    fcntl(sock, F_SETFL, O_NONBLOCK);
-
-    // Recibir un entero del servidor
-    int bytes_recv = 0;
-    while (bytes_recv != sizeof(pid))
-    {
-        bytes_recv = recv(sock, &pid, sizeof(pid), 0);
-        if (bytes_recv < 0)
-        {
-            // Si no hay datos disponibles, esperar un poco y volver a intentar
-            usleep(1000);
-        }
-    }
+    recv(sock, &pid, sizeof(pid), 0);
     printf("PCB recibida: %d\n", pid);
+    
+    
+    printf("xxxxxxxxxx");
 
     // Solicitar CPU
     /*
