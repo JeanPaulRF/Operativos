@@ -49,8 +49,6 @@ int main(int argc, char const *argv[])
         exit(EXIT_FAILURE);
     }
 
-    while (1)
-    {
         // Accept incoming connection
         if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen)) < 0)
         {
@@ -66,8 +64,7 @@ int main(int argc, char const *argv[])
         }
 
         // Liberar el pthread
-        pthread_detach(tid);
-    }
+        //pthread_detach(tid);
 
     close(server_fd);
     return 0;
@@ -75,21 +72,20 @@ int main(int argc, char const *argv[])
 
 void *handle_client(void *arg)
 {
-    int sock = *(int *)arg;
-    char buffer[1024] = {0};
-    int valread;
+
+	int sock = *(int *)arg;
+    int burst, prioridad, pid = 99;
 
     // Read incoming message from the client (burst)
-    recv(sock, &burst, sizeof(int), 0);
+    recv(sock, &burst, sizeof(burst), 0);
     printf("Burst: %d\n", burst);
 
     // Read incoming message from the client (prioridad)
-    recv(sock, &prioridad, sizeof(int), 0);
+    recv(sock, &prioridad, sizeof(prioridad), 0);
     printf("Prioridad: %d\n", prioridad);
 
     // Send response message to the client
-    char *response = "Hello from server";
-    send(sock, response, strlen(response), 0);
+    send(sock, &pid, sizeof(pid), 0);
     printf("Response sent\n");
 
     // Close the socket
