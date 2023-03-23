@@ -67,7 +67,7 @@ int main(int argc, char const *argv[])
 
         sleep(getRandom(2, 5));
     }
-    
+
     printf("\n\n--Fin del programa--\n");
 
     // Cerrar socket
@@ -103,56 +103,31 @@ void *cicloProcesos(void *arg)
 
 void *funcionProceso(void *arg)
 {
-    int sock = *(int *)arg;
-
-    // Crear proceso
-    int pid;
+    int client_socket = *(int *)arg;
     int burst = getRandom(min, max);
     int prioridad = getRandom(min, max);
 
-    // Envia datos de proceso
-    if (send(sock, &burst, sizeof(burst), 0) == -1)
+    printf("Enviando burst: %d\n", burst);
+    send(client_socket, &burst, sizeof(burst), 0); // Enviar burst al servidor
+
+    printf("Enviando prioridad: %d\n", prioridad);
+    send(client_socket, &prioridad, sizeof(prioridad), 0); // Enviar burst al servidor
+
+    // Esperar hasta que haya datos disponibles en el socket
+    fd_set readfds;
+    FD_ZERO(&readfds);
+    FD_SET(client_socket, &readfds);
+    int pid = select(client_socket + 1, &readfds, NULL, NULL, NULL);
+    if (pid <= 0)
     {
-        printf("Error al enviar el burst");
-        perror("Error al enviar el burst");
+        perror("Error en select");
         exit(EXIT_FAILURE);
     }
 
-    if (send(sock, &prioridad, sizeof(prioridad), 0) == -1)
-    {
-        printf("Error al enviar la prioridad");
-        perror("Error al enviar la prioridad");
-        exit(EXIT_FAILURE);
-    }
-
-    // Recibir PID
-    recv(sock, &pid, sizeof(pid), 0);
-    printf("PCB recibida: %d\n", pid);
-    
-    
-    printf("xxxxxxxxxx");
+    recv(client_socket, &pid, sizeof(pid), 0); // Recibir pid del servidor
+    printf("Recibido pid: %d\n", pid);
 
     // Solicitar CPU
-    /*
-    send(sock, 1, sizeof(int), 0);
-    printf("PCB solicitada\n");
-
-    // Recibir respuesta de CPU
-    int respuesta;
-    recv(sock, &respuesta, sizeof(int), 0);
-    if (respuesta == 1)
-    {
-        printf("CPU recibida\n");
-
-        // Enviar Datos de proceso
-        send(sock, &proceso, sizeof(proceso), 0);
-        printf("Proceso enviado\n");
-    }
-    else
-    {
-        printf("CPU no recibida\n");
-    }
-    */
 
     return NULL;
 }
