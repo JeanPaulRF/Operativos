@@ -5,25 +5,28 @@
 #include <arpa/inet.h>
 #include <pthread.h>
 #include <time.h>
+#include <fcntl.h>
 
 #define PORT 8080
 
-char archivo[30];
+int min, max;
 
+int getRandom(int minimo, int maximo);
 void *cicloProcesos(void *arg);
 void *funcionProceso(void *arg);
 
 int main(int argc, char const *argv[])
 {
-    printf("\n--Bienvenido al menu de cliente manual del planificador de procesos--\n\n");
-    printf("-Nombre del archivo con los procesos-\n\n");
-    printf("Archivo: ");
-    scanf("%s", archivo);
+    printf("\n--Bienvenido al menu de cliente automatico del planificador de procesos--\n\n");
+    printf("-Rango de valores enteros para el burst y la prioridad de los procesos-\n\n");
+    printf("Valor minimo: ");
+    scanf("%d", &min);
+    printf("Valor maximo: ");
+    scanf("%d", &max);
 
     int sock = 0, valread;
     struct sockaddr_in serv_addr;
     char buffer[1024] = {0};
-    pthread_t thread;
 
     // Create socket file descriptor
     if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
@@ -51,12 +54,21 @@ int main(int argc, char const *argv[])
         return -1;
     }
 
-    // thread Crear procesos
-    if (pthread_create(&thread, NULL, &cicloProcesos, (void *)(&sock)) != 0)
+    while (1)
     {
-        printf("\nError al crear el thread\n");
-        return -1;
+        pthread_t thread;
+
+        // crear thread del proceso
+        if (pthread_create(&thread, NULL, funcionProceso, (void *)&sock) < 0)
+        {
+            printf("\nError al crear el thread del proceso\n");
+            return -1;
+        }
+
+        sleep(getRandom(2, 5));
     }
+
+    printf("\n\n--Fin del programa--\n");
 
     // Cerrar socket
     close(sock);
@@ -71,53 +83,51 @@ int getRandom(int minimo, int maximo)
 void *cicloProcesos(void *arg)
 {
     int sock = *(int *)arg;
-    pthread_t thread;
 
-    // while (1) segun la cantidad de procesos
-    sleep(getRandom(3, 8));
+    while (1)
+    {
+        pthread_t thread;
 
-    // crear thread del proceso
-    pthread_create(&thread, NULL, &funcionProceso, (void *)(&sock));
+        // crear thread del proceso
+        if (pthread_create(&thread, NULL, funcionProceso, (void *)&sock) < 0)
+        {
+            printf("\nError al crear el thread del proceso\n");
+            return NULL;
+        }
 
-    return;
+        sleep(getRandom(3, 8));
+    }
+
+    return NULL;
 }
 
 void *funcionProceso(void *arg)
 {
-    int sock = *(int *)arg;
+    int client_socket = *(int *)arg;
+    int burst = getRandom(min, max);
+    int prioridad = getRandom(min, max);
 
-    // Crear proceso
-    int burst;     // del archivo
-    int prioridad; // del archivo
+    printf("Enviando burst: %d\n", burst);
+    send(client_socket, &burst, sizeof(burst), 0); // Enviar burst al servidor
 
-    // Envia datos de proceso
-    send(sock, burst, sizeof(int), 0);
+    printf("Enviando prioridad: %d\n", prioridad);
+    send(client_socket, &prioridad, sizeof(prioridad), 0); // Enviar burst al servidor
 
-    send(sock, prioridad, sizeof(int), 0);
+    // Esperar hasta que haya datos disponibles en el socket
+    fd_set readfds;
+    FD_ZERO(&readfds);
+    FD_SET(client_socket, &readfds);
+    int pid = select(client_socket + 1, &readfds, NULL, NULL, NULL);
+    if (pid <= 0)
+    {
+        perror("Error en select");
+        exit(EXIT_FAILURE);
+    }
 
-    // Recibir PCB
-    recv(sock, &proceso.pid, sizeof(int), 0);
-    printf("PCB recibida: %d\n", proceso.pid);
+    recv(client_socket, &pid, sizeof(pid), 0); // Recibir pid del servidor
+    printf("Recibido pid: %d\n", pid);
 
     // Solicitar CPU
-    send(sock, 1, sizeof(int), 0);
-    printf("PCB solicitada\n");
 
-    // Recibir respuesta de CPU
-    int respuesta;
-    recv(sock, &respuesta, sizeof(int), 0);
-    if (respuesta == 1)
-    {
-        printf("CPU recibida\n");
-
-        // Enviar Datos de proceso
-        send(sock, &proceso, sizeof(proceso), 0);
-        printf("Proceso enviado\n");
-    }
-    else
-    {
-        printf("CPU no recibida\n");
-    }
-
-    return;
+    return NULL;
 }
