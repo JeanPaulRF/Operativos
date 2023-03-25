@@ -69,6 +69,7 @@ int main(int argc, char const *argv[])
             continue;
         }
         num_clients++;
+
         if (num_clients >= MAX_CLIENTS)
         {
             printf("Número máximo de clientes alcanzado\n");

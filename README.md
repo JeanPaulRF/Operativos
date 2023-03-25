@@ -12,7 +12,7 @@ Estudiantes:
 
 David Jose Espinoza Soto - 2016012024
 
-Jean Paul Rodriguez      - 0000000000
+Jean Paul Rodriguez      - 2020059156
 
 Taylor                   - 0000000000
 
