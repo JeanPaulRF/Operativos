@@ -10,100 +10,270 @@
 -> Recibir procesos sin terminar, para volver a ponerlos en la cola de READY
 
 */
-typedef struct 
-{
-	unsigned int cont_PID;
-	unsigned int cant_JOB;
-	unsigned int index;
-	Proceso *READY; 
+struct node{
+	Proceso data;
+	struct nodo* NEXT;
 	
-} JobScheduler;
+};
 
-// crear la estructura
-struct* JobScheduler new_JobScheduler(){
-	JobScheduler *new_JS;
-	new_JS->cont_PID = 1; // 0 a 4294967295
-	new_JS->cant_JOB = 50;
-	new_JS->index = 0;
-	new_JS->READY = (Proceso *) malloc(50); // arreglo base con capacidad para 50 procesos
-	return new_JS;
-}
+typedef struct node node_js;
 
-// Funcion para agrandar la cola READY
+// variable global
+unsigned int cont_PID; // va asignando el id de los procesos
+unsigned int cant_jobs; // va contando cuantos procesos existen
+node_js *READY; // la cola de procesos en READY
+
+// funciones
+void printlist(node_js *head);
+
+// crear proceso nuevo
+node_js *create_new_job(int n_burst, int n_priority);
+
+// encontrar nodo
+node_js *find_node(node_js *head, int v_pid);
+
+// retornar cabeza
+node_js *get_head(node_js *head);
+
+// insertar en la lista simple
+node_js *insert_at_head(node_js **head, node_js *node_to_insert);
+void insert_after_node(node_js *node_to_insert_after, node_js *newnode);
+void *insert_at_end(node_js **head, node_js *node_to_insert);
+
+// insertar un proceso devuelto
+void recibe_job(node_js **head, Proceso old_job);
+
+// retorna un proceso y lo borra del READY
+Proceso get_proceso(node_js **head, int v_pid);
+
+// remover de la lista simple
+void remove_position(node_js **head, int position);
+node_js *remove_last(node_js *head);
+node_js *remove_first(node_js *head);
+
+// pruebas
 /*
-void agrandar_cola_READY(struct JobScheduler *JS){
-	// el 70 seria el total ya aumentada
-	// Reallocating memory
-	JS->READY = (Proceso *) realloc(READY, 70); 
+int main(){
+	// pruebas funcionalidades
+	cont_PID = 1;
+	cant_jobs = 0;
+	
+	READY = NULL;
+	node_js *tmp;
+	
+	for(int i = 0; i<10; i++){
+		tmp = create_new_job( i*2 + 5, i+1);
+		insert_at_head(&READY, tmp);
+	}
+	printlist(READY);
+	
+	tmp = find_node(READY, 8);
+	insert_after_node(tmp, create_new_job( 12 , 8));
+	insert_at_end(READY, create_new_job( 77 , 11));
+	
+	tmp = get_head(READY);
+	// retorno el pid recien creado
+	printf("head pid: %d\n",tmp->data.pid); 
+	
+	printlist(READY);
+	
+	READY = remove_first(READY);
+	printf("node head remove \n");
+	
+	printlist(READY);
+	
+	READY = remove_last(READY);
+	printf("node last remove \n");
+	
+	printlist(READY);
+	
+	remove_position(&READY, 4);
+	printf("node in position 4 remove \n");
+	
+	printlist(READY);
+	
+	Proceso old_job;
+	old_job.pid = 45;
+	old_job.burst = 55;
+	old_job.prioridad = 5;
+	
+	recibe_job(READY, old_job);
+	
+	printlist(READY);
+	
+	printf("Sacar un proceso, el pid = 4\n");
+	old_job = get_proceso(READY, 4);
+	printlist(READY);
+	
+	printf("Pid: %d\n", old_job.pid);
+	
+	return 0;
 }
 */
 
-// insertar un nuevo proceso
-/*
-void insert_job(struct JobScheduler *JS, int v_burst, int v_prioridad){
-	// crea el proceso
-	Proceso newJOB;
-	newJOB.pid = JS->cont_PID;
-	newJOB.burst = v_burst;
-	newJOB.prioridad = v_prioridad;
+void printlist(node_js *head){
+	node_js *temporary = head;
 	
-	if( JS->index == JS->cant_JOB ) agrandar_cola_READY(JS);
-	
-	JS->READY[JS->index] = newJOB;
-	JS->index += 1; //si se llena funcion para agrandar READY
-	JS->cont_PID += 1;
-};*/
+	while(temporary != NULL){
+		printf("Pid :%d - Burst: %d - Prioridad: %d\n", temporary->data.pid, temporary->data.burst, temporary->data.prioridad);
+		temporary = temporary->NEXT;
+	}
+	printf("\n");
+}
 
-// Funcion para enviar mensaje al cliente con el PID
+// creo un nuevo proceso
+node_js *create_new_job(int n_burst, int n_priority){
+	node_js *result = malloc(sizeof(node_js));
+	Proceso p_tmp;
+	
+	// creo el job o proceso
+	p_tmp.pid = cont_PID;
+	p_tmp.burst = n_burst;
+	p_tmp.prioridad = n_priority;
+	
+	// ajusto las variables globales
+	cont_PID++;
+	cant_jobs++;
+	
+	// se inserta en el nodo job scheduler
+	result->data = p_tmp;
+	result->NEXT = NULL;
+	
+	return result;
+}
+
+// inserta al principio
+node_js *insert_at_head(node_js **head, node_js *node_to_insert){
+	node_to_insert->NEXT = *head;
+	*head = node_to_insert;
+	return node_to_insert;
+}
+
+// inserta un nodo al final
+void *insert_at_end(node_js **head, node_js *node_to_insert){
+	node_js *ptr = head;
+	
+	while(ptr->NEXT != NULL) ptr = ptr->NEXT;
+	
+	ptr->NEXT = node_to_insert;
+	
+};
+
+// insertar despues de un nodo
+void insert_after_node(node_js *node_to_insert_after, node_js *newnode){
+	newnode->NEXT = node_to_insert_after->NEXT;
+	node_to_insert_after->NEXT = newnode;
+}
+
+// encontrar un nodo
+node_js *find_node(node_js *head, int v_pid){
+	node_js *tmp = head;
+	while(tmp != NULL){
+		if(tmp->data.pid == v_pid) return tmp;
+		tmp = tmp->NEXT;
+	}
+	return NULL;
+}
+
+// regresar la cabeza
+node_js *get_head(node_js *head){
+	node_js *tmp = malloc(sizeof(node_js));
+	tmp->data = head->data;
+	tmp->NEXT = NULL;
+	return tmp;
+}
+
+// remover el primer nodo
+node_js *remove_first(node_js *head){
+	if(head == NULL) printf("READY is empty\n");
+	else{
+		node_js *tmp = head;
+		head = head->NEXT;
+		free(tmp);
+		tmp = NULL;
+	}
+	return head;
+}
+
+// remover el ultimo nodo
+node_js *remove_last(node_js *head){
+	if(head == NULL) printf("READY is empty\n");
+	else if(head->NEXT == NULL){
+		free(head);
+		head = NULL;
+	}
+	else{
+		node_js *tmp = head;
+		node_js *tmp2 = head;
+		while(tmp->NEXT != NULL){
+			tmp2 = tmp;
+			tmp = tmp->NEXT;
+		}
+		tmp2->NEXT = NULL;
+		free(tmp);
+		tmp = NULL;
+	}
+	return head;
+}
+
+// remover un una posicion especifica
+void remove_position(node_js **head, int position){
+	node_js *current = *head;
+	node_js *previous = *head;
+	
+	if(*head == NULL) printf("READY is empty\n");
+	else if( position == 1){
+		*head = current->NEXT;
+		free(current);
+		current = NULL;
+	}
+	else{
+		while(position != 1){
+			previous = current;
+			current = current->NEXT;
+			position--;
+		}
+		previous->NEXT = current->NEXT;
+		free(current);
+		current = NULL;
+	}
+}
 
 // Funcion para recibir un Proceso del CPU Scheduler
-/*
-void reinsert_job(struct JobScheduler *JS, Proceso *job){
-	if( JS->index == JS->cant_JOB ) agrandar_cola_READY();
-	else{
-		JS->READY[JS->index] = job;
-		JS->index += 1;
-	}	
-}
-*/
-
-// Funcion para reagustar
-/*
-void reajuste_READY( struct JobScheduler *JS, v_indice int){
-	int i = v_indice;
+void recibe_job(node_js **head, Proceso old_job){
 	
-	while( i < JS->cant_JOB){
-		JS->READY[i] = JS->READY[i+1];
-	}
-	JS->index -= 1;
-}
-*/ 
+	node_js *old_node = malloc(sizeof(node_js));
+	node_js *ptr = head;
+	
+	old_node->data = old_job;
+	old_node->NEXT = NULL;
+	
+	while(ptr->NEXT != NULL) ptr = ptr->NEXT;
+	
+	ptr->NEXT = old_node;
+};
 
 // Funcion para sacar un Proceso
-/*
-Proceso get_job( struct JobScheduler *JS, v_pid int){
-	int i = 0;
-	Proceso newJOB;
+Proceso get_proceso(node_js **head, int v_pid){
+	node_js *tmp = head;
+	Proceso p_tmp;
+	int position = 1;
 	
-	while( i < JS->cant_JOB){
-		if ( JS->READY[i].pid == v_pid ){
-			newJOB = JS->READY[i].pid;
-			reajuste_READY(JS, i);
-			return newJOB;
+	p_tmp.pid = 0; //7 digamos codigo de error
+	
+	while(tmp != NULL){
+		if(tmp->data.pid == v_pid) {
+			// salva la informacion del proceso buscado
+			p_tmp = tmp->data;
+			// borra el nodo que lo contenia
+			printf("Aqui llego\n");
+			remove_position(&head, position);
+			
+			//retorna la informacion buscada
+			return p_tmp;
 		}
-		else i++;
+		tmp = tmp->NEXT;
+		position++;
 	}
-	return newJOB; //le caeria vacio.
-}
-*/
-
-int main(){
-	struct JobScheduler *JS = (struct* JobScheduler) new_JobScheduler();
-	int a,b;
-	//insert_job(JS, 3, 4);
-	
-	//printf("Inserted: %d\n", (JS->READY[0]).pid );
-	
-	free(JS);
-	return 0;
+	return p_tmp;
 }
