@@ -7,6 +7,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <string.h>
+#include "jobScheduler.c"
 
 #define PORT 8080
 #define MAX_CLIENTS 10
@@ -19,6 +20,12 @@ int main(int argc, char const *argv[])
     int server_socket, client_socket;
     pthread_t client_threads[MAX_CLIENTS];
     int num_clients = 0;
+
+    // variables para el scheduler
+    cont_PID = 0;
+    cant_jobs = 0;
+    READY = NULL;
+    node_js *tmp;
 
     // Crear socket
     server_socket = socket(AF_INET, SOCK_STREAM, 0);
@@ -108,6 +115,8 @@ void *handle_client(void *arg)
             break; // Si el cliente se desconecta, salir del ciclo
         }
         printf("Prioridad: %d del cliente %d\n", prioridad, client_socket);
+
+        // jobScheduler -----------------------------------
 
         int pid = 99; // Generar número aleatorio
         printf("Enviando pid %d al cliente %d\n", pid, client_socket);
