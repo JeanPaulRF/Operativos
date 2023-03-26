@@ -12,6 +12,8 @@
 #define PORT 8080
 #define MAX_CLIENTS 10
 
+int timer = 0;
+
 void *handle_client(void *arg);
 
 int main(int argc, char const *argv[])
@@ -54,6 +56,14 @@ int main(int argc, char const *argv[])
     }
 
     printf("Servidor en línea\n");
+
+    // Crear hilo para manejar el timer
+    pthread_t timer_thread;
+    if (pthread_create(&timer_thread, NULL, handle_client, (void *)) != 0)
+    {
+        perror("Error al crear hilo del timer");
+        continue;
+    }
 
     // Aceptar conexiones entrantes y crear hilos para manejar a los clientes
     while (1)
@@ -120,6 +130,8 @@ void *handle_client(void *arg)
 
         int pid = READY->data.pid; // Recibe el pid del proceso que se va a ejecutar
 
+        READY->data.tiempoLlegada = timer; // Se le asigna el tiempo de llegada
+
         printf("Enviando pid %d al cliente %d\n\n", pid, client_socket);
         send(client_socket, &pid, sizeof(pid), 0); // Enviar pid al cliente
     }
@@ -127,5 +139,15 @@ void *handle_client(void *arg)
     close(client_socket); // Cerrar socket del cliente
 
     printlist(READY);
+    return NULL;
+}
+
+void *handle_timer(void *arg)
+{
+    while (1)
+    {
+        sleep(1);
+        timer++;
+    }
     return NULL;
 }
