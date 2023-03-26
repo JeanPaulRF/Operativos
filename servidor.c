@@ -13,9 +13,11 @@
 #define MAX_CLIENTS 10
 
 int timer = 0;
+node_js *EXIT;
 
 void *handle_client(void *arg);
 void *handle_timer();
+void *hadle_scheduler();
 
 int main(int argc, char const *argv[])
 {
@@ -28,6 +30,7 @@ int main(int argc, char const *argv[])
     cont_PID = 1;
     cant_jobs = 0;
     READY = NULL;
+    EXIT = NULL;
 
     // Crear socket
     server_socket = socket(AF_INET, SOCK_STREAM, 0);
@@ -63,6 +66,14 @@ int main(int argc, char const *argv[])
     if (pthread_create(&timer_thread, NULL, handle_timer, NULL) != 0)
     {
         perror("Error al crear hilo del timer");
+        exit(-1);
+    }
+
+    // crear hilo del cpu-scheduler
+    pthread_t scheduler_thread;
+    if (pthread_create(&scheduler_thread, NULL, handle_scheduler, NULL) != 0)
+    {
+        perror("Error al crear hilo del scheduler");
         exit(-1);
     }
 
@@ -143,12 +154,28 @@ void *handle_client(void *arg)
     return NULL;
 }
 
-void *handle_timer()
+void *handle_timer(void *arg)
 {
     while (1)
     {
         sleep(1);
         timer++;
+    }
+    return NULL;
+}
+
+void *handle_scheduler(void *arg)
+{
+    while (1)
+    {
+        if (READY != NULL)
+        {
+            node_js *aux = READY;
+            while (aux != NULL)
+            {
+                //---------------
+            }
+        }
     }
     return NULL;
 }
