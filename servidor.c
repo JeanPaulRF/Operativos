@@ -88,7 +88,7 @@ int main(int argc, char const *argv[])
             perror("Error al aceptar conexión entrante");
             continue;
         }
-        printf("Conexión entrante desde %s:%d\n", inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
+        printf("Conexión entrante desde %s:%d\n\n", inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
 
         // Crear hilo para manejar al cliente
         if (pthread_create(&client_threads[num_clients], NULL, handle_client, (void *)&client_socket) != 0)
