@@ -15,6 +15,7 @@
 int timer = 0;
 
 void *handle_client(void *arg);
+void *handle_timer();
 
 int main(int argc, char const *argv[])
 {
@@ -59,10 +60,10 @@ int main(int argc, char const *argv[])
 
     // Crear hilo para manejar el timer
     pthread_t timer_thread;
-    if (pthread_create(&timer_thread, NULL, handle_client, (void *)) != 0)
+    if (pthread_create(&timer_thread, NULL, handle_timer, NULL) != 0)
     {
         perror("Error al crear hilo del timer");
-        continue;
+        exit(-1);
     }
 
     // Aceptar conexiones entrantes y crear hilos para manejar a los clientes
@@ -142,7 +143,7 @@ void *handle_client(void *arg)
     return NULL;
 }
 
-void *handle_timer(void *arg)
+void *handle_timer()
 {
     while (1)
     {
