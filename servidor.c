@@ -25,7 +25,6 @@ int main(int argc, char const *argv[])
     cont_PID = 0;
     cant_jobs = 0;
     READY = NULL;
-    node_js *tmp;
 
     // Crear socket
     server_socket = socket(AF_INET, SOCK_STREAM, 0);
@@ -117,9 +116,11 @@ void *handle_client(void *arg)
         printf("Prioridad: %d del cliente %d\n", prioridad, client_socket);
 
         // jobScheduler -----------------------------------
+        insert_at_head(&READY, create_new_job(burst, prioridad));
 
-        int pid = 99; // Generar número aleatorio
-        printf("Enviando pid %d al cliente %d\n", pid, client_socket);
+        int pid = READY->data.pid; // Recibe el pid del proceso que se va a ejecutar
+
+        printf("Enviando pid %d al cliente %d\n\n", pid, client_socket);
         send(client_socket, &pid, sizeof(pid), 0); // Enviar pid al cliente
     }
 

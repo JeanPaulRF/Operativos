@@ -125,7 +125,7 @@ void *funcionProceso(void *arg)
     }
 
     recv(client_socket, &pid, sizeof(pid), 0); // Recibir pid del servidor
-    printf("Recibido pid: %d\n", pid);
+    printf("Recibido pid: %d\n\n", pid);
 
     // Solicitar CPU
 
