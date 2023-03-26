@@ -17,7 +17,7 @@ node_js *EXIT;
 
 void *handle_client(void *arg);
 void *handle_timer();
-void *hadle_scheduler();
+void *handle_scheduler();
 
 int main(int argc, char const *argv[])
 {
