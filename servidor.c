@@ -22,7 +22,7 @@ int main(int argc, char const *argv[])
     int num_clients = 0;
 
     // variables para el scheduler
-    cont_PID = 0;
+    cont_PID = 1;
     cant_jobs = 0;
     READY = NULL;
 
@@ -125,5 +125,7 @@ void *handle_client(void *arg)
     }
 
     close(client_socket); // Cerrar socket del cliente
+
+    printlist(READY);
     return NULL;
 }
