@@ -16,7 +16,7 @@ Jean Paul Rodriguez      - 2020059156
 
 Taylor                   - 0000000000
 
-Ronald                   - 0000000000
+Ronald Cordero Fallas    - 2018132830
 
 ## Objetivos del proyecto
 - Aprender a desarrollar un esquema de cliente-servidor.
