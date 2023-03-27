@@ -1,91 +1,122 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
 #include "proceso.h"
 #include "jobScheduler.c"
 
-void algoritmoFifo(Proceso cola[]);
-void cargarAJobScheduler(Proceso procesoActual);
-void algoritmoSjf(Proceso cola[]);
-int getIndexShortest(Proceso cola[]); //indice del proceso con menos burst
-void algoritmoHpf(Proceso cola[]);
-int getIndexPrioridad(Proceso cola[]);
-void roundRobin(Proceso cola[], int quantum);
+void algoritmoFifo(node_js **headReady, node_js **headExit);
+void algoritmoSjf(node_js **headReady, node_js **headExit);
+int getPidShortestBurst(node_js **headReady); //pid del proceso con menos burst
+void algoritmoHpf(node_js **headReady, node_js **headExit);
+int getPidShortestPrioridad(node_js **headReady);
+void roundRobin(node_js **headReady, node_js **headExit, int quantum);
 
 // Algoritmo FIFO
-void algoritmoFifo(Proceso cola[]){
+void algoritmoFifo(node_js **headReady, node_js **headExit){ // pasar el ready
   Proceso procesoActual;
-  for (int i = 0; cola.size; i++) {   // llevar registro del tamaño de la cola
-    procesoActual = cola[i];
-    cargarAJobScheduler(procesoActual);
-  }
+  node_js *tmp = headReady;
+  int vpid = 0;   // probar asignacion a NULL
+  vpid = tmp->data.pid;
+  procesoActual = get_proceso(headReady, vpid);
+  procesoActual.burstRestante = procesoActual.burst;
+  procesoActual.tiempoSalida = procesoActual.tiempoLlegada + procesoActual.burstRestante + 7; // corregir +7
+  procesoActual.tat = procesoActual.tiempoSalida - procesoActual.tiempoLlegada;
+  procesoActual.wt = procesoActual.tat - procesoActual.burstRestante;
+  procesoActual.burst = 0;
+  recibe_job(headExit, procesoActual);
 }
 
 // Algoritmo SJF
-void algoritmoSjf(struct Proceso cola[]) {
+void algoritmoSjf(node_js **headReady, node_js **headExit) {
   int indexShortest;
   int repeticiones = 0;
-  while(repeticiones < cola.size) {   // borrar procesos terminados?
-    indexShortest = getIndexShortest(cola);
-    cargarAJobScheduler(cola[indexShortest]);
-    cola[indexShortest].burstRestante = 0;  //setear el burst como ya procesado
-    repeticiones ++;
-  }
+  int vpid = 0;   // probar asignacion a NULL
+  node_js *temporary = headReady;
+  Proceso procesoActual;
+  node_js *tmp = headReady;
+  vpid = getPidShortest(&headReady);
+  procesoActual = get_proceso(headReady, vpid);
+  procesoActual.burstRestante = procesoActual.burst;
+  procesoActual.tiempoSalida = procesoActual.tiempoLlegada + procesoActual.burstRestante + 7; // corregir +7
+  procesoActual.tat = procesoActual.tiempoSalida - procesoActual.tiempoLlegada;
+  procesoActual.wt = procesoActual.tat - procesoActual.burstRestante;
+  procesoActual.burst = 0;
+  recibe_job(headExit, procesoActual);
 }
 
-int getIndexShortest(Proceso cola[]) { // los procesos que ya pasaron se setean en burst = -1
-  Proceso masPequenio = cola[0];
-  int indexShortest;
+int getPidShortestBurst(node_js **headReady) { // los procesos que ya pasaron se setean en burst = -1
+  node_js *masPequenio = headReady;
+  int burstTmp = INT_MAX;
+  int indexShortest = INT_MAX;
   
-  for(int i = 1 ; i < cola.size - 1 ; i++) {
-    if((cola[i].burst < masPequenio.burst) && (cola[i].burstRestante > 0)) { //si burstRestante = 0, ya fue procesado
-      masPequenio = cola[i];
-      indexShortest = i;
+  while (masPequenio != NULL) {
+    if(masPequenio->data.burst < burstTmp) { //si burstRestante = 0, ya fue procesado
+      indexShortest = masPequenio->data.pid;
+      burstTmp = masPequenio->data.burst;
     }
+    masPequenio = masPequenio->NEXT;
   }
   return indexShortest;
 }
 
 // Algoritmo HPF
-void algoritmoHpf(Proceso cola[]) {
-  cargarAJobScheduler(cola[0]); // se carga el proceso1
-  int repeticiones = 1;
-  int indexPrioridad;
-
-  while(repeticiones < cola.size) {
-    indexPrioridad = getIndexPrioridad(cola);
-    cargarAJobScheduler(cola[indexPrioridad]);
-  }
+void algoritmoHpf(node_js **headReady, node_js **headExit) {
+  int indexShortest;
+  int repeticiones = 0;
+  int vpid = 0;   // probar asignacion a NULL
+  node_js *temporary = headReady;
+  Proceso procesoActual;
+  node_js *tmp = headReady;
+  vpid = getPidShortestPrioridad(&headReady);
+  procesoActual = get_proceso(headReady, vpid);
+  procesoActual.burstRestante = procesoActual.burst;
+  procesoActual.tiempoSalida = procesoActual.tiempoLlegada + procesoActual.burstRestante + 7; // corregir +7
+  procesoActual.tat = procesoActual.tiempoSalida - procesoActual.tiempoLlegada;
+  procesoActual.wt = procesoActual.tat - procesoActual.burstRestante;
+  procesoActual.burst = 0;
+  recibe_job(headExit, procesoActual);
 }
 
-int getIndexPrioridad(Proceso cola[]) {
-  int indexPrioridadMayor = 1;    // empieza en 1 porque el proceso1 siempre ejecuta primero
-  for (int i = 2 ; i < cola.size; i++) {  
-    if(cola[i].prioridad > cola[indexPrioridadMayor].prioridad) {
-      indexPrioridadMayor = i;
-    } else if(cola[i].prioridad == cola[indexPrioridadMayor].prioridad) {
-      indexPrioridadMayor = (cola[i].pid < cola[indexPrioridadMayor].pid) ? i : indexPrioridadMayor; // si tienen igual prioridad retorna pid mas bajo
+int getPidShortestPrioridad(node_js **headReady) {
+  node_js *masPequenio = headReady;
+  int prioridadTmp = INT_MAX;
+  int indexShortest = INT_MAX;
+  
+  while (masPequenio != NULL) {
+    if(masPequenio->data.burst < prioridadTmp) { //si burstRestante = 0, ya fue procesado
+      indexShortest = masPequenio->data.pid;
+      prioridadTmp = masPequenio->data.prioridad;
     }
+    masPequenio = masPequenio->NEXT;
   }
-  return indexPrioridadMayor;
+  return indexShortest;
 }
 
 
 // Algoritmo Round Robin
-void roundRobin(Proceso cola[], int quantum){
-  int cantProcesosTerminados = 0;
-  int indexActual = 0;
-  while(cantProcesosTerminados != cola.size) {
-    if(cola[indexActual].burstRestante > quantum) {
-      cola[indexActual].burstRestante = cola[indexActual].burstRestante - quantum;
-    } else {
-      cola[indexActual].burstRestante = 0;
-      cantProcesosTerminados ++;
-    }
-    indexActual ++;
+void roundRobin(node_js **headReady, node_js **headExit, int quantum){
+  Proceso procesoActual;
+  node_js *tmp = headReady;
+  int vpid = 0;   // probar asignacion a NULL
+  vpid = tmp->data.pid;
+  procesoActual = get_proceso(headReady, vpid);
+
+  if (procesoActual.burst < quantum) {
+    procesoActual.burstRestante += procesoActual.burst;
+  } else {
+    procesoActual.burstRestante += quantum;
   }
+  procesoActual.tiempoSalida = procesoActual.tiempoLlegada + procesoActual.burstRestante + 7; // corregir +7
+  procesoActual.tat = procesoActual.tiempoSalida - procesoActual.tiempoLlegada;
+  procesoActual.wt = procesoActual.tat - procesoActual.burstRestante;
+
+  if (procesoActual.burst - quantum <= 0) {
+    procesoActual.burst = 0;
+  } else {
+    procesoActual.burst = procesoActual.burst - quantum;
+  }
+
+  recibe_job(headExit, procesoActual);
 }
 
-void cargarAJobScheduler(Proceso procesoActual) {
-  jobScheduler.add(procesoActual);
-}
 
