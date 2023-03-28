@@ -34,7 +34,7 @@ void algoritmoSjf(node_js **headReady, node_js **headExit) {
   node_js *temporary = headReady;
   Proceso procesoActual;
   node_js *tmp = headReady;
-  vpid = getPidShortest(&headReady);
+  vpid = getPidShortestBurst(&headReady);
   procesoActual = get_proceso(headReady, vpid);
   procesoActual.burstRestante = procesoActual.burst;
   procesoActual.tiempoSalida = procesoActual.tiempoLlegada + procesoActual.burstRestante + 7; // corregir +7

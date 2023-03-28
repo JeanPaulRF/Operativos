@@ -210,10 +210,29 @@ void *handle_scheduler(void *arg)
     {
         if (READY != NULL)
         {
-            node_js *aux = READY;
-            while (aux != NULL)
+            //node_js *aux = READY; no lo necesitamos, porque necesitamos ir vaciando READY
+            while (READY != NULL)
             {
                 //---------------
+				switch(algoritmo){
+					case 1: // si escogio FIFO
+						algoritmoFifo(READY, EXIT);
+					case 2: // si escogimos SJF
+						algoritmoSjf(READY, EXIT);
+					case 3: // si escogimos HPF
+						algoritmoHpf(READY, EXIT);
+					case 4: // si escogimos RR
+						roundRobin(READY, EXIT, quantum);
+					default: // por default que aplique el fifo
+						algoritmoFifo(READY, EXIT);
+				}
+				
+				if(EXIT->data.burst != 0){ // si el proceso recien enviado a exit aun tiene burts que procesar
+					Proceso v_proc;
+					v_proc = get_proceso(EXIT, EXIT->data.pid);// tome el primer proceso, el recien enviado
+					recibe_job(READY, v_proc); // lo envia al final de READY
+				}
+				
             }
         }
     }
