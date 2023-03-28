@@ -220,7 +220,7 @@ void *handle_scheduler(void *arg)
     return NULL;
 }
 
-void *handle_input()
+void *handle_input(void *arg)
 {
     int salir = 1;
     printf("Digite 0 para terminar la ejecucion del CPU: ");
