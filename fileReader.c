@@ -1,61 +1,79 @@
 #include <stdio.h>
-#include <gtk/gtk.h>
+#include <stdlib.h>
 
-void on_file_clicked(GtkWidget *button, gpointer user_data) {
-    GtkWidget *dialog;
-    GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_OPEN;
-    gint res;
+// Definición de la estructura de un nodo de la lista
+typedef struct nodo {
+    int valor;
+    struct nodo* siguiente;
+} Nodo;
 
-    dialog = gtk_file_chooser_dialog_new("Abrir archivo", NULL, action,
-        "_Cancelar", GTK_RESPONSE_CANCEL, "_Abrir", GTK_RESPONSE_ACCEPT, NULL);
-
-    res = gtk_dialog_run(GTK_DIALOG(dialog));
-    if (res == GTK_RESPONSE_ACCEPT) {
-        char *filename;
-        GtkFileChooser *chooser = GTK_FILE_CHOOSER(dialog);
-        filename = gtk_file_chooser_get_filename(chooser);
-        
-        FILE *archivo;
-        char buffer[100];
-
-        archivo = fopen(filename, "r");
-        if (archivo == NULL) {
-            printf("Error al abrir el archivo");
-            return;
+// Función para agregar un valor a la lista
+void agregar(Nodo** cabeza, int valor) {
+    Nodo* nuevo_nodo = (Nodo*) malloc(sizeof(Nodo));
+    nuevo_nodo->valor = valor;
+    nuevo_nodo->siguiente = NULL;
+    if (*cabeza == NULL) {
+        *cabeza = nuevo_nodo;
+    } else {
+        Nodo* ultimo_nodo = *cabeza;
+        while (ultimo_nodo->siguiente != NULL) {
+            ultimo_nodo = ultimo_nodo->siguiente;
         }
-
-        while (fgets(buffer, 100, archivo)) {
-            printf("%s", buffer);
-        }
-
-        fclose(archivo);
-        g_free(filename);
+        ultimo_nodo->siguiente = nuevo_nodo;
     }
-
-    gtk_widget_destroy(dialog);
 }
 
-int main(int argc, char *argv[]) {
-    GtkWidget *window;
-    GtkWidget *button;
-    GtkWidget *box;
+int main() {
+    // Abrir el archivo de texto
+    FILE* archivo = fopen("archivo.txt", "r");
+    if (archivo == NULL) {
+        printf("No se pudo abrir el archivo\n");
+        return 1;
+    }
 
-    gtk_init(&argc, &argv);
+    // Inicializar las listas para almacenar los datos
+    Nodo* lista_burst = NULL;
+    Nodo* lista_prioridad = NULL;
 
-    window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-    gtk_window_set_title(GTK_WINDOW(window), "Lector de archivos");
-    g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
+    // Leer cada línea del archivo
+    int burst, prioridad;
+    while (fscanf(archivo, "%d %d", &burst, &prioridad) == 2) {
+        // Agregar los datos a las respectivas listas
+        agregar(&lista_burst, burst);
+        agregar(&lista_prioridad, prioridad);
+    }
 
-    box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
-    gtk_container_add(GTK_CONTAINER(window), box);
+    // Cerrar el archivo
+    fclose(archivo);
 
-    button = gtk_button_new_with_label("Seleccionar archivo");
-    g_signal_connect(button, "clicked", G_CALLBACK(on_file_clicked), NULL);
-    gtk_container_add(GTK_CONTAINER(box), button);
+    // Imprimir los datos de las listas
+    printf("Lista Burst:\n");
+    Nodo* nodo_burst = lista_burst;
+    while (nodo_burst != NULL) {
+        printf("%d\n", nodo_burst->valor);
+        nodo_burst = nodo_burst->siguiente;
+    }
+    printf("\nLista Prioridad:\n");
+    Nodo* nodo_prioridad = lista_prioridad;
+    while (nodo_prioridad != NULL) {
+        printf("%d\n", nodo_prioridad->valor);
+        nodo_prioridad = nodo_prioridad->siguiente;
+    }
 
-    gtk_widget_show_all(window);
-
-    gtk_main();
+    // Liberar la memoria de las listas
+    Nodo* nodo_actual = lista_burst;
+    Nodo* nodo_siguiente;
+    while (nodo_actual != NULL) {
+        nodo_siguiente = nodo_actual->siguiente;
+        free(nodo_actual);
+        nodo_actual = nodo_siguiente;
+    }
+    nodo_actual = lista_prioridad;
+    while (nodo_actual != NULL) {
+        nodo_siguiente = nodo_actual->siguiente;
+        free(nodo_actual);
+        nodo_actual = nodo_siguiente;
+    }
 
     return 0;
 }
