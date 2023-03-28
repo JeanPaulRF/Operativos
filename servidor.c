@@ -25,7 +25,6 @@ void *handle_input();
 
 int main(int argc, char const *argv[])
 {
-    menuServer();
     serverFunction();
 
     return 0;
@@ -72,6 +71,8 @@ void serverFunction()
     }
 
     printf("Servidor en línea\n\n");
+
+    menuServer();
 
     // Crear hilo para manejar el timer
     pthread_t timer_thread;
@@ -149,6 +150,8 @@ void menuServer()
         printf("Ingrese el quantum: ");
         scanf("%d\n\n", &quantum);
     }
+
+    return NULL;
 }
 
 void *handle_client(void *arg)
