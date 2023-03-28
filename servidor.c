@@ -21,6 +21,7 @@ void serverFunction();
 void *handle_client(void *arg);
 void *handle_timer();
 void *handle_scheduler();
+void *handle_input();
 
 int main(int argc, char const *argv[])
 {
@@ -88,10 +89,11 @@ void serverFunction()
         exit(-1);
     }
 
-    pthread_t conections_thread;
-    if (pthread_create(&scheduler_thread, NULL, handle_scheduler, NULL) != 0)
+    // crear hilo para manejar input del usuario
+    pthread_t input_thread;
+    if (pthread_create(&input_thread, NULL, handle_input, NULL) != 0)
     {
-        perror("Error al crear hilo del scheduler");
+        perror("Error al crear hilo del input");
         exit(-1);
     }
 
@@ -139,11 +141,13 @@ void menuServer()
     printf("2. SJF\n");
     printf("3. HPF\n");
     printf("4. RR\n\n");
-    scanf("Elija una opcion: %d\n\n", &algoritmo);
+    printf("Elija una opcion: ");
+    scanf("%d\n\n", &algoritmo);
 
     if (algoritmo == 4)
     {
-        scanf("Digite el quantum: %d\n\n", &quantum);
+        printf("Ingrese el quantum: ");
+        scanf("%d\n\n", &quantum);
     }
 }
 
@@ -209,6 +213,18 @@ void *handle_scheduler(void *arg)
                 //---------------
             }
         }
+    }
+    return NULL;
+}
+
+void *handle_input()
+{
+    int salir = 1;
+    printf("Digite 0 para terminar la ejecucion del CPU: ");
+    scanf("%d", &salir);
+    if (salir == 0)
+    {
+        exit(0);
     }
     return NULL;
 }
