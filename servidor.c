@@ -18,7 +18,6 @@ int algoritmo, quantum;
 
 void menuServer();
 void serverFunction();
-void *handle_conections(void *arg);
 void *handle_client(void *arg);
 void *handle_timer();
 void *handle_scheduler();
@@ -35,6 +34,8 @@ void serverFunction()
 {
     struct sockaddr_in server_addr;
     int server_socket, client_socket;
+    pthread_t client_threads[MAX_CLIENTS];
+    int num_clients = 0;
 
     // variables para el scheduler
     cont_PID = 1;
@@ -87,40 +88,12 @@ void serverFunction()
         exit(-1);
     }
 
-    // crear hilo para manejar las conexiones entrantes
     pthread_t conections_thread;
-    if (pthread_create(&scheduler_thread, NULL, handle_scheduler, (void *)&client_socket) != 0)
+    if (pthread_create(&scheduler_thread, NULL, handle_scheduler, NULL) != 0)
     {
-        perror("Error al crear hilo de las conexiones entrantes");
+        perror("Error al crear hilo del scheduler");
         exit(-1);
     }
-
-    close(server_socket);
-}
-
-void menuServer()
-{
-    printf("\n--Bienvenido al servidor del planificador de procesos--\n\n");
-    printf("-Algoritmos de planificacion disponibles-\n\n");
-    printf("1. FIFO\n");
-    printf("2. SJF\n");
-    printf("3. HPF\n");
-    printf("4. RR\n\n");
-    scanf("Elija una opcion: %d\n\n", &algoritmo);
-
-    if (algoritmo == 4)
-    {
-        scanf("Digite el quantum: %d\n\n", &quantum);
-    }
-
-    return NULL;
-}
-
-void *handle_conections(void *arg)
-{
-    int client_socket = *(int *)arg;
-    pthread_t client_threads[MAX_CLIENTS];
-    int num_clients = 0;
 
     // Aceptar conexiones entrantes y crear hilos para manejar a los clientes
     while (1)
@@ -155,7 +128,23 @@ void *handle_conections(void *arg)
     {
         pthread_join(client_threads[i], NULL);
     }
-    return NULL;
+    close(server_socket);
+}
+
+void menuServer()
+{
+    printf("\n--Bienvenido al servidor del planificador de procesos--\n\n");
+    printf("-Algoritmos de planificacion disponibles-\n\n");
+    printf("1. FIFO\n");
+    printf("2. SJF\n");
+    printf("3. HPF\n");
+    printf("4. RR\n\n");
+    scanf("Elija una opcion: %d\n\n", &algoritmo);
+
+    if (algoritmo == 4)
+    {
+        scanf("Digite el quantum: %d\n\n", &quantum);
+    }
 }
 
 void *handle_client(void *arg)
