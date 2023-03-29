@@ -238,10 +238,11 @@ node_js *remove_last(node_js *head)
 // remover un una posicion especifica
 void remove_position(node_js **head, int position)
 {
-	node_js *current = *head;
-	node_js *previous = *head;
+	printf("HOLLA");
+	node_js *current = head;
+	node_js *previous = head;
 	
-
+	
 	if (*head == NULL)
 		printf("READY is empty\n");
 	else if (position == 1)
@@ -284,7 +285,7 @@ void recibe_job(node_js **head, Proceso old_job)
 Proceso get_proceso(node_js **head, int v_pid)
 {
 	node_js *tmp = head;
-	Proceso p_tmp = malloc(sizeof(Proceso));
+	Proceso p_tmp;
 	int position = 1;
 
 	p_tmp.pid = 0; // 7 digamos codigo de error
@@ -296,9 +297,8 @@ Proceso get_proceso(node_js **head, int v_pid)
 			// salva la informacion del proceso buscado
 			p_tmp = tmp->data;
 			// borra el nodo que lo contenia
-			printf("Aqui llego\n");
-			remove_position(&head, position);
-
+			printf("Aqui llego %d\n", position);
+			remove_position(head, position);
 			// retorna la informacion buscada
 			return p_tmp;
 		}
