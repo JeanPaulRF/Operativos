@@ -19,6 +19,7 @@ int num_clients = 0;
 int server_socket, client_socket;
 struct sockaddr_in server_addr;
 pthread_t client_threads[MAX_CLIENTS];
+int runnig = 1;
 
 void menuServer();
 void serverFunction();
@@ -92,14 +93,6 @@ void serverFunction()
     }
     */
 
-    // Aceptar conexiones entrantes y crear hilos para manejar a los clientes
-    pthread_t conection_thread;
-    if (pthread_create(&conection_thread, NULL, handle_conections, NULL) != 0)
-    {
-        perror("Error al crear hilo de conexiones");
-        exit(-1);
-    }
-
     // crear hilo del cpu-scheduler
     pthread_t scheduler_thread;
     if (pthread_create(&scheduler_thread, NULL, handle_scheduler, NULL) != 0)
@@ -108,7 +101,42 @@ void serverFunction()
         exit(-1);
     }
 
-    // Esperar a que todos los hilos terminen y cerrar sockets
+    pthread_t input_thread;
+    if (pthread_create(&input_thread, NULL, handle_input, NULL) != 0)
+    {
+        perror("Error al crear hilo del input");
+        exit(-1);
+    }
+
+    // Aceptar conexiones entrantes y crear hilos para manejar a los clientes
+    while (running)
+    {
+        struct sockaddr_in client_addr;
+        socklen_t client_addr_len = sizeof(client_addr);
+        client_socket = accept(server_socket, (struct sockaddr *)&client_addr, &client_addr_len);
+        if (client_socket < 0)
+        {
+            perror("Error al aceptar conexión entrante");
+            continue;
+        }
+        printf("Conexión entrante desde %s:%d\n\n", inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
+
+        // Crear hilo para manejar al cliente
+        if (pthread_create(&client_threads[num_clients], NULL, handle_client, (void *)&client_socket) != 0)
+        {
+            perror("Error al crear hilo");
+            continue;
+        }
+        num_clients++;
+
+        if (num_clients >= MAX_CLIENTS)
+        {
+            printf("Número máximo de clientes alcanzado\n");
+            break;
+        }
+    }
+
+        // Esperar a que todos los hilos terminen y cerrar sockets
     for (int i = 0; i < num_clients; i++)
     {
         pthread_join(client_threads[i], NULL);
@@ -145,32 +173,6 @@ void menuServer()
 
 void *haddle_conections(void *arg)
 {
-    while (1)
-    {
-        struct sockaddr_in client_addr;
-        socklen_t client_addr_len = sizeof(client_addr);
-        client_socket = accept(server_socket, (struct sockaddr *)&client_addr, &client_addr_len);
-        if (client_socket < 0)
-        {
-            perror("Error al aceptar conexión entrante");
-            continue;
-        }
-        printf("Conexión entrante desde %s:%d\n\n", inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
-
-        // Crear hilo para manejar al cliente
-        if (pthread_create(&client_threads[num_clients], NULL, handle_client, (void *)&client_socket) != 0)
-        {
-            perror("Error al crear hilo");
-            continue;
-        }
-        num_clients++;
-
-        if (num_clients >= MAX_CLIENTS)
-        {
-            printf("Número máximo de clientes alcanzado\n");
-            break;
-        }
-    }
     return NULL;
 }
 
@@ -301,12 +303,12 @@ void *handle_scheduler(void *arg)
 
 void *handle_input(void *arg)
 {
-    int salir = 1;
+    int salir;
     printf("Digite 0 para terminar la ejecucion del CPU: ");
     scanf("%d", &salir);
     if (salir == 0)
     {
-        exit(0);
+        runnig = 0;
     }
     return NULL;
 }
