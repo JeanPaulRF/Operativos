@@ -330,10 +330,13 @@ void *handle_scheduler(void *arg)
 
         	
                 printlist(EXIT);
-
-                if (EXIT->data.burst != 0)
-                {                              // si el proceso recien enviado a exit aun tiene burts que procesar
-                    READY = recibe_job(READY, v_proc); // lo envia al final de READY
+		
+		pthread_mutex_lock(&mutex);
+		if(EXIT != NULL){
+		        if (EXIT->data.burst != 0)
+		        {                              // si el proceso recien enviado a exit aun tiene burts que procesar
+		            READY = recibe_job(READY, v_proc); // lo envia al final de READY
+		        }
                 }
                 
                 pthread_mutex_unlock(&mutex);

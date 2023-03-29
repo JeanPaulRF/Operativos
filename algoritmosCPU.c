@@ -19,9 +19,10 @@ void algoritmoFifo(node_js **headReady, node_js **headExit)
   
   vpid = tmp->data.pid;
   procesoActual = get_proceso(headReady, vpid);
+
   
   if(procesoActual != NULL ) headExit = recibe_job(headExit, procesoActual);
-  // else, pos no hace nada
+
 }
 
 // Algoritmo SJF
