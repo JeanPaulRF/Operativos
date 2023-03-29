@@ -19,13 +19,7 @@ void algoritmoFifo(node_js **headReady, node_js **headExit)
   
   vpid = tmp->data.pid;
   procesoActual = get_proceso(headReady, vpid);
-  /*
-  procesoActual.burstRestante = procesoActual.burst;
-  procesoActual.tiempoSalida = procesoActual.tiempoLlegada + procesoActual.burstRestante + 7; // corregir +7
-  procesoActual.tat = procesoActual.tiempoSalida - procesoActual.tiempoLlegada;
-  procesoActual.wt = procesoActual.tat - procesoActual.burstRestante;
-  procesoActual.burst = 0;
-  */
+  
   headExit = recibe_job(headExit, procesoActual);
 }
 
@@ -40,13 +34,7 @@ void algoritmoSjf(node_js **headReady, node_js **headExit)
   node_js *tmp = headReady;
   vpid = getPidShortestBurst(&headReady);
   procesoActual = get_proceso(headReady, vpid);
-  /*
-  procesoActual.burstRestante = procesoActual.burst;
-  procesoActual.tiempoSalida = procesoActual.tiempoLlegada + procesoActual.burstRestante + 7; // corregir +7
-  procesoActual.tat = procesoActual.tiempoSalida - procesoActual.tiempoLlegada;
-  procesoActual.wt = procesoActual.tat - procesoActual.burstRestante;
-  procesoActual.burst = 0;
-  */
+  
   headExit = recibe_job(headExit, procesoActual);
 }
 
@@ -79,13 +67,7 @@ void algoritmoHpf(node_js **headReady, node_js **headExit)
   node_js *tmp = headReady;
   vpid = getPidShortestPrioridad(&headReady);
   procesoActual = get_proceso(headReady, vpid);
-  /*
-  procesoActual.burstRestante = procesoActual.burst;
-  procesoActual.tiempoSalida = procesoActual.tiempoLlegada + procesoActual.burstRestante + 7; // corregir +7
-  procesoActual.tat = procesoActual.tiempoSalida - procesoActual.tiempoLlegada;
-  procesoActual.wt = procesoActual.tat - procesoActual.burstRestante;
-  procesoActual.burst = 0;
-  */
+  
   headExit = recibe_job(headExit, procesoActual);
 }
 
@@ -115,21 +97,6 @@ void roundRobin(node_js **headReady, node_js **headExit, int quantum)
   int vpid = 0; // probar asignacion a NULL
   vpid = tmp->data.pid;
   procesoActual = get_proceso(headReady, vpid);
-  /*
-  if (procesoActual.burst < quantum) {
-    procesoActual.burstRestante += procesoActual.burst;
-  } else {
-    procesoActual.burstRestante += quantum;
-  }
-  procesoActual.tiempoSalida = procesoActual.tiempoLlegada + procesoActual.burstRestante + 7; // corregir +7
-  procesoActual.tat = procesoActual.tiempoSalida - procesoActual.tiempoLlegada;
-  procesoActual.wt = procesoActual.tat - procesoActual.burstRestante;
-
-  if (procesoActual.burst - quantum <= 0) {
-    procesoActual.burst = 0;
-  } else {
-    procesoActual.burst = procesoActual.burst - quantum;
-  }
-  */
+  
   headExit = recibe_job(headExit, procesoActual);
 }

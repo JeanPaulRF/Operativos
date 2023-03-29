@@ -268,14 +268,19 @@ void *handle_scheduler(void *arg)
                 {
                 case 1: // si escogio FIFO
                     algoritmoFifo(READY, EXIT);
+                    break;
                 case 2: // si escogimos SJF
                     algoritmoSjf(READY, EXIT);
+                    break;
                 case 3: // si escogimos HPF
                     algoritmoHpf(READY, EXIT);
+                    break;
                 case 4: // si escogimos RR
                     roundRobin(READY, EXIT, quantum);
+                    break;
                 default: // por default que aplique el fifo
                     algoritmoFifo(READY, EXIT);
+                    break;
                 }
         	pthread_mutex_unlock(&mutex);
 
