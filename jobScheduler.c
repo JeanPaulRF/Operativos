@@ -240,6 +240,7 @@ void remove_position(node_js **head, int position)
 {
 	node_js *current = *head;
 	node_js *previous = *head;
+	
 
 	if (*head == NULL)
 		printf("READY is empty\n");

@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
-#include "proceso.h"
 #include "jobScheduler.c"
 
 void algoritmoFifo(node_js **headReady, node_js **headExit);
