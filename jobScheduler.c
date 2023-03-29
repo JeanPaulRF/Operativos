@@ -41,13 +41,13 @@ void insert_after_node(node_js *node_to_insert_after, node_js *newnode);
 void *insert_at_end(node_js **head, node_js *node_to_insert);
 
 // insertar un proceso devuelto
-void recibe_job(node_js **head, Proceso old_job);
+node_js *recibe_job(node_js **head, Proceso old_job);
 
 // retorna un proceso y lo borra del READY
 Proceso get_proceso(node_js **head, int v_pid);
 
 // remover de la lista simple
-void remove_position(node_js **head, int position);
+node_js *remove_position(node_js **head, int position);
 node_js *remove_last(node_js *head);
 node_js *remove_first(node_js *head);
 
@@ -305,7 +305,7 @@ Proceso get_proceso(node_js **head, int v_pid)
 			p_tmp = tmp->data;
 			// borra el nodo que lo contenia
 			printf("Aqui llego %d\n", position);
-			remove_position(head, position);
+			head = remove_position(head, position);
 			// retorna la informacion buscada
 			return p_tmp;
 		}
