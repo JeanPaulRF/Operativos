@@ -284,7 +284,7 @@ void recibe_job(node_js **head, Proceso old_job)
 Proceso get_proceso(node_js **head, int v_pid)
 {
 	node_js *tmp = head;
-	Proceso p_tmp = malloc(sizeof(Proceso));;
+	Proceso p_tmp = malloc(sizeof(Proceso));
 	int position = 1;
 
 	p_tmp.pid = 0; // 7 digamos codigo de error
