@@ -83,15 +83,13 @@ void serverFunction()
         exit(-1);
     }
 
-    // crear hilo para manejar input del usuario
-    /*
+	//hilo para manejar el input del usuario
     pthread_t input_thread;
     if (pthread_create(&input_thread, NULL, handle_input, NULL) != 0)
     {
         perror("Error al crear hilo del input");
         exit(-1);
     }
-    */
 
     // crear hilo del cpu-scheduler
     pthread_t scheduler_thread;
@@ -101,12 +99,7 @@ void serverFunction()
         exit(-1);
     }
 
-    pthread_t input_thread;
-    if (pthread_create(&input_thread, NULL, handle_input, NULL) != 0)
-    {
-        perror("Error al crear hilo del input");
-        exit(-1);
-    }
+    
 
     // Aceptar conexiones entrantes y crear hilos para manejar a los clientes
     while (running)
