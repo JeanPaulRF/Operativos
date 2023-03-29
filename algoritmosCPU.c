@@ -20,7 +20,8 @@ void algoritmoFifo(node_js **headReady, node_js **headExit)
   vpid = tmp->data.pid;
   procesoActual = get_proceso(headReady, vpid);
   
-  headExit = recibe_job(headExit, procesoActual);
+  if(procesoActual != NULL ) headExit = recibe_job(headExit, procesoActual);
+  // else, pos no hace nada
 }
 
 // Algoritmo SJF
@@ -35,7 +36,8 @@ void algoritmoSjf(node_js **headReady, node_js **headExit)
   vpid = getPidShortestBurst(&headReady);
   procesoActual = get_proceso(headReady, vpid);
   
-  headExit = recibe_job(headExit, procesoActual);
+  if(procesoActual != NULL ) headExit = recibe_job(headExit, procesoActual);
+  // else, pos no hace nada
 }
 
 int getPidShortestBurst(node_js **headReady)
@@ -68,7 +70,8 @@ void algoritmoHpf(node_js **headReady, node_js **headExit)
   vpid = getPidShortestPrioridad(&headReady);
   procesoActual = get_proceso(headReady, vpid);
   
-  headExit = recibe_job(headExit, procesoActual);
+  if(procesoActual != NULL ) headExit = recibe_job(headExit, procesoActual);
+  // else, pos no hace nada
 }
 
 int getPidShortestPrioridad(node_js **headReady)
@@ -98,5 +101,6 @@ void roundRobin(node_js **headReady, node_js **headExit, int quantum)
   vpid = tmp->data.pid;
   procesoActual = get_proceso(headReady, vpid);
   
-  headExit = recibe_job(headExit, procesoActual);
+  if(procesoActual != NULL ) headExit = recibe_job(headExit, procesoActual);
+  // else, pos no hace nada
 }

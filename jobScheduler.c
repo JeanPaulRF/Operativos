@@ -297,20 +297,27 @@ Proceso get_proceso(node_js **head, int v_pid)
 
 	p_tmp.pid = 0; // 7 digamos codigo de error
 
-	while (tmp != NULL)
-	{
-		if (tmp->data.pid == v_pid)
-		{
-			// salva la informacion del proceso buscado
-			p_tmp = tmp->data;
-			// borra el nodo que lo contenia
-			printf("Aqui llego %d\n", position);
-			head = remove_position(head, position);
-			// retorna la informacion buscada
-			return p_tmp;
-		}
-		tmp = tmp->NEXT;
-		position++;
+	if(tmp == NULL) {
+		printf("READY is empty\n"); //no hay nada que sacar
+		return NULL; //retornar nulo lo afectará
 	}
-	return p_tmp;
+	else{
+		while (tmp != NULL) //cuando el head esta lleno
+		{
+			if (tmp->data.pid == v_pid)
+			{
+				// salva la informacion del proceso buscado
+				p_tmp = tmp->data;
+				// borra el nodo que lo contenia
+				//printf("Aqui llego %d\n", position);
+				head = remove_position(head, position);
+				// retorna la informacion buscada
+				return p_tmp;
+			}
+			tmp = tmp->NEXT;
+			position++;
+		}
+
+		return p_tmp;
+	}
 }
