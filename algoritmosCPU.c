@@ -16,6 +16,7 @@ void algoritmoFifo(node_js **headReady, node_js **headExit)
   Proceso procesoActual;
   node_js *tmp = headReady;
   int vpid = 0; // probar asignacion a NULL
+  //printf("vpid : %d\n", vpid);
   vpid = tmp->data.pid;
   procesoActual = get_proceso(headReady, vpid);
   /*
