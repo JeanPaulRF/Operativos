@@ -280,12 +280,14 @@ node_js *recibe_job(node_js **head, Proceso old_job)
 		while (ptr->NEXT != NULL) ptr = ptr->NEXT;
 
 		ptr->NEXT = old_node;
+		return head;
 	}
 	else{ // cuando esta vacia
 		ptr = old_node;
+		return ptr;
 	}
 
-	return head;
+	
 };
 
 // Funcion para sacar un Proceso
