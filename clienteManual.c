@@ -54,6 +54,8 @@ int main(int argc, char const *argv[])
         return -1;
     }
 
+    printf("\n");
+
     while (1)
     {
         pthread_t thread;
@@ -125,7 +127,7 @@ void *funcionProceso(void *arg)
     }
 
     recv(client_socket, &pid, sizeof(pid), 0); // Recibir pid del servidor
-    printf("Recibido pid: %d\n", pid);
+    printf("Recibido pid: %d\n\n", pid);
 
     // Solicitar CPU
 

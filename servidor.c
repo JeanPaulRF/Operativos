@@ -91,12 +91,14 @@ void serverFunction()
     }
 
     // crear hilo para manejar input del usuario
+    /*
     pthread_t input_thread;
     if (pthread_create(&input_thread, NULL, handle_input, NULL) != 0)
     {
         perror("Error al crear hilo del input");
         exit(-1);
     }
+    */
 
     // Aceptar conexiones entrantes y crear hilos para manejar a los clientes
     while (1)
@@ -190,7 +192,10 @@ void *handle_client(void *arg)
 
     close(client_socket); // Cerrar socket del cliente
 
+    printf("\n-----------READY-----------\n");
     printlist(READY);
+    printf("\n\n----------EXIT------------\n");
+    printlist(EXIT);
     return NULL;
 }
 
@@ -210,29 +215,64 @@ void *handle_scheduler(void *arg)
     {
         if (READY != NULL)
         {
-            //node_js *aux = READY; no lo necesitamos, porque necesitamos ir vaciando READY
+            // node_js *aux = READY; no lo necesitamos, porque necesitamos ir vaciando READY
             while (READY != NULL)
             {
                 //---------------
-				switch(algoritmo){
-					case 1: // si escogio FIFO
-						algoritmoFifo(READY, EXIT);
-					case 2: // si escogimos SJF
-						algoritmoSjf(READY, EXIT);
-					case 3: // si escogimos HPF
-						algoritmoHpf(READY, EXIT);
-					case 4: // si escogimos RR
-						roundRobin(READY, EXIT, quantum);
-					default: // por default que aplique el fifo
-						algoritmoFifo(READY, EXIT);
-				}
-				
-				if(EXIT->data.burst != 0){ // si el proceso recien enviado a exit aun tiene burts que procesar
-					Proceso v_proc;
-					v_proc = get_proceso(EXIT, EXIT->data.pid);// tome el primer proceso, el recien enviado
-					recibe_job(READY, v_proc); // lo envia al final de READY
-				}
-				
+                switch (algoritmo)
+                {
+                case 1: // si escogio FIFO
+                    algoritmoFifo(READY, EXIT);
+                case 2: // si escogimos SJF
+                    algoritmoSjf(READY, EXIT);
+                case 3: // si escogimos HPF
+                    algoritmoHpf(READY, EXIT);
+                case 4: // si escogimos RR
+                    roundRobin(READY, EXIT, quantum);
+                default: // por default que aplique el fifo
+                    algoritmoFifo(READY, EXIT);
+                }
+
+                // se obtiene el proceso
+                Proceso v_proc;
+                v_proc = get_proceso(EXIT, EXIT->data.pid); // tome el primer proceso, el recien enviado
+
+                // RR
+                if (algoritmo == 4)
+                {
+                    if (v_proc.burst > quantum)
+                    {
+                        sleep(quantum);
+
+                        v_proc.burst -= quantum;
+                    }
+                    else
+                    {
+                        sleep(v_proc.burst);
+
+                        v_proc.burstRestante = v_proc.burst;
+                        v_proc.tiempoSalida = timer - v_proc.tiempoLlegada; // corregir + 7
+                        v_proc.tat = v_proc.tiempoSalida - v_proc.tiempoLlegada;
+                        v_proc.wt = v_proc.tat - v_proc.burstRestante;
+                        v_proc.burst = 0;
+                    }
+                }
+                else
+                {
+                    // ejecutar proceso
+                    sleep(v_proc.burst);
+
+                    v_proc.burstRestante = v_proc.burst;
+                    v_proc.tiempoSalida = timer - v_proc.tiempoLlegada; // corregir + 7
+                    v_proc.tat = v_proc.tiempoSalida - v_proc.tiempoLlegada;
+                    v_proc.wt = v_proc.tat - v_proc.burstRestante;
+                    v_proc.burst = 0;
+                }
+
+                if (EXIT->data.burst != 0)
+                {                              // si el proceso recien enviado a exit aun tiene burts que procesar
+                    recibe_job(READY, v_proc); // lo envia al final de READY
+                }
             }
         }
     }
