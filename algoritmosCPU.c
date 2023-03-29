@@ -26,7 +26,7 @@ void algoritmoFifo(node_js **headReady, node_js **headExit)
   procesoActual.wt = procesoActual.tat - procesoActual.burstRestante;
   procesoActual.burst = 0;
   */
-  recibe_job(headExit, procesoActual);
+  headExit = recibe_job(headExit, procesoActual);
 }
 
 // Algoritmo SJF
@@ -47,7 +47,7 @@ void algoritmoSjf(node_js **headReady, node_js **headExit)
   procesoActual.wt = procesoActual.tat - procesoActual.burstRestante;
   procesoActual.burst = 0;
   */
-  recibe_job(headExit, procesoActual);
+  headExit = recibe_job(headExit, procesoActual);
 }
 
 int getPidShortestBurst(node_js **headReady)
@@ -86,7 +86,7 @@ void algoritmoHpf(node_js **headReady, node_js **headExit)
   procesoActual.wt = procesoActual.tat - procesoActual.burstRestante;
   procesoActual.burst = 0;
   */
-  recibe_job(headExit, procesoActual);
+  headExit = recibe_job(headExit, procesoActual);
 }
 
 int getPidShortestPrioridad(node_js **headReady)
@@ -131,5 +131,5 @@ void roundRobin(node_js **headReady, node_js **headExit, int quantum)
     procesoActual.burst = procesoActual.burst - quantum;
   }
   */
-  recibe_job(headExit, procesoActual);
+  headExit = recibe_job(headExit, procesoActual);
 }

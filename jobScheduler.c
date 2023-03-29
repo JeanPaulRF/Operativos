@@ -236,7 +236,7 @@ node_js *remove_last(node_js *head)
 }
 
 // remover un una posicion especifica
-void remove_position(node_js **head, int position)
+node_js *remove_position(node_js **head, int position)
 {
 	node_js *current = *head;
 	node_js *previous = *head;
@@ -262,10 +262,11 @@ void remove_position(node_js **head, int position)
 		free(current);
 		current = NULL;
 	}
+	return head;
 }
 
 // Funcion para recibir un Proceso del CPU Scheduler
-void recibe_job(node_js **head, Proceso old_job)
+node_js *recibe_job(node_js **head, Proceso old_job)
 {
 
 	node_js *old_node = malloc(sizeof(node_js));
@@ -274,17 +275,23 @@ void recibe_job(node_js **head, Proceso old_job)
 	old_node->data = old_job;
 	old_node->NEXT = NULL;
 
-	while (ptr->NEXT != NULL)
-		ptr = ptr->NEXT;
+	if( ptr != NULL){ // cuando la cabeza tiene 1 o más
+		while (ptr->NEXT != NULL) ptr = ptr->NEXT;
 
-	ptr->NEXT = old_node;
+		ptr->NEXT = old_node;
+	}
+	else{ // cuando esta vacia
+		ptr = old_node;
+	}
+
+	return head;
 };
 
 // Funcion para sacar un Proceso
 Proceso get_proceso(node_js **head, int v_pid)
 {
 	node_js *tmp = head;
-	Proceso p_tmp = malloc(sizeof(Proceso));
+	Proceso p_tmp;
 	int position = 1;
 
 	p_tmp.pid = 0; // 7 digamos codigo de error
