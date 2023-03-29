@@ -15,9 +15,14 @@
 int timer = 0;
 node_js *EXIT;
 int algoritmo, quantum;
+int num_clients = 0;
+int server_socket, client_socket;
+struct sockaddr_in server_addr;
+pthread_t client_threads[MAX_CLIENTS];
 
 void menuServer();
 void serverFunction();
+void *handle_conections(void *arg);
 void *handle_client(void *arg);
 void *handle_timer();
 void *handle_scheduler();
@@ -32,11 +37,6 @@ int main(int argc, char const *argv[])
 
 void serverFunction()
 {
-    struct sockaddr_in server_addr;
-    int server_socket, client_socket;
-    pthread_t client_threads[MAX_CLIENTS];
-    int num_clients = 0;
-
     // variables para el scheduler
     cont_PID = 1;
     cant_jobs = 0;
@@ -93,6 +93,58 @@ void serverFunction()
     */
 
     // Aceptar conexiones entrantes y crear hilos para manejar a los clientes
+    pthread_t conection_thread;
+    if (pthread_create(&conection_thread, NULL, handle_conections, NULL) != 0)
+    {
+        perror("Error al crear hilo de conexiones");
+        exit(-1);
+    }
+
+    // crear hilo del cpu-scheduler
+    pthread_t scheduler_thread;
+    if (pthread_create(&scheduler_thread, NULL, handle_scheduler, NULL) != 0)
+    {
+        perror("Error al crear hilo del scheduler");
+        exit(-1);
+    }
+
+    // Esperar a que todos los hilos terminen y cerrar sockets
+    for (int i = 0; i < num_clients; i++)
+    {
+        pthread_join(client_threads[i], NULL);
+    }
+
+    printf("\n-----------READY-----------\n");
+    printlist(READY);
+    printf("\n\n----------EXIT------------\n");
+    printlist(EXIT);
+
+    close(server_socket);
+}
+
+void menuServer()
+{
+    printf("\n--Bienvenido al servidor del planificador de procesos--\n\n");
+    printf("-Algoritmos de planificacion disponibles-\n\n");
+    printf("1. FIFO\n");
+    printf("2. SJF\n");
+    printf("3. HPF\n");
+    printf("4. RR\n\n");
+    printf("Elija una opcion: ");
+    scanf("%d", &algoritmo);
+    printf("\n\n");
+
+    if (algoritmo == 4)
+    {
+        printf("Ingrese el quantum: ");
+        scanf("%d\n\n", &quantum);
+    }
+
+    return NULL;
+}
+
+void *haddle_conections(void *arg)
+{
     while (1)
     {
         struct sockaddr_in client_addr;
@@ -119,47 +171,6 @@ void serverFunction()
             break;
         }
     }
-
-    // Esperar a que todos los hilos terminen y cerrar sockets
-    for (int i = 0; i < num_clients; i++)
-    {
-        pthread_join(client_threads[i], NULL);
-    }
-    
-    // crear hilo del cpu-scheduler
-    pthread_t scheduler_thread;
-    if (pthread_create(&scheduler_thread, NULL, handle_scheduler, NULL) != 0)
-    {
-        perror("Error al crear hilo del scheduler");
-        exit(-1);
-    }
-    
-    printf("\n-----------READY-----------\n");
-    printlist(READY);
-    printf("\n\n----------EXIT------------\n");
-    printlist(EXIT);
-    
-    close(server_socket);
-}
-
-void menuServer()
-{
-    printf("\n--Bienvenido al servidor del planificador de procesos--\n\n");
-    printf("-Algoritmos de planificacion disponibles-\n\n");
-    printf("1. FIFO\n");
-    printf("2. SJF\n");
-    printf("3. HPF\n");
-    printf("4. RR\n\n");
-    printf("Elija una opcion: ");
-    scanf("%d", &algoritmo);
-    printf("\n\n");
-
-    if (algoritmo == 4)
-    {
-        printf("Ingrese el quantum: ");
-        scanf("%d\n\n", &quantum);
-    }
-
     return NULL;
 }
 
@@ -176,7 +187,7 @@ void *handle_client(void *arg)
             printf("Cliente desconectado\n");
             break; // Si el cliente se desconecta, salir del ciclo
         }
-        //printf("Burst: %d del cliente %d\n", burst, client_socket);
+        // printf("Burst: %d del cliente %d\n", burst, client_socket);
 
         bytes_recv = recv(client_socket, &prioridad, sizeof(prioridad), 0); // Recibir prioridad del cliente
         if (bytes_recv <= 0)
@@ -184,7 +195,7 @@ void *handle_client(void *arg)
             printf("Cliente desconectado\n");
             break; // Si el cliente se desconecta, salir del ciclo
         }
-        //printf("Prioridad: %d del cliente %d\n", prioridad, client_socket);
+        // printf("Prioridad: %d del cliente %d\n", prioridad, client_socket);
 
         // jobScheduler -----------------------------------
         insert_at_head(&READY, create_new_job(burst, prioridad));
@@ -193,7 +204,7 @@ void *handle_client(void *arg)
 
         READY->data.tiempoLlegada = timer; // Se le asigna el tiempo de llegada
 
-        //printf("Enviando pid %d al cliente %d\n\n", pid, client_socket);
+        // printf("Enviando pid %d al cliente %d\n\n", pid, client_socket);
         send(client_socket, &pid, sizeof(pid), 0); // Enviar pid al cliente
     }
 
@@ -238,35 +249,35 @@ void *handle_scheduler(void *arg)
                 // se obtiene el proceso
                 Proceso v_proc;
                 v_proc = get_proceso(EXIT, EXIT->data.pid); // tome el primer proceso, el recien enviado
-		
-		printf("Proceso: %d Burst: %d Prioridad: %d En ejecucion\n", v_proc.pid, v_proc.burst, v_proc.prioridad);
-		
+
+                printf("Proceso: %d Burst: %d Prioridad: %d En ejecucion\n", v_proc.pid, v_proc.burst, v_proc.prioridad);
+
                 // RR
                 if (algoritmo == 4)
                 {
                     if (v_proc.burst > quantum)
                     {
-                        //sleep(quantum);
+                        // sleep(quantum);
 
                         v_proc.burst -= quantum;
                     }
                     else
                     {
-                        //sleep(v_proc.burst);
+                        // sleep(v_proc.burst);
 
                         v_proc.burstRestante = v_proc.burst;
                         v_proc.tiempoSalida = timer - v_proc.tiempoLlegada; // corregir + 7
                         v_proc.tat = v_proc.tiempoSalida - v_proc.tiempoLlegada;
                         v_proc.wt = v_proc.tat - v_proc.burstRestante;
                         v_proc.burst = 0;
-                        
+
                         printf("Proceso: %d Terminado\n", v_proc.pid);
                     }
                 }
                 else
                 {
                     // ejecutar proceso
-                    //sleep(v_proc.burst);
+                    // sleep(v_proc.burst);
 
                     v_proc.burstRestante = v_proc.burst;
                     v_proc.tiempoSalida = timer - v_proc.tiempoLlegada; // corregir + 7
@@ -275,7 +286,7 @@ void *handle_scheduler(void *arg)
                     v_proc.burst = 0;
                     printf("Proceso: %d Terminado\n", v_proc.pid);
                 }
-                
+
                 printlist(EXIT);
 
                 if (EXIT->data.burst != 0)
