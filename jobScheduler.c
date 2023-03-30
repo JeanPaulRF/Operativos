@@ -129,28 +129,6 @@ void insert_at_end_READY(node_js *new_node)
 	}
 }
 
-// insertar al final de una lista simple
-void insert_at_end_EXIT(node_js *new_node)
-{
-	// creo un puntero temporal que sirve de guia, apuntando a la lista de entrada
-	node_js *temporary = EXIT;
-
-	// si la lista que llega esta vacia
-	if (temporary == NULL)
-	{
-		EXIT = new_node;
-		// por alguna razon no puede, tira segmentation fault
-	}
-	else
-	{ // si la lista tiene por lo menos 1 elemento
-		while (temporary->NEXT != NULL)
-		{								 // mientras el siguiente no sea nulo
-			temporary = temporary->NEXT; // me desplazo al siguiente
-		}								 // al final temporary estaria en el ultimo nodo js
-		temporary->NEXT = new_node;
-	}
-}
-
 // buscar un proceso especifico
 node_js *find_nodeJS(node_js **head, int v_pid)
 {
