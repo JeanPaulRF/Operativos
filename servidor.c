@@ -13,7 +13,6 @@
 #define MAX_CLIENTS 10
 
 int timer = 0;
-node_js *EXIT;
 int algoritmo, quantum;
 
 // server
@@ -92,7 +91,7 @@ void serverFunction()
     }
 
     
-
+/*
     // crear hilo del cpu-scheduler
     pthread_t scheduler_thread;
     if (pthread_create(&scheduler_thread, NULL, handle_scheduler, NULL) != 0)
@@ -100,7 +99,7 @@ void serverFunction()
         perror("Error al crear hilo del scheduler");
         exit(-1);
     }
-
+*/
     
     
     // hilo para Aceptar conexiones entrantes y crear hilos para manejar a los clientes
@@ -223,7 +222,9 @@ void *handle_client(void *arg)
 	pthread_mutex_lock(&mutex);
         
         // jobScheduler -----------------------------------
-        insert_at_head(&READY, create_new_job(burst, prioridad));
+        node_js *nodoTmp = malloc(sizeof(node_js));
+        nodoTmp = create_new_job(burst, prioridad);
+        READY = insert_at_end(&READY, nodoTmp);
 
         int pid = READY->data.pid; // Recibe el pid del proceso que se va a ejecutar
 
@@ -267,7 +268,7 @@ void *handle_scheduler(void *arg)
                 switch (algoritmo)
                 {
                 case 1: // si escogio FIFO
-                    algoritmoFifo(READY, EXIT);
+                    algoritmoFifo();
                     break;
                 case 2: // si escogimos SJF
                     algoritmoSjf(READY, EXIT);
@@ -287,7 +288,8 @@ void *handle_scheduler(void *arg)
         	pthread_mutex_lock(&mutex);
                 // se obtiene el proceso
                 Proceso v_proc;
-                v_proc = get_proceso(EXIT, EXIT->data.pid); // tome el primer proceso, el recien enviado
+                		v_proc = get_proceso(EXIT, EXIT->data.pid); // tome el primer proceso, el recien enviado
+        	v_proc = EXIT->data;
         	pthread_mutex_unlock(&mutex);
         	
                 printf("Proceso: %d Burst: %d Prioridad: %d En ejecucion\n", v_proc.pid, v_proc.burst, v_proc.prioridad);
@@ -327,15 +329,17 @@ void *handle_scheduler(void *arg)
                     printf("Proceso: %d Terminado\n", v_proc.pid);
                 }
 
-
-        	
-                printlist(EXIT);
+                //printlist(EXIT);
 		
 		pthread_mutex_lock(&mutex);
 		if(EXIT != NULL){
 		        if (EXIT->data.burst != 0)
 		        {                              // si el proceso recien enviado a exit aun tiene burts que procesar
-		            READY = recibe_job(READY, v_proc); // lo envia al final de READY
+		        	node_js *nodoTmp = malloc(sizeof(node_js));
+		        	nodoTmp->data = EXIT->data;
+		        	nodoTmp->NEXT = NULL;
+		            READY = insert_at_end(&READY, nodoTmp); // lo envia al final de READY
+		            EXIT = EXIT->NEXT;
 		        }
                 }
                 

@@ -3,7 +3,9 @@
 #include <limits.h>
 #include "jobScheduler.c"
 
-void algoritmoFifo(node_js **headReady, node_js **headExit);
+node_js *EXIT;
+
+void algoritmoFifo();
 void algoritmoSjf(node_js **headReady, node_js **headExit);
 int getPidShortestBurst(node_js **headReady); // pid del proceso con menos burst
 void algoritmoHpf(node_js **headReady, node_js **headExit);
@@ -11,17 +13,23 @@ int getPidShortestPrioridad(node_js **headReady);
 void roundRobin(node_js **headReady, node_js **headExit, int quantum);
 
 // Algoritmo FIFO
-void algoritmoFifo(node_js **headReady, node_js **headExit)
-{ // pasar el ready
+void algoritmoFifo()
+{ 
+// pasar el ready
   Proceso procesoActual;
-  node_js *tmp = headReady;
+  node_js *tmp = READY;
   int vpid = 0; // probar asignacion a NULL
   
   vpid = tmp->data.pid;
-  procesoActual = get_proceso(headReady, vpid);
+  procesoActual = get_proceso(READY, vpid);
 
-  
-  if(procesoActual != NULL ) headExit = recibe_job(headExit, procesoActual);
+   //EXIT = recibe_job(headExit, procesoActual);
+  if(procesoActual.pid != 0){
+  	node_js *nodoTmp = malloc(sizeof(node_js));
+  	nodoTmp->data = procesoActual;
+  	nodoTmp->NEXT = NULL;
+  	insert_at_head(&EXIT, nodoTmp);
+  }
 
 }
 
@@ -37,7 +45,7 @@ void algoritmoSjf(node_js **headReady, node_js **headExit)
   vpid = getPidShortestBurst(&headReady);
   procesoActual = get_proceso(headReady, vpid);
   
-  if(procesoActual != NULL ) headExit = recibe_job(headExit, procesoActual);
+  if(procesoActual.pid != 0) headExit = recibe_job(headExit, procesoActual);
   // else, pos no hace nada
 }
 
@@ -71,7 +79,7 @@ void algoritmoHpf(node_js **headReady, node_js **headExit)
   vpid = getPidShortestPrioridad(&headReady);
   procesoActual = get_proceso(headReady, vpid);
   
-  if(procesoActual != NULL ) headExit = recibe_job(headExit, procesoActual);
+  if(procesoActual.pid != 0) headExit = recibe_job(headExit, procesoActual);
   // else, pos no hace nada
 }
 
@@ -102,6 +110,6 @@ void roundRobin(node_js **headReady, node_js **headExit, int quantum)
   vpid = tmp->data.pid;
   procesoActual = get_proceso(headReady, vpid);
   
-  if(procesoActual != NULL ) headExit = recibe_job(headExit, procesoActual);
+  if(procesoActual.pid != 0) headExit = recibe_job(headExit, procesoActual);
   // else, pos no hace nada
 }

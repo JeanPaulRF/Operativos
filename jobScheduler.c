@@ -12,8 +12,8 @@
 */
 struct node
 {
-	Proceso data;
-	struct nodo *NEXT;
+	Proceso *data;
+	struct node *NEXT;
 };
 
 typedef struct node node_js;
@@ -38,7 +38,7 @@ node_js *get_head(node_js *head);
 // insertar en la lista simple
 node_js *insert_at_head(node_js **head, node_js *node_to_insert);
 void insert_after_node(node_js *node_to_insert_after, node_js *newnode);
-void *insert_at_end(node_js **head, node_js *node_to_insert);
+node_js *insert_at_end(node_js **head, node_js *node_to_insert);
 
 // insertar un proceso devuelto
 node_js *recibe_job(node_js **head, Proceso old_job);
@@ -155,14 +155,19 @@ node_js *insert_at_head(node_js **head, node_js *node_to_insert)
 }
 
 // inserta un nodo al final
-void *insert_at_end(node_js **head, node_js *node_to_insert)
+node_js *insert_at_end(node_js **head, node_js *node_to_insert)
 {
 	node_js *ptr = head;
+	
+	if(ptr == NULL){
+		return node_to_insert;
+	}
 
 	while (ptr->NEXT != NULL)
 		ptr = ptr->NEXT;
 
 	ptr->NEXT = node_to_insert;
+	return head;
 };
 
 // insertar despues de un nodo
@@ -243,13 +248,17 @@ node_js *remove_position(node_js **head, int position)
 	node_js *previous = head;
 	
 	
-	if (*head == NULL)
+	if (*head == NULL){
 		printf("READY is empty\n");
+		return NULL;
+	}
 	else if (position == 1)
 	{
-		*head = current->NEXT;
-		free(current);
-		current = NULL;
+		previous = current;
+		current = current->NEXT;
+		//free(current);
+		//current = NULL;
+		return previous;
 	}
 	else
 	{
@@ -260,7 +269,7 @@ node_js *remove_position(node_js **head, int position)
 			position--;
 		}
 		previous->NEXT = current->NEXT;
-		free(current);
+		//free(current);
 		current = NULL;
 	}
 	return head;
@@ -301,13 +310,16 @@ Proceso get_proceso(node_js **head, int v_pid)
 
 	if(tmp == NULL) {
 		printf("READY is empty\n"); //no hay nada que sacar
-		return NULL; //retornar nulo lo afectará
+		return p_tmp; //retornar nulo lo afectará
 	}
 	else{
 		while (tmp != NULL) //cuando el head esta lleno
 		{
-			if (tmp->data.pid == v_pid)
+			if (tmp->NEXT != NULL && tmp->NEXT->data.pid == v_pid)
 			{
+				
+				tmp->NEXT = tmp->NEXT->NEXT;
+			
 				// salva la informacion del proceso buscado
 				p_tmp = tmp->data;
 				// borra el nodo que lo contenia
