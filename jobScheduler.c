@@ -23,94 +23,27 @@ unsigned int cont_PID;	// va asignando el id de los procesos
 unsigned int cant_jobs; // va contando cuantos procesos existen
 node_js *READY;			// la cola de procesos en READY
 
-// funciones
+// ----------- funciones
+// imprime una lista simple
 void printlist(node_js *head);
 
 // crear proceso nuevo
 node_js *create_new_job(int n_burst, int n_priority);
 
-// encontrar nodo
-node_js *find_node(node_js *head, int v_pid);
+// insertar al principio de una lista simple
+void insert_at_start(node_js **head, node_js *new_node);
 
-// retornar cabeza
-node_js *get_head(node_js *head);
+// insertar al final de una lista simple
+void insert_at_end(node_js **head, node_js *new_node);
 
-// insertar en la lista simple
-node_js *insert_at_head(node_js **head, node_js *node_to_insert);
-void insert_after_node(node_js *node_to_insert_after, node_js *newnode);
-node_js *insert_at_end(node_js **head, node_js *node_to_insert);
+// buscar un proceso especifico
+node_js *find_nodeJS(node_js **head, int v_pid);
 
-// insertar un proceso devuelto
-node_js *recibe_job(node_js **head, Proceso old_job);
+// eliminar un nodo en especifico
+void *delete_nodeJS(node_js **head, int v_pid);
 
-// retorna un proceso y lo borra del READY
-Proceso get_proceso(node_js **head, int v_pid);
-
-// remover de la lista simple
-node_js *remove_position(node_js **head, int position);
-node_js *remove_last(node_js *head);
-node_js *remove_first(node_js *head);
-
-// pruebas
-/*
-int main(){
-	// pruebas funcionalidades
-	cont_PID = 1;
-	cant_jobs = 0;
-
-	READY = NULL;
-	node_js *tmp;
-
-	for(int i = 0; i<10; i++){
-		tmp = create_new_job( i*2 + 5, i+1);
-		insert_at_head(&READY, tmp);
-	}
-	printlist(READY);
-
-	tmp = find_node(READY, 8);
-	insert_after_node(tmp, create_new_job( 12 , 8));
-	insert_at_end(READY, create_new_job( 77 , 11));
-
-	tmp = get_head(READY);
-	// retorno el pid recien creado
-	printf("head pid: %d\n",tmp->data.pid);
-
-	printlist(READY);
-
-	READY = remove_first(READY);
-	printf("node head remove \n");
-
-	printlist(READY);
-
-	READY = remove_last(READY);
-	printf("node last remove \n");
-
-	printlist(READY);
-
-	remove_position(&READY, 4);
-	printf("node in position 4 remove \n");
-
-	printlist(READY);
-
-	Proceso old_job;
-	old_job.pid = 45;
-	old_job.burst = 55;
-	old_job.prioridad = 5;
-
-	recibe_job(READY, old_job);
-
-	printlist(READY);
-
-	printf("Sacar un proceso, el pid = 4\n");
-	old_job = get_proceso(READY, 4);
-	printlist(READY);
-
-	printf("Pid: %d\n", old_job.pid);
-
-	return 0;
-}
-*/
-
+// -------- definiciones
+// imprime una lista simple
 void printlist(node_js *head)
 {
 	node_js *temporary = head;
@@ -118,7 +51,7 @@ void printlist(node_js *head)
 	while (temporary != NULL)
 	{
 		printf("Pid :%d - Burst: %d - Prioridad: %d - Tiempo de Llegada: %d\n",
-			   temporary->data.pid, temporary->data.burst, temporary->data.prioridad, temporary->data.tiempoLlegada);
+			   temporary->data->pid, temporary->data->burst, temporary->data->prioridad, temporary->data->tiempoLlegada);
 		temporary = temporary->NEXT;
 	}
 	printf("\n");
@@ -127,211 +60,157 @@ void printlist(node_js *head)
 // creo un nuevo proceso
 node_js *create_new_job(int n_burst, int n_priority)
 {
+	// reservo espacio en memoria
+	
 	node_js *result = malloc(sizeof(node_js));
-	Proceso p_tmp;
-
+	Proceso *v_data = malloc(sizeof(Proceso));
+	
 	// creo el job o proceso
-	p_tmp.pid = cont_PID;
-	p_tmp.burst = n_burst;
-	p_tmp.prioridad = n_priority;
-
+	v_data->pid = cont_PID;
+	
+	v_data->burst = n_burst;
+	v_data->prioridad = n_priority;
+	v_data->tiempoLlegada = 0;
+	v_data->tiempoSalida = 0;
+	v_data->tat = 0;
+	v_data->wt = 0;
+	v_data->estado = 0;
+	v_data->burstRestante = 0;
+	
 	// ajusto las variables globales
 	cont_PID++;
 	cant_jobs++;
 
-	// se inserta en el nodo job scheduler
-	result->data = p_tmp;
+	// se define al siguiente como nulo
+	result->data = v_data;
 	result->NEXT = NULL;
 
 	return result;
 }
 
-// inserta al principio
-node_js *insert_at_head(node_js **head, node_js *node_to_insert)
-{
-	node_to_insert->NEXT = *head;
-	*head = node_to_insert;
-	return node_to_insert;
+// insertar al principio de una lista simple
+void insert_at_start(node_js **head, node_js *new_node){
+	// creo un puntero temporal que sirve de guia, apuntando a la lista de entrada
+	node_js *temporary = head;
+
+	// si la lista que llega esta vacia
+	if(temporary == NULL) *head = new_node;
+	else{ //si la lista tiene por lo menos 1 elemento
+		// lo siguiente del nuevo nodo es toda la lista de entrada
+		new_node->NEXT = *head;
+		// la cabeza de la lista pasa a ser el nuevo nodo js
+		*head = new_node;
+	}
 }
 
-// inserta un nodo al final
-node_js *insert_at_end(node_js **head, node_js *node_to_insert)
-{
-	node_js *ptr = head;
-	
-	if(ptr == NULL){
-		return node_to_insert;
+// insertar al final de una lista simple
+void insert_at_end(node_js **head, node_js *new_node){
+	// creo un puntero temporal que sirve de guia, apuntando a la lista de entrada
+	node_js *temporary = head;
+
+	// si la lista que llega esta vacia
+	if(temporary == NULL){		
+		//*head = new_node;
+		// por alguna razon no puede, tira segmentation fault
 	}
-
-	while (ptr->NEXT != NULL)
-		ptr = ptr->NEXT;
-
-	ptr->NEXT = node_to_insert;
-	return head;
-};
-
-// insertar despues de un nodo
-void insert_after_node(node_js *node_to_insert_after, node_js *newnode)
-{
-	newnode->NEXT = node_to_insert_after->NEXT;
-	node_to_insert_after->NEXT = newnode;
+	else{ //si la lista tiene por lo menos 1 elemento
+		while( temporary->NEXT != NULL ){ // mientras el siguiente no sea nulo
+			temporary = temporary->NEXT; // me desplazo al siguiente
+		} // al final temporary estaria en el ultimo nodo js
+		temporary->NEXT = new_node;
+	}
 }
 
-// encontrar un nodo
-node_js *find_node(node_js *head, int v_pid)
-{
-	node_js *tmp = head;
-	while (tmp != NULL)
-	{
-		if (tmp->data.pid == v_pid)
-			return tmp;
-		tmp = tmp->NEXT;
-	}
-	return NULL;
-}
+// buscar un proceso especifico
+node_js *find_nodeJS(node_js **head, int v_pid){
+	// creo un puntero temporal que sirve de guia, apuntando a la lista de entrada
+	node_js *temporary = *head;
 
-// regresar la cabeza
-node_js *get_head(node_js *head)
-{
-	node_js *tmp = malloc(sizeof(node_js));
-	tmp->data = head->data;
-	tmp->NEXT = NULL;
-	return tmp;
-}
+	// declaro un nodo js para almacenar el resultado
+	Proceso *v_data = malloc(sizeof(Proceso));
+	node_js *result = malloc(sizeof(node_js));
 
-// remover el primer nodo
-node_js *remove_first(node_js *head)
-{
-	if (head == NULL)
-		printf("READY is empty\n");
-	else
-	{
-		node_js *tmp = head;
-		head = head->NEXT;
-		free(tmp);
-		tmp = NULL;
-	}
-	return head;
-}
+	// le doy valores de error por si no encuentra nada
+	v_data->pid = 0;
+	result->data = v_data;
+	result->NEXT = NULL;
 
-// remover el ultimo nodo
-node_js *remove_last(node_js *head)
-{
-	if (head == NULL)
-		printf("READY is empty\n");
-	else if (head->NEXT == NULL)
-	{
-		free(head);
-		head = NULL;
-	}
-	else
-	{
-		node_js *tmp = head;
-		node_js *tmp2 = head;
-		while (tmp->NEXT != NULL)
-		{
-			tmp2 = tmp;
-			tmp = tmp->NEXT;
-		}
-		tmp2->NEXT = NULL;
-		free(tmp);
-		tmp = NULL;
-	}
-	return head;
-}
-
-// remover un una posicion especifica
-node_js *remove_position(node_js **head, int position)
-{
-	printf("HOLLA");
-	node_js *current = head;
-	node_js *previous = head;
-	
-	
-	if (*head == NULL){
-		printf("READY is empty\n");
-		return NULL;
-	}
-	else if (position == 1)
-	{
-		previous = current;
-		current = current->NEXT;
-		//free(current);
-		//current = NULL;
-		return previous;
-	}
-	else
-	{
-		while (position != 1)
-		{
-			previous = current;
-			current = current->NEXT;
-			position--;
-		}
-		previous->NEXT = current->NEXT;
-		//free(current);
-		current = NULL;
-	}
-	return head;
-}
-
-// Funcion para recibir un Proceso del CPU Scheduler
-node_js *recibe_job(node_js **head, Proceso old_job)
-{
-
-	node_js *old_node = malloc(sizeof(node_js));
-	node_js *ptr = head;
-
-	old_node->data = old_job;
-	old_node->NEXT = NULL;
-
-	if( ptr != NULL){ // cuando la cabeza tiene 1 o más
-		while (ptr->NEXT != NULL) ptr = ptr->NEXT;
-
-		ptr->NEXT = old_node;
-		return head;
-	}
-	else{ // cuando esta vacia
-		ptr = old_node;
-		return ptr;
-	}
-
-	
-};
-
-// Funcion para sacar un Proceso
-Proceso get_proceso(node_js **head, int v_pid)
-{
-	node_js *tmp = head;
-	Proceso p_tmp;
-	int position = 1;
-
-	p_tmp.pid = 0; // 7 digamos codigo de error
-
-	if(tmp == NULL) {
-		printf("READY is empty\n"); //no hay nada que sacar
-		return p_tmp; //retornar nulo lo afectará
-	}
+	if( temporary == NULL ){
+		printf("\n List is empty \n");
+		return result; // el nodo caeria con pid = 0
+	} 
 	else{
-		while (tmp != NULL) //cuando el head esta lleno
-		{
-			if (tmp->NEXT != NULL && tmp->NEXT->data.pid == v_pid)
-			{
-				
-				tmp->NEXT = tmp->NEXT->NEXT;
-			
-				// salva la informacion del proceso buscado
-				p_tmp = tmp->data;
-				// borra el nodo que lo contenia
-				//printf("Aqui llego %d\n", position);
-				head = remove_position(head, position);
-				// retorna la informacion buscada
-				return p_tmp;
-			}
-			tmp = tmp->NEXT;
-			position++;
+		if(temporary->data->pid == v_pid){ // si el primero es el buscado
+			result->data = temporary->data; //copio el data y mantengo el nulo
+			return result;
 		}
+		else{ // si hay mas de 1 elemento en la lista, busco hasta llegar al final
+			while( temporary->NEXT != NULL ){ // mientras el siguiente no sea nulo, me desplazo
+				if(temporary->data->pid == v_pid){
+					result->data = temporary->data; //copio el data y mantengo el nulo
+					return result;
+				}
+				temporary = temporary->NEXT; // me desplazo al siguiente
+			}
+			// al final solo me queda el ultimo nodo
+			
+			if(temporary->data->pid == v_pid){
+				result->data = temporary->data; //copio el data y mantengo el nulo
+				return result;
+			}
+			else{ // si no lo encuentro devuelve el node js con el pid = 0
+				return result;
+			}
+		}
+	}
+}
 
-		return p_tmp;
+// eliminar un nodo en especifico
+void *delete_nodeJS(node_js **head, int v_pid){
+	// creo un puntero temporal que sirve de guia, apuntando a la lista de entrada
+	node_js *tmpA = *head;
+	node_js *tmpB = *head;
+	node_js *tmpC = *head;
+
+	if( tmpA == NULL ){
+		printf("\n List is empty \n");
+	} 
+	else{
+		if(tmpA->data->pid == v_pid){ // si el primero es el buscado y esta solo
+			if( tmpA->NEXT == NULL	){ // y esta solo
+				*head = NULL; // Le asigno un nulo a la cabeza, no puedo liberar su memoria
+			}
+			else{ // si hay algo mas alla
+				tmpA = tmpA->NEXT; // el temporal pasa al siguiente
+				*head = tmpA; // la lista pasa a ser el siguiente
+				free(tmpB); // libero la memoria del elemento anterior
+				tmpB = NULL;				
+			}
+		}
+		else{
+			
+			while( tmpA->NEXT != NULL ){ // mientras el siguiente no sea nulo, me desplazo
+				if(tmpA->data->pid == v_pid){
+					tmpA = tmpA->NEXT;
+					free(tmpB->NEXT);
+					tmpB->NEXT = NULL;
+					tmpB->NEXT = tmpA;
+					*head = tmpC;
+					break;
+				}
+				tmpB = tmpA; // el previous se queda un paso por detras
+				tmpA = tmpA->NEXT; // me desplazo al siguiente
+				
+			}
+			// al final solo me queda el ultimo nodo
+			
+			if(tmpA->data->pid == v_pid){
+				*head = tmpC;
+				tmpB->NEXT = NULL;
+				free(tmpA); // libero la memoria del ultimo elemento
+				tmpA = NULL;
+				
+			}// si no lo encuentro no hace nada
+		}
 	}
 }
