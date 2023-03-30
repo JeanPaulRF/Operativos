@@ -43,11 +43,11 @@ int main(int argc, char const *argv[])
 
 void serverFunction()
 {
-	// variables para el scheduler
-	cont_PID = 1;
-	cant_jobs = 0;
-	READY = NULL;
-	EXIT = NULL;
+    // variables para el scheduler
+    cont_PID = 1;
+    cant_jobs = 0;
+    READY = NULL;
+    EXIT = NULL;
 
     // Crear socket
     server_socket = socket(AF_INET, SOCK_STREAM, 0);
@@ -80,8 +80,6 @@ void serverFunction()
 
     menuServer();
 
-
-
     // Crear hilo para manejar el timer
     pthread_t timer_thread;
     if (pthread_create(&timer_thread, NULL, handle_timer, NULL) != 0)
@@ -90,38 +88,33 @@ void serverFunction()
         exit(-1);
     }
 
-    
-/*
-    // crear hilo del cpu-scheduler
-    pthread_t scheduler_thread;
-    if (pthread_create(&scheduler_thread, NULL, handle_scheduler, NULL) != 0)
-    {
-        perror("Error al crear hilo del scheduler");
-        exit(-1);
-    }
-*/
-    
-    
+    /*
+        // crear hilo del cpu-scheduler
+        pthread_t scheduler_thread;
+        if (pthread_create(&scheduler_thread, NULL, handle_scheduler, NULL) != 0)
+        {
+            perror("Error al crear hilo del scheduler");
+            exit(-1);
+        }
+    */
+
     // hilo para Aceptar conexiones entrantes y crear hilos para manejar a los clientes
-    
+
     pthread_t conections_thread;
     if (pthread_create(&conections_thread, NULL, handle_conections, NULL) != 0)
     {
         perror("Error al crear hilo de las conexiones");
         exit(-1);
     }
-    
-    
+
     consultas();
-    
-    
-    
+
     // cerrar sockets
     for (int i = 0; i < num_clients; i++)
     {
         close(client_sockets[i]);
     }
-    
+
     // Esperar a que todos los hilos terminen y cerrar sockets
     for (int i = 0; i < num_clients; i++)
     {
@@ -134,7 +127,7 @@ void serverFunction()
     printlist(EXIT);
 
     close(server_socket);
-    
+
     return NULL;
 }
 
@@ -161,9 +154,9 @@ void menuServer()
 
 void *handle_conections(void *arg)
 {
-	while (1)
+    while (1)
     {
-    	
+
         struct sockaddr_in client_addr;
         socklen_t client_addr_len = sizeof(client_addr);
         client_socket = accept(server_socket, (struct sockaddr *)&client_addr, &client_addr_len);
@@ -172,7 +165,7 @@ void *handle_conections(void *arg)
             perror("Error al aceptar conexión entrante");
             continue;
         }
-        //printf("Conexión entrante desde %s:%d\n\n", inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
+        // printf("Conexión entrante desde %s:%d\n\n", inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
 
         // Crear hilo para manejar al cliente
         if (pthread_create(&client_threads[num_clients], NULL, handle_client, (void *)&client_socket) != 0)
@@ -180,9 +173,9 @@ void *handle_conections(void *arg)
             perror("Error al crear hilo");
             continue;
         }
-        
+
         pthread_mutex_lock(&mutex);
-        //control de sockets
+        // control de sockets
         client_sockets[num_clients] = client_socket;
         num_clients++;
         pthread_mutex_unlock(&mutex);
@@ -206,7 +199,7 @@ void *handle_client(void *arg)
         int bytes_recv = recv(client_socket, &burst, sizeof(burst), 0); // Recibir burst del cliente
         if (bytes_recv <= 0)
         {
-            //printf("Cliente desconectado\n");
+            // printf("Cliente desconectado\n");
             break; // Si el cliente se desconecta, salir del ciclo
         }
         // printf("Burst: %d del cliente %d\n", burst, client_socket);
@@ -214,13 +207,13 @@ void *handle_client(void *arg)
         bytes_recv = recv(client_socket, &prioridad, sizeof(prioridad), 0); // Recibir prioridad del cliente
         if (bytes_recv <= 0)
         {
-            //printf("Cliente desconectado\n");
+            // printf("Cliente desconectado\n");
             break; // Si el cliente se desconecta, salir del ciclo
         }
-        //printf("Prioridad: %d del cliente %d\n", prioridad, client_socket);
+        // printf("Prioridad: %d del cliente %d\n", prioridad, client_socket);
 
-	pthread_mutex_lock(&mutex);
-        
+        pthread_mutex_lock(&mutex);
+
         // jobScheduler -----------------------------------
         node_js *nodoTmp = malloc(sizeof(node_js));
         nodoTmp = create_new_job(burst, prioridad);
@@ -229,12 +222,11 @@ void *handle_client(void *arg)
         int pid = READY->data.pid; // Recibe el pid del proceso que se va a ejecutar
 
         READY->data.tiempoLlegada = timer; // Se le asigna el tiempo de llegada
-        
+
         pthread_mutex_unlock(&mutex);
 
         // printf("Enviando pid %d al cliente %d\n\n", pid, client_socket);
         send(client_socket, &pid, sizeof(pid), 0); // Enviar pid al cliente
-        
     }
 
     close(client_socket); // Cerrar socket del cliente
@@ -264,7 +256,7 @@ void *handle_scheduler(void *arg)
             {
                 //---------------
 
-        	pthread_mutex_lock(&mutex);
+                pthread_mutex_lock(&mutex);
                 switch (algoritmo)
                 {
                 case 1: // si escogio FIFO
@@ -283,15 +275,15 @@ void *handle_scheduler(void *arg)
                     algoritmoFifo(READY, EXIT);
                     break;
                 }
-        	pthread_mutex_unlock(&mutex);
+                pthread_mutex_unlock(&mutex);
 
-        	pthread_mutex_lock(&mutex);
+                pthread_mutex_lock(&mutex);
                 // se obtiene el proceso
                 Proceso v_proc;
-                		v_proc = get_proceso(EXIT, EXIT->data.pid); // tome el primer proceso, el recien enviado
-        	v_proc = EXIT->data;
-        	pthread_mutex_unlock(&mutex);
-        	
+                v_proc = get_proceso(EXIT, EXIT->data.pid); // tome el primer proceso, el recien enviado
+                v_proc = EXIT->data;
+                pthread_mutex_unlock(&mutex);
+
                 printf("Proceso: %d Burst: %d Prioridad: %d En ejecucion\n", v_proc.pid, v_proc.burst, v_proc.prioridad);
 
                 // RR
@@ -329,20 +321,21 @@ void *handle_scheduler(void *arg)
                     printf("Proceso: %d Terminado\n", v_proc.pid);
                 }
 
-                //printlist(EXIT);
-		
-		pthread_mutex_lock(&mutex);
-		if(EXIT != NULL){
-		        if (EXIT->data.burst != 0)
-		        {                              // si el proceso recien enviado a exit aun tiene burts que procesar
-		        	node_js *nodoTmp = malloc(sizeof(node_js));
-		        	nodoTmp->data = EXIT->data;
-		        	nodoTmp->NEXT = NULL;
-		            READY = insert_at_end(&READY, nodoTmp); // lo envia al final de READY
-		            EXIT = EXIT->NEXT;
-		        }
+                // printlist(EXIT);
+
+                pthread_mutex_lock(&mutex);
+                if (EXIT != NULL)
+                {
+                    if (EXIT->data.burst != 0)
+                    { // si el proceso recien enviado a exit aun tiene burts que procesar
+                        node_js *nodoTmp = malloc(sizeof(node_js));
+                        nodoTmp->data = EXIT->data;
+                        nodoTmp->NEXT = NULL;
+                        READY = insert_at_end(&READY, nodoTmp); // lo envia al final de READY
+                        EXIT = EXIT->NEXT;
+                    }
                 }
-                
+
                 pthread_mutex_unlock(&mutex);
             }
         }
@@ -350,23 +343,25 @@ void *handle_scheduler(void *arg)
     return NULL;
 }
 
+void consultas()
+{
+    int input = 99;
+    printf("Opciones disponibles: \n\n");
+    printf("0. Terminar la simulacion\n");
+    printf("1. Ver el contenido del Ready\n\n");
+    printf("Elija una opcion: ");
+    scanf("%d", &input);
 
-void consultas(){
-	int input = 99;
-	printf("Opciones disponibles: \n\n");
-	printf("0. Terminar la simulacion\n");
-	printf("1. Ver el contenido del Ready\n\n");
-	printf("Elija una opcion: ");
-	scanf("%d", &input);
-	
-	if(input == 0){
-		return NULL;
-	}
-	else{
-		pthread_mutex_lock(&mutex);
-		printf("\n-----------READY-----------\n");
-    		printlist(READY);
-		pthread_mutex_unlock(&mutex);
-		consultas();
-	}
+    if (input == 0)
+    {
+        return NULL;
+    }
+    else
+    {
+        pthread_mutex_lock(&mutex);
+        printf("\n-----------READY-----------\n");
+        printlist(READY);
+        pthread_mutex_unlock(&mutex);
+        consultas();
+    }
 }
