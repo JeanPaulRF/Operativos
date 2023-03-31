@@ -51,8 +51,8 @@ void printlist(node_js *head)
 
 	while (temporary != NULL)
 	{
-		printf("Pid :%d - Burst: %d - Prioridad: %d - Tiempo de Llegada: %d\n",
-			   temporary->data->pid, temporary->data->burst, temporary->data->prioridad, temporary->data->tiempoLlegada);
+		printf("Pid :%d - Burst: %d - Prioridad: %d - Burst Restante: %d - Tiempo de Llegada: %d\n",
+			   temporary->data->pid, temporary->data->burst, temporary->data->prioridad, temporary->data->burstRestante, temporary->data->tiempoLlegada);
 		temporary = temporary->NEXT;
 	}
 	printf("\n");
@@ -76,7 +76,7 @@ node_js *create_new_job(int n_burst, int n_priority)
 	v_data->tat = 0;
 	v_data->wt = 0;
 	v_data->estado = 0;
-	v_data->burstRestante = 0;
+	v_data->burstRestante = n_burst;
 	
 	// ajusto las variables globales
 	cont_PID++;
@@ -101,6 +101,7 @@ void insert_at_start(node_js **head, node_js *new_node){
 		new_node->NEXT = *head;
 		// la cabeza de la lista pasa a ser el nuevo nodo js
 		*head = new_node;
+		//*head->NEXT = NULL;
 	}
 }
 

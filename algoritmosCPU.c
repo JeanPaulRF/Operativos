@@ -3,15 +3,15 @@
 #include <limits.h>
 #include "jobScheduler.c"
 
-void algoritmoFifo();
-void algoritmoSjf();
+node_js *algoritmoFifo();
+node_js * algoritmoSjf();
 int getPidShortestBurst(); // pid del proceso con menos burst
-void algoritmoHpf();
+node_js * algoritmoHpf();
 int getPidShortestPrioridad();
-void roundRobin(int quantum);
+node_js * roundRobin(int quantum);
 
 // Algoritmo FIFO
-void algoritmoFifo()
+node_js *algoritmoFifo()
 { 
 // pasar el ready
   node_js *nodeActual;
@@ -22,14 +22,15 @@ void algoritmoFifo()
   nodeActual = find_nodeJS(&READY, vpid); //deberia ser el head
 
   if(nodeActual->data->pid != 0){
-    delete_nodeJS(&READY, nodeActual);
-  	insert_at_start(&EXIT, nodeActual);
+    delete_nodeJS(&READY, nodeActual->data->pid);
+  	//insert_at_start(&EXIT, nodeActual);
+  	return nodeActual;
   }
 
 }
 
 // Algoritmo SJF
-void algoritmoSjf()
+node_js *algoritmoSjf()
 {
   int vpid = 0; // probar asignacion a NULL
   node_js *nodeActual;
@@ -38,8 +39,8 @@ void algoritmoSjf()
   
   if(nodeActual->data->pid != 0) 
   {
-    delete_nodeJS(&READY, nodeActual);
-    insert_at_start(&EXIT, nodeActual);
+    delete_nodeJS(&READY, nodeActual->data->pid);
+    return nodeActual;
   } 
   // else, pos no hace nada
 }
@@ -63,7 +64,7 @@ int getPidShortestBurst()
 }
 
 // Algoritmo HPF
-void algoritmoHpf()
+node_js *algoritmoHpf()
 {
   //int indexShortest;
   //int repeticiones = 0;
@@ -76,8 +77,8 @@ void algoritmoHpf()
   
   if(nodeActual->data->pid != 0)
   {
-    delete_nodeJS(&READY, nodeActual);
-    insert_at_start(&EXIT, nodeActual);
+    delete_nodeJS(&READY, nodeActual->data->pid);
+    return nodeActual;
   }
   // else, pos no hace nada
 }
@@ -101,7 +102,7 @@ int getPidShortestPrioridad()
 }
 
 // Algoritmo Round Robin
-void roundRobin(int quantum)
+node_js *roundRobin(int quantum)
 {
   node_js *nodeActual;
   node_js *tmp = READY;  // puede que deba corregirse READY a &READY
@@ -111,8 +112,8 @@ void roundRobin(int quantum)
   
   if(nodeActual->data->pid != 0)
   {
-    delete_nodeJS(&READY, nodeActual);
-    insert_at_start(&EXIT, nodeActual);
+    delete_nodeJS(&READY, nodeActual->data->pid);
+    return nodeActual;
   }
   // else, pos no hace nada
 }
