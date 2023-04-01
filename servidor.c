@@ -14,6 +14,7 @@
 
 int timer = 0;
 int algoritmo, quantum;
+int ocioso = 0;
 
 // server
 int num_clients = 0;
@@ -120,11 +121,20 @@ void serverFunction()
     {
         pthread_join(client_threads[i], NULL);
     }
+    
+    printf("\n-----------FIN DE LA EJECUCION-----------\n");
+    printf("\nCantidad de procesos ejecutados: \n");
+    printf("\nCantidad de segundos con CPU ocioso: %d\n", ocioso);
+    printf("\nTabla de TAT y WT de los procesos ejecutados: \n");
+    printf("\nPromedio de Waiting Time: \n");
+    printf("\nPromedio de Turn Around Time: \n\n");
 
+/*
     printf("\n-----------READY-----------\n");
     printlist(READY);
     printf("\n\n----------EXIT------------\n");
     printlist(EXIT);
+*/
 
     close(server_socket);
 
@@ -309,7 +319,7 @@ void *handle_scheduler(void *arg)
                         insert_at_start(&EXIT, v_node);
                         pthread_mutex_unlock(&mutex);
 
-                        //printf("Proceso: %d Terminado\n", v_node->data->pid);
+                        printf("\nProceso: %d terminado.\n\n", v_node->data->pid);
                     }
                 }
                 else
@@ -325,12 +335,16 @@ void *handle_scheduler(void *arg)
 		        insert_at_start(&EXIT, v_node);
 		        pthread_mutex_unlock(&mutex);
 
-                        //printf("Proceso: %d Terminado\n", v_node->data->pid);
+                        printf("\nProceso: %d terminado.\n\n", v_node->data->pid);
                 }
 
                 // printlist(EXIT);
 
             }
+        }
+        else{
+        	sleep(1);
+        	ocioso++;
         }
     }
     return NULL;
@@ -354,8 +368,6 @@ void consultas()
         pthread_mutex_lock(&mutex);
         printf("\n-----------READY-----------\n");
 	    printlist(READY);
-	    printf("\n\n----------EXIT------------\n");
-	    printlist(EXIT);
         pthread_mutex_unlock(&mutex);
         consultas();
     }
