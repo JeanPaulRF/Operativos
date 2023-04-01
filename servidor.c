@@ -89,15 +89,13 @@ void serverFunction()
         exit(-1);
     }
 
-    
-        // crear hilo del cpu-scheduler
-        pthread_t scheduler_thread;
-        if (pthread_create(&scheduler_thread, NULL, handle_scheduler, NULL) != 0)
-        {
-            perror("Error al crear hilo del scheduler");
-            exit(-1);
-        }
-    
+    // crear hilo del cpu-scheduler
+    pthread_t scheduler_thread;
+    if (pthread_create(&scheduler_thread, NULL, handle_scheduler, NULL) != 0)
+    {
+        perror("Error al crear hilo del scheduler");
+        exit(-1);
+    }
 
     // hilo para Aceptar conexiones entrantes y crear hilos para manejar a los clientes
 
@@ -121,7 +119,7 @@ void serverFunction()
     {
         pthread_join(client_threads[i], NULL);
     }
-    
+
     printf("\n-----------FIN DE LA EJECUCION-----------\n");
     printf("\nCantidad de procesos ejecutados: \n");
     printf("\nCantidad de segundos con CPU ocioso: %d\n", ocioso);
@@ -129,12 +127,12 @@ void serverFunction()
     printf("\nPromedio de Waiting Time: \n");
     printf("\nPromedio de Turn Around Time: \n\n");
 
-/*
-    printf("\n-----------READY-----------\n");
-    printlist(READY);
-    printf("\n\n----------EXIT------------\n");
-    printlist(EXIT);
-*/
+    /*
+        printf("\n-----------READY-----------\n");
+        printlist(READY);
+        printf("\n\n----------EXIT------------\n");
+        printlist(EXIT);
+    */
 
     close(server_socket);
 
@@ -229,7 +227,7 @@ void *handle_client(void *arg)
         node_js *nodoTmp = malloc(sizeof(node_js));
         nodoTmp = create_new_job(burst, prioridad);
         nodoTmp->data->tiempoLlegada = timer; // Se le asigna el tiempo de llegada
-        
+
         insert_at_end(&READY, nodoTmp);
 
         int pid = nodoTmp->data->pid; // Recibe el pid del proceso que se va a ejecutar
@@ -288,10 +286,10 @@ void *handle_scheduler(void *arg)
                     break;
                 }
                 pthread_mutex_unlock(&mutex);
-                
+
                 printf("\nProceso %d con burst %d y prioridad %d entra en ejecucion\n\n", v_node->data->pid, v_node->data->burst, v_node->data->prioridad);
 
-                //printf("Proceso: %d Burst: %d Prioridad: %d En ejecucion\n", v_node->data->pid, v_node->data->burst, v_node->data->prioridad);
+                // printf("Proceso: %d Burst: %d Prioridad: %d En ejecucion\n", v_node->data->pid, v_node->data->burst, v_node->data->prioridad);
 
                 // RR
                 if (algoritmo == 4)
@@ -301,20 +299,20 @@ void *handle_scheduler(void *arg)
                         sleep(quantum);
 
                         v_node->data->burstRestante -= quantum;
-                        
+
                         pthread_mutex_lock(&mutex);
                         insert_at_end(&READY, v_node);
                         pthread_mutex_unlock(&mutex);
                     }
                     else
                     {
-                         sleep(v_node->data->burst);
+                        sleep(v_node->data->burst);
 
                         v_node->data->tiempoSalida = timer - v_node->data->tiempoLlegada; // sleep suma timer + burst
                         v_node->data->tat = v_node->data->tiempoSalida - v_node->data->tiempoLlegada;
                         v_node->data->wt = v_node->data->tat - v_node->data->burst;
                         v_node->data->burstRestante = 0;
-                        
+
                         pthread_mutex_lock(&mutex);
                         insert_at_start(&EXIT, v_node);
                         pthread_mutex_unlock(&mutex);
@@ -324,27 +322,27 @@ void *handle_scheduler(void *arg)
                 }
                 else
                 {
-                     sleep(v_node->data->burst);
+                    sleep(v_node->data->burst);
 
-		        v_node->data->tiempoSalida = timer - v_node->data->tiempoLlegada; // sleep suma timer + burst
-		        v_node->data->tat = v_node->data->tiempoSalida - v_node->data->tiempoLlegada;
-		        v_node->data->wt = v_node->data->tat - v_node->data->burst;
-		        v_node->data->burstRestante = 0;
-		        
-		        pthread_mutex_lock(&mutex);
-		        insert_at_start(&EXIT, v_node);
-		        pthread_mutex_unlock(&mutex);
+                    v_node->data->tiempoSalida = timer - v_node->data->tiempoLlegada; // sleep suma timer + burst
+                    v_node->data->tat = v_node->data->tiempoSalida - v_node->data->tiempoLlegada;
+                    v_node->data->wt = v_node->data->tat - v_node->data->burst;
+                    v_node->data->burstRestante = 0;
 
-                        printf("\nProceso: %d terminado.\n\n", v_node->data->pid);
+                    pthread_mutex_lock(&mutex);
+                    insert_at_start(&EXIT, v_node);
+                    pthread_mutex_unlock(&mutex);
+
+                    printf("\nProceso: %d terminado.\n\n", v_node->data->pid);
                 }
 
                 // printlist(EXIT);
-
             }
         }
-        else{
-        	sleep(1);
-        	ocioso++;
+        else
+        {
+            sleep(1);
+            ocioso++;
         }
     }
     return NULL;
@@ -367,7 +365,7 @@ void consultas()
     {
         pthread_mutex_lock(&mutex);
         printf("\n-----------READY-----------\n");
-	    printlist(READY);
+        printlist(READY);
         pthread_mutex_unlock(&mutex);
         consultas();
     }
