@@ -47,6 +47,7 @@ void serverFunction()
     // variables para el scheduler
     cont_PID = 1;
     cant_jobs = 0;
+    no_pruebas = 0;
     READY = NULL;
     EXIT = NULL;
 

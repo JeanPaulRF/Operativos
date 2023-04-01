@@ -21,6 +21,7 @@ typedef struct node node_js;
 // variable global
 unsigned int cont_PID;	// va asignando el id de los procesos
 unsigned int cant_jobs; // va contando cuantos procesos existen
+unsigned int no_pruebas; // va contando cuantas pruebas se han echo
 node_js *READY;			// la cola de procesos en READY
 node_js *EXIT;
 
@@ -42,6 +43,12 @@ node_js *find_nodeJS(node_js **head, int v_pid);
 
 // eliminar un nodo en especifico
 void *delete_nodeJS(node_js **head, int v_pid);
+
+// registrar los resultados de una lista
+void register_result(node_js *head, char* v_file);
+
+// cuente cuantos nodos existen en la lista
+int number_of_nodes(node_js *head);
 
 // -------- definiciones
 // imprime una lista simple
@@ -242,4 +249,57 @@ void *delete_nodeJS(node_js **head, int v_pid)
 			} // si no lo encuentro no hace nada
 		}
 	}
+}
+
+// registrar los resultados de una lista
+void register_result(node_js *head, char* v_file){
+	
+	FILE *in;
+	FILE *out;
+	
+	char buffer_in[256], buffer_out[256];
+	node_js *temporary = head;
+	
+	out = fopen( v_file, "a");
+	
+	if(out == NULL){ // si no se pudo abrir el archivo
+		printf("\n Dont'n open the file \n");
+	}
+	else{
+		
+		snprintf(buffer_out, 256, "\n\n Prueba No %d \n\n", no_pruebas);
+		no_pruebas++;
+		
+		size_t bytes_wrote = fwrite(buffer_out, sizeof(char), strlen(buffer_out), out);
+		
+		while (temporary != NULL)
+		{
+			snprintf(buffer_out, 256, "Pid :%d - Burst: %d - Prioridad: %d - Tiempo de Llegada: %d - Tiempo de Salida: %d - TAT: %d - WT: %d \n",
+			 temporary->data->pid, temporary->data->burstRestante, temporary->data->prioridad, temporary->data->tiempoLlegada, 
+			 temporary->data->tiempoSalida, temporary->data->tat, temporary->data->wt );
+			
+			bytes_wrote = fwrite(buffer_out, sizeof(char), strlen(buffer_out), out);
+			
+			if(bytes_wrote != strlen(buffer_out)) {
+				printf("\n Error, dont'n write in the file \n");
+			}
+			
+			temporary = temporary->NEXT;
+		}
+		
+		fclose(out);
+	}
+}
+
+// cuente cuantos nodos existen en la lista
+int number_of_nodes(node_js *head){
+	node_js *temporary = head;
+	int result = 0;
+
+	while (temporary != NULL)
+	{
+		result++;
+		temporary = temporary->NEXT;
+	}
+	return result;
 }
