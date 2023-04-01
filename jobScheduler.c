@@ -50,6 +50,10 @@ void register_result(node_js *head, char* v_file);
 // cuente cuantos nodos existen en la lista
 int number_of_nodes(node_js *head);
 
+// Obtienen los promedios de TAT y WT
+int get_average_TAT(node_js *head);
+int get_average_WT(node_js *head);
+
 // -------- definiciones
 // imprime una lista simple
 void printlist(node_js *head)
@@ -260,6 +264,10 @@ void register_result(node_js *head, char* v_file){
 	char buffer_in[256], buffer_out[256];
 	node_js *temporary = head;
 	
+	int prom_tat = get_average_TAT(head);
+	int prom_wt  = get_average_WT(head);
+	int number_node = number_of_nodes(head);
+	
 	out = fopen( v_file, "a");
 	
 	if(out == NULL){ // si no se pudo abrir el archivo
@@ -267,10 +275,17 @@ void register_result(node_js *head, char* v_file){
 	}
 	else{
 		
-		snprintf(buffer_out, 256, "\n\n Prueba No %d \n\n", no_pruebas);
+		snprintf(buffer_out, 256, "\n\n-- o -- Prueba No %d -- o --\n\n", no_pruebas);
 		no_pruebas++;
 		
 		size_t bytes_wrote = fwrite(buffer_out, sizeof(char), strlen(buffer_out), out);
+		
+		snprintf(buffer_out, 256, "Promedio de TAT %d \n", prom_tat);
+		bytes_wrote = fwrite(buffer_out, sizeof(char), strlen(buffer_out), out);
+		snprintf(buffer_out, 256, "Promedio de WT  %d \n", prom_wt);
+		bytes_wrote = fwrite(buffer_out, sizeof(char), strlen(buffer_out), out);
+		snprintf(buffer_out, 256, "Numero de Nodos %d \n", number_node);
+		bytes_wrote = fwrite(buffer_out, sizeof(char), strlen(buffer_out), out);
 		
 		while (temporary != NULL)
 		{
@@ -302,4 +317,41 @@ int number_of_nodes(node_js *head){
 		temporary = temporary->NEXT;
 	}
 	return result;
+}
+
+// Obtienen los promedios de TAT y WT
+int get_average_TAT(node_js *head){
+	node_js *temporary = head;
+	
+	int result = 0;
+	int cantidad_nodos = number_of_nodes(head);
+
+	while (temporary != NULL)
+	{
+		result += temporary->data->tat;
+		temporary = temporary->NEXT;
+	}
+	
+	if (cantidad_nodos > 0){
+		return (result / cantidad_nodos);
+	}
+	else return result;
+}
+
+int get_average_WT(node_js *head){
+	node_js *temporary = head;
+	
+	int result = 0;
+	int cantidad_nodos = number_of_nodes(head);
+
+	while (temporary != NULL)
+	{
+		result += temporary->data->wt;
+		temporary = temporary->NEXT;
+	}
+	
+	if (cantidad_nodos > 0){
+		return (result / cantidad_nodos);
+	}
+	else return result;
 }
