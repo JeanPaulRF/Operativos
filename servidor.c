@@ -8,6 +8,7 @@
 #include <arpa/inet.h>
 #include <string.h>
 #include "algoritmosCPU.c"
+#include "fileReader.c"
 
 #define PORT 8080
 #define MAX_CLIENTS 10
@@ -202,8 +203,10 @@ void *handle_conections(void *arg)
 void *handle_client(void *arg)
 {
     int client_socket = *(int *)arg;
+    Nodo *handle_list = getFileList();
+    Nodo *nodo_actual = handle_list;
 
-    while (1)
+    while (nodo_actual != NULL)
     {
         int burst, prioridad;
         int bytes_recv = recv(client_socket, &burst, sizeof(burst), 0); // Recibir burst del cliente

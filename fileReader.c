@@ -5,15 +5,17 @@
 // Estructura para almacenar los valores
 typedef struct nodo
 {
-    int valor;
+    int burst;
+    int prioridad;
     struct nodo *siguiente;
 } Nodo;
 
 // Con esta función agrego un valor
-void agregar(Nodo **cabeza, int valor)
+void agregar(Nodo **cabeza, int valor1, int valor2)
 {
     Nodo *nuevo_nodo = (Nodo *)malloc(sizeof(Nodo));
-    nuevo_nodo->valor = valor;
+    nuevo_nodo->burst = valor1;
+    nuevo_nodo->prioridad = valor2;
     nuevo_nodo->siguiente = NULL;
     if (*cabeza == NULL)
     {
@@ -30,7 +32,7 @@ void agregar(Nodo **cabeza, int valor)
     }
 }
 
-int main()
+Nodo *getFileList()
 {
     // Abrir archivo
     FILE *archivo = fopen("archivo.txt", "r");
@@ -40,8 +42,7 @@ int main()
         return 1;
     }
 
-    Nodo *lista_burst = NULL;
-    Nodo *lista_prioridad = NULL;
+    Nodo *lista_procesos = NULL;
 
     char linea[100];
     fgets(linea, 100, archivo);
@@ -52,27 +53,27 @@ int main()
     int valor_burst, valor_prioridad;
     while (fscanf(archivo, "%d\t%d", &valor_burst, &valor_prioridad) == 2)
     {
-        agregar(&lista_burst, valor_burst);
-        agregar(&lista_prioridad, valor_prioridad);
+        agregar(&lista_procesos, valor_burst, valor_prioridad);
+        
     }
 
     fclose(archivo);
 
     // Imprimir las listas
     printf("Lista %s:\n", burst);
-    Nodo *nodo_burst = lista_burst;
+    Nodo *nodo_burst = lista_procesos;
+    Nodo *nodo_prioridad = lista_procesos;
     while (nodo_burst != NULL)
     {
-        printf("%d\n", nodo_burst->valor);
+        printf("%d\n", nodo_burst->burst);
         nodo_burst = nodo_burst->siguiente;
     }
     printf("\nLista %s:\n", prioridad);
-    Nodo *nodo_prioridad = lista_prioridad;
     while (nodo_prioridad != NULL)
     {
-        printf("%d\n", nodo_prioridad->valor);
+        printf("%d\n", nodo_prioridad->prioridad);
         nodo_prioridad = nodo_prioridad->siguiente;
     }
 
-    return 0;
+    return lista_procesos;
 }
