@@ -39,7 +39,7 @@ Nodo *getFileList()
     if (archivo == NULL)
     {
         printf("No se pudo abrir el archivo\n");
-        return 1;
+        return NULL;
     }
 
     Nodo *lista_procesos = NULL;

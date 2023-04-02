@@ -11,6 +11,7 @@
 #define PORT 8080
 
 int min, max;
+Nodo *nodo_actual;
 
 int getRandom(int minimo, int maximo);
 void *cicloProcesos(void *arg);
@@ -21,7 +22,7 @@ int main(int argc, char const *argv[])
     printf("\n--Bienvenido al menu de cliente manual del planificador de procesos--\n\n");
     printf("-Procesos a trabajar-\n\n");
     Nodo *lista_manual = getFileList();
-    Nodo *nodo_actual = lista_manual;
+    nodo_actual = lista_manual;
     
 
     int sock = 0, valread;
@@ -61,13 +62,13 @@ int main(int argc, char const *argv[])
         pthread_t thread;
 
         // crear thread del proceso
-        if (pthread_create(&thread, NULL, funcionProceso(nodo_actual->burst, nodo_actual->prioridad), (void *)&sock) < 0)
+        if (pthread_create(&thread, NULL, funcionProceso, (void *)&sock) < 0)
         {
             printf("\nError al crear el thread del proceso\n");
             return -1;
         }
 
-        sleep(getRandom(2, 5));
+        sleep(getRandom(3, 8));
         nodo_actual = nodo_actual->siguiente;
     }
 
@@ -83,31 +84,13 @@ int getRandom(int minimo, int maximo)
     return rand() % (maximo - minimo + 1) + minimo;
 }
 
-void *cicloProcesos(void *arg)
-{
-    int sock = *(int *)arg;
-
-    while (1)
-    {
-        pthread_t thread;
-
-        // crear thread del proceso
-        if (pthread_create(&thread, NULL, funcionProceso, (void *)&sock) < 0)
-        {
-            printf("\nError al crear el thread del proceso\n");
-            return NULL;
-        }
-
-        sleep(getRandom(3, 8));
-    }
-
-    return NULL;
-}
-
-void *funcionProceso(int burst, int prioridad)
+void *funcionProceso(void *arg)
 {   
-    void *arg;
     int client_socket = *(int *)arg;
+    int burst = nodo_actual->burst;
+    int prioridad = nodo_actual->prioridad;
+    
+    sleep(2);
 
     printf("Enviando burst: %d\n", burst);
     send(client_socket, &burst, sizeof(burst), 0); // Enviar burst al servidor
