@@ -6,6 +6,7 @@
 #include <pthread.h>
 #include <time.h>
 #include <fcntl.h>
+#include "fileReader.c"
 
 #define PORT 8080
 
@@ -17,12 +18,11 @@ void *funcionProceso(void *arg);
 
 int main(int argc, char const *argv[])
 {
-    printf("\n--Bienvenido al menu de cliente automatico del planificador de procesos--\n\n");
-    printf("-Rango de valores enteros para el burst y la prioridad de los procesos-\n\n");
-    printf("Valor minimo: ");
-    scanf("%d", &min);
-    printf("Valor maximo: ");
-    scanf("%d", &max);
+    printf("\n--Bienvenido al menu de cliente manual del planificador de procesos--\n\n");
+    printf("-Procesos a trabajar-\n\n");
+    Nodo *lista_manual = getFileList();
+    Nodo *nodo_actual = lista_manual;
+    
 
     int sock = 0, valread;
     struct sockaddr_in serv_addr;
@@ -56,18 +56,19 @@ int main(int argc, char const *argv[])
 
     printf("\n");
 
-    while (1)
+    while (nodo_actual != NULL)
     {
         pthread_t thread;
 
         // crear thread del proceso
-        if (pthread_create(&thread, NULL, funcionProceso, (void *)&sock) < 0)
+        if (pthread_create(&thread, NULL, funcionProceso(nodo_actual->burst, nodo_actual->prioridad), (void *)&sock) < 0)
         {
             printf("\nError al crear el thread del proceso\n");
             return -1;
         }
 
         sleep(getRandom(2, 5));
+        nodo_actual = nodo_actual->siguiente;
     }
 
     printf("\n\n--Fin del programa--\n");
@@ -103,11 +104,10 @@ void *cicloProcesos(void *arg)
     return NULL;
 }
 
-void *funcionProceso(void *arg)
-{
+void *funcionProceso(int burst, int prioridad)
+{   
+    void *arg;
     int client_socket = *(int *)arg;
-    int burst = getRandom(min, max);
-    int prioridad = getRandom(min, max);
 
     printf("Enviando burst: %d\n", burst);
     send(client_socket, &burst, sizeof(burst), 0); // Enviar burst al servidor
