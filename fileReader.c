@@ -60,6 +60,7 @@ Nodo *getFileList()
     fclose(archivo);
 
     // Imprimir las listas
+    /*
     printf("Lista %s:\n", burst);
     Nodo *nodo_burst = lista_procesos;
     Nodo *nodo_prioridad = lista_procesos;
@@ -74,6 +75,6 @@ Nodo *getFileList()
         printf("%d\n", nodo_prioridad->prioridad);
         nodo_prioridad = nodo_prioridad->siguiente;
     }
-
+	*/
     return lista_procesos;
 }

@@ -1,0 +1,11 @@
+
+
+-- o -- Prueba No 0 -- o --
+
+Promedio de TAT 24 
+Promedio de WT  11 
+Numero de Nodos 4 
+Pid :2 - Burst: 15 - Prioridad: 11 - Tiempo de Llegada: 11 - Tiempo de Salida: 57 - TAT: 46 - WT: 31 
+Pid :3 - Burst: 10 - Prioridad: 13 - Tiempo de Llegada: 16 - Tiempo de Salida: 42 - TAT: 26 - WT: 16 
+Pid :4 - Burst: 12 - Prioridad: 11 - Tiempo de Llegada: 20 - Tiempo de Salida: 32 - TAT: 12 - WT: 0 
+Pid :1 - Burst: 14 - Prioridad: 13 - Tiempo de Llegada: 6 - Tiempo de Salida: 20 - TAT: 14 - WT: 0 

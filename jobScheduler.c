@@ -29,6 +29,8 @@ node_js *EXIT;
 // imprime una lista simple
 void printlist(node_js *head);
 
+void printlist2(node_js *head);
+
 // crear proceso nuevo
 node_js *create_new_job(int n_burst, int n_priority);
 
@@ -62,8 +64,21 @@ void printlist(node_js *head)
 
 	while (temporary != NULL)
 	{
-		printf("Pid :%d - Burst: %d - Prioridad: %d - Burst Restante: %d - Tiempo de Llegada: %d\n",
-			   temporary->data->pid, temporary->data->burst, temporary->data->prioridad, temporary->data->burstRestante, temporary->data->tiempoLlegada);
+		printf("Pid :%d - Burst: %d - Prioridad: %d - Burst Restante: %d - Tiempo de Llegada: %d - Salida: %d\n",
+			   temporary->data->pid, temporary->data->burst, temporary->data->prioridad, temporary->data->burstRestante, temporary->data->tiempoLlegada, temporary->data->tiempoSalida);
+		temporary = temporary->NEXT;
+	}
+	printf("\n");
+}
+
+void printlist2(node_js *head)
+{
+	node_js *temporary = head;
+
+	while (temporary != NULL)
+	{
+		printf("Pid :%d - TAT: %d - WT: %d\n",
+			   temporary->data->pid, temporary->data->tat, temporary->data->wt);
 		temporary = temporary->NEXT;
 	}
 	printf("\n");
@@ -290,7 +305,7 @@ void register_result(node_js *head, char* v_file){
 		while (temporary != NULL)
 		{
 			snprintf(buffer_out, 256, "Pid :%d - Burst: %d - Prioridad: %d - Tiempo de Llegada: %d - Tiempo de Salida: %d - TAT: %d - WT: %d \n",
-			 temporary->data->pid, temporary->data->burstRestante, temporary->data->prioridad, temporary->data->tiempoLlegada, 
+			 temporary->data->pid, temporary->data->burst, temporary->data->prioridad, temporary->data->tiempoLlegada, 
 			 temporary->data->tiempoSalida, temporary->data->tat, temporary->data->wt );
 			
 			bytes_wrote = fwrite(buffer_out, sizeof(char), strlen(buffer_out), out);

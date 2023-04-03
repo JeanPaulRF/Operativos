@@ -120,13 +120,17 @@ void serverFunction()
     {
         pthread_join(client_threads[i], NULL);
     }
+    
+    printf("EXIT\n");
+    printlist(EXIT);
 
     printf("\n-----------FIN DE LA EJECUCION-----------\n");
-    printf("\nCantidad de procesos ejecutados: \n");
+    printf("\nCantidad de procesos ejecutados: %d\n", number_of_nodes(EXIT));
     printf("\nCantidad de segundos con CPU ocioso: %d\n", ocioso);
     printf("\nTabla de TAT y WT de los procesos ejecutados: \n");
-    printf("\nPromedio de Waiting Time: \n");
-    printf("\nPromedio de Turn Around Time: \n\n");
+    printlist2(EXIT);
+    printf("Promedio de Waiting Time: %d\n", get_average_WT(EXIT));
+    printf("\nPromedio de Turn Around Time: %d\n\n", get_average_TAT(EXIT));
 
     /*
         printf("\n-----------READY-----------\n");
@@ -134,6 +138,25 @@ void serverFunction()
         printf("\n\n----------EXIT------------\n");
         printlist(EXIT);
     */
+    
+    switch (algoritmo)
+                {
+                case 1: // si escogio FIFO
+                    register_result(EXIT, "resultadosFIFO.txt");
+                    break;
+                case 2: // si escogimos SJF
+                    register_result(EXIT, "resultadosSJF.txt");
+                    break;
+                case 3: // si escogimos HPF
+                    register_result(EXIT, "resultadosHPF.txt");
+                    break;
+                case 4: // si escogimos RR
+                    register_result(EXIT, "resultadosRR.txt");
+                    break;
+                default: // por default que aplique el fifo
+                    register_result(EXIT, "resultadosFIFO.txt");
+                    break;
+                }
 
     close(server_socket);
 
@@ -288,7 +311,7 @@ void *handle_scheduler(void *arg)
                 }
                 pthread_mutex_unlock(&mutex);
 
-                printf("\nProceso %d con burst %d y prioridad %d entra en ejecucion\n\n", v_node->data->pid, v_node->data->burst, v_node->data->prioridad);
+                printf("\n\nProceso %d con burst %d y prioridad %d entra en ejecucion\n\n", v_node->data->pid, v_node->data->burst, v_node->data->prioridad);
 
                 // printf("Proceso: %d Burst: %d Prioridad: %d En ejecucion\n", v_node->data->pid, v_node->data->burst, v_node->data->prioridad);
 
@@ -309,7 +332,7 @@ void *handle_scheduler(void *arg)
                     {
                         sleep(v_node->data->burst);
 
-                        v_node->data->tiempoSalida = timer - v_node->data->tiempoLlegada; // sleep suma timer + burst
+                        v_node->data->tiempoSalida = timer; // sleep suma timer
                         v_node->data->tat = v_node->data->tiempoSalida - v_node->data->tiempoLlegada;
                         v_node->data->wt = v_node->data->tat - v_node->data->burst;
                         v_node->data->burstRestante = 0;
@@ -325,7 +348,7 @@ void *handle_scheduler(void *arg)
                 {
                     sleep(v_node->data->burst);
 
-                    v_node->data->tiempoSalida = timer - v_node->data->tiempoLlegada; // sleep suma timer + burst
+                    v_node->data->tiempoSalida = timer; // sleep suma timer + burst
                     v_node->data->tat = v_node->data->tiempoSalida - v_node->data->tiempoLlegada;
                     v_node->data->wt = v_node->data->tat - v_node->data->burst;
                     v_node->data->burstRestante = 0;

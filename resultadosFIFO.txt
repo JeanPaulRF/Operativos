@@ -1,0 +1,34 @@
+
+
+-- o -- Prueba No 0 -- o --
+
+Promedio de TAT 10 
+Promedio de WT  3 
+Numero de Nodos 4 
+Pid :4 - Burst: 2 - Prioridad: 10 - Tiempo de Llegada: 22 - Tiempo de Salida: 31 - TAT: 9 - WT: 7 
+Pid :3 - Burst: 9 - Prioridad: 4 - Tiempo de Llegada: 16 - Tiempo de Salida: 29 - TAT: 13 - WT: 4 
+Pid :2 - Burst: 7 - Prioridad: 2 - Tiempo de Llegada: 9 - Tiempo de Salida: 20 - TAT: 11 - WT: 4 
+Pid :1 - Burst: 8 - Prioridad: 3 - Tiempo de Llegada: 5 - Tiempo de Salida: 13 - TAT: 8 - WT: 0 
+
+
+-- o -- Prueba No 0 -- o --
+
+Promedio de TAT 5 
+Promedio de WT  0 
+Numero de Nodos 5 
+Pid :5 - Burst: 6 - Prioridad: 8 - Tiempo de Llegada: 34 - Tiempo de Salida: 41 - TAT: 7 - WT: 1 
+Pid :4 - Burst: 4 - Prioridad: 7 - Tiempo de Llegada: 31 - Tiempo de Salida: 35 - TAT: 4 - WT: 0 
+Pid :3 - Burst: 4 - Prioridad: 3 - Tiempo de Llegada: 27 - Tiempo de Salida: 31 - TAT: 4 - WT: 0 
+Pid :2 - Burst: 3 - Prioridad: 5 - Tiempo de Llegada: 22 - Tiempo de Salida: 26 - TAT: 4 - WT: 1 
+Pid :1 - Burst: 6 - Prioridad: 4 - Tiempo de Llegada: 17 - Tiempo de Salida: 23 - TAT: 6 - WT: 0 
+
+
+-- o -- Prueba No 0 -- o --
+
+Promedio de TAT 26 
+Promedio de WT  13 
+Numero de Nodos 4 
+Pid :4 - Burst: 12 - Prioridad: 11 - Tiempo de Llegada: 23 - Tiempo de Salida: 60 - TAT: 37 - WT: 25 
+Pid :3 - Burst: 10 - Prioridad: 13 - Tiempo de Llegada: 19 - Tiempo de Salida: 48 - TAT: 29 - WT: 19 
+Pid :2 - Burst: 15 - Prioridad: 11 - Tiempo de Llegada: 14 - Tiempo de Salida: 38 - TAT: 24 - WT: 9 
+Pid :1 - Burst: 14 - Prioridad: 13 - Tiempo de Llegada: 9 - Tiempo de Salida: 23 - TAT: 14 - WT: 0 
