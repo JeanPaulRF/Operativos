@@ -1,13 +1,5 @@
 {
     "files.associations": {
-        "string.h": "c",
-        "array": "c",
-        "*.tcc": "c",
-        "memory": "c",
-        "functional": "c",
-        "istream": "c",
-        "tuple": "c",
-        "utility": "c"
-    },
-    "code-runner.runInTerminal": true
+        "stdlib.h": "c"
+    }
 }
