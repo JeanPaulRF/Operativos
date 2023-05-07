@@ -30,15 +30,20 @@ int main()
     // Matar todos los procesos
     kill(0, SIGTERM);
 
-    // Liberar la memoria compartida
+    // Desvinculamos la zona de memoria compartida
+    if (shmdt(shmaddr) == -1)
+    {
+        perror("shmdt");
+        exit(EXIT_FAILURE);
+    }
+
+    // Borramos la zona de memoria compartida y el semáforo
     if (shmctl(shmid, IPC_RMID, NULL) == -1)
     {
         perror("shmctl");
         exit(EXIT_FAILURE);
     }
-
-    // Liberar el conjunto de semáforos
-    if (semctl(semid, 0, IPC_RMID) == -1)
+    if (semctl(semid, 0, IPC_RMID, arg) == -1)
     {
         perror("semctl");
         exit(EXIT_FAILURE);
