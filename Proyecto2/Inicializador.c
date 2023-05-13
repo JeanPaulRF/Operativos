@@ -4,12 +4,12 @@
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
+#include <sys/sem.h>
 
 #define SHM_KEY 9999
 #define SEM_KEY 1234
 #define SEM_KEY2 5678
 #define SIZE_LINEA 60
-#define SIZE_CONTROL 100
 #define N_SEMAPHORES 2
 #define MAX_PROCESOS 100
 #define SIZE_CONTROL sizeof(Control)
@@ -25,7 +25,7 @@ typedef struct
 // estructura para el control de procesos
 typedef struct
 {
-    Proceso[MAX_PROCESOS] * procesos;
+    Proceso procesos[MAX_PROCESOS];
     int count;
     int sem_id;
 } Control;
@@ -44,7 +44,7 @@ void init_sem(int sem_id, int val)
 
     if (semctl(sem_id, 0, SETVAL, arg) == -1)
     {
-        error("Error en semctl (SETVAL)");
+        perror("Error en semctl (SETVAL)");
     }
 }
 
@@ -53,9 +53,10 @@ int main(int argc, char *argv[])
     int shm_id;
     int lineas;
     int *mem;
-    *Control control;
+    Control *control;
     char *shm_ptr;
     int sem_id;
+    int i;
 
     printf("Ingrese el numero de lineas que desea: ");
     scanf("%d", &lineas);
@@ -69,7 +70,7 @@ int main(int argc, char *argv[])
     sem_id = semget(SEM_KEY, 1, IPC_CREAT | 0666);
     if (sem_id == -1)
     {
-        error("Error en semget");
+        perror("Error en semget");
     }
 
     // semáforos para la memoria compartida
@@ -78,7 +79,7 @@ int main(int argc, char *argv[])
         sem_ids[i] = semget(SEM_KEY + 1 + i, 1, IPC_CREAT | 0666);
         if (sem_ids[i] == -1)
         {
-            error("Error en semget");
+            perror("Error en semget");
         }
     }
 
@@ -88,14 +89,11 @@ int main(int argc, char *argv[])
         sem_reader_ids[i] = semget(SEM_KEY2 + 1 + i, 1, IPC_CREAT | 0666);
         if (sem_reader_ids[i] == -1)
         {
-            error("Error en semget");
+            perror("Error en semget");
         }
     }
 
     // inicializar los semáforos
-
-    // semaforo de control
-    init_sem(control->sem_id, 1);
 
     // semáforos para la memoria compartida
     for (i = 0; i < lineas; i++)
@@ -137,6 +135,9 @@ int main(int argc, char *argv[])
     // Escribir en la memoria compartida
     control->count = 0;
     control->sem_id = sem_id;
+    
+    // semaforo de control
+    init_sem(control->sem_id, 1);
 
     // Separar el segmento de memoria compartida del espacio de direcciones del proceso
     shmdt(shm_ptr);
