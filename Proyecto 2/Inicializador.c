@@ -12,6 +12,7 @@
 #define SIZE_CONTROL 100
 #define N_SEMAPHORES 2
 #define MAX_PROCESOS 100
+#define SIZE_CONTROL sizeof(Control)
 
 typedef struct
 {
@@ -53,6 +54,8 @@ int main(int argc, char *argv[])
     int lineas;
     int *mem;
     *Control control;
+    char *shm_ptr;
+    int sem_id;
 
     printf("Ingrese el numero de lineas que desea: ");
     scanf("%d", &lineas);
@@ -63,8 +66,8 @@ int main(int argc, char *argv[])
     // crear los semáforos
 
     // semaforo de control
-    control->sem_id = semget(SEM_KEY, 1, IPC_CREAT | 0666);
-    if (control->sem_id == -1)
+    sem_id = semget(SEM_KEY, 1, IPC_CREAT | 0666);
+    if (sem_id == -1)
     {
         error("Error en semget");
     }
@@ -107,7 +110,7 @@ int main(int argc, char *argv[])
     }
 
     // crear la memoria compartida
-    shm_id = shmget(SHM_KEY, SIZE_LINEA * lineas, IPC_CREAT | 0666); // Creacion de la memoria compartida
+    shm_id = shmget(SHM_KEY, SIZE_CONTROL + SIZE_LINEA * lineas, IPC_CREAT | 0666); // Creacion de la memoria compartida
     if (shm_id < 0)
     {
         perror("Error con shmget");
@@ -119,6 +122,26 @@ int main(int argc, char *argv[])
     {
         mem[i] = 0;
     }
+
+    // Adjuntar el segmento de memoria compartida al espacio de direcciones del proceso
+    shm_ptr = shmat(shm_id, NULL, 0);
+    if (shm_ptr == (char *)-1)
+    {
+        perror("shmat");
+        exit(1);
+    }
+
+    // Convertir el puntero a la memoria compartida a un puntero a una estructura Control
+    control = (Control *)shm_ptr;
+
+    // Escribir en la memoria compartida
+    control->count = 0;
+    control->sem_id = sem_id;
+
+    // Separar el segmento de memoria compartida del espacio de direcciones del proceso
+    shmdt(shm_ptr);
+
+    return 0;
 
     printf("Se ha creado la memoria compartida con ID %d de %d bytes dividida en %d lineas.\n", shm_id, SIZE_LINEA * lineas, lineas);
     printf("Se han creado %d semaforos para la memoria.\n", N_SEMAPHORES * lineas);
