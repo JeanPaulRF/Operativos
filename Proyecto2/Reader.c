@@ -106,7 +106,7 @@ void reader(int lector_id, int tiempo_lectura, int tiempo_dormir){
       shm_addr += strlen(shm_addr) + 1;
 
       // verificación de final de memoria para volver al inicio
-      if (shm_addr >= shm_addr + SHARED_MEMORY_SIZE) {
+      if (shm_addr >= shm_addr + SIZE_LINEA) {
           // Reiniciar al comienzo de la memoria compartida
           shm_addr = shmat(shm_id, NULL, 0);
       }
@@ -117,5 +117,4 @@ void reader(int lector_id, int tiempo_lectura, int tiempo_dormir){
 
     // detach (aqui o en main?)
     shmdt(shm_addr);
-		}
 }
