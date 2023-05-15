@@ -135,14 +135,12 @@ int main(int argc, char *argv[])
     // Escribir en la memoria compartida
     control->count = 0;
     control->sem_id = sem_id;
-    
+
     // semaforo de control
     init_sem(control->sem_id, 1);
 
     // Separar el segmento de memoria compartida del espacio de direcciones del proceso
     shmdt(shm_ptr);
-
-    return 0;
 
     printf("Se ha creado la memoria compartida con ID %d de %d bytes dividida en %d lineas.\n", shm_id, SIZE_LINEA * lineas, lineas);
     printf("Se han creado %d semaforos para la memoria.\n", N_SEMAPHORES * lineas);
