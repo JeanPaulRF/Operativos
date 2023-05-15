@@ -4,8 +4,9 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 
-#define SHM_KEY 9999
-#define SHM_SIZE sizeof(struct ejemplo) // tamaño de la estructura
+#define SHM_KEY 1234
+#define SEM_KEY_CONTROL 6666
+#define SIZE_CONTROL (int)sizeof(Control) // tamaño de la estructura
 
 typedef struct
 {
@@ -44,7 +45,7 @@ int main()
         exit(1);
     }
 
-    shm_id = shmget(key, SHM_SIZE, 0666);
+    shm_id = shmget(key, 0, 0666);
     if (shm_id == -1)
     {
         perror("shmget");

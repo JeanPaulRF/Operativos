@@ -6,8 +6,10 @@
 #include <sys/shm.h>
 #include <sys/sem.h>
 
-#define SHM_KEY 5678
-#define SEM_KEY 1234
+#define SHM_KEY 1234
+#define SEM_KEY_CONTROL 6666
+#define SEM_KEY_MEMORIA 7777
+#define SEM_KEY_READERS 8888
 
 int main()
 {
@@ -20,8 +22,22 @@ int main()
     }
 
     // Obtener el identificador del conjunto de semáforos
-    int semid = semget(SEM_KEY, 0, 0);
-    if (semid == -1)
+    int semid_control = semget(SEM_KEY_CONTROL, 0, 0);
+    if (semid_control == -1)
+    {
+        perror("semget");
+        exit(EXIT_FAILURE);
+    }
+
+    int semid_memoria = semget(SEM_KEY_MEMORIA, 0, 0);
+    if (semid_memoria == -1)
+    {
+        perror("semget");
+        exit(EXIT_FAILURE);
+    }
+
+    int semid_readers = semget(SEM_KEY_READERS, 0, 0);
+    if (semid_readers == -1)
     {
         perror("semget");
         exit(EXIT_FAILURE);
@@ -43,7 +59,19 @@ int main()
         perror("shmctl");
         exit(EXIT_FAILURE);
     }
-    if (semctl(semid, 0, IPC_RMID, arg) == -1)
+    if (semctl(semid_control, 0, IPC_RMID, arg) == -1)
+    {
+        perror("semctl");
+        exit(EXIT_FAILURE);
+    }
+
+    if (semctl(semid_memoria, 0, IPC_RMID, arg) == -1)
+    {
+        perror("semctl");
+        exit(EXIT_FAILURE);
+    }
+
+    if (semctl(semid_readers, 0, IPC_RMID, arg) == -1)
     {
         perror("semctl");
         exit(EXIT_FAILURE);
