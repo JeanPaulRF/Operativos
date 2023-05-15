@@ -13,7 +13,7 @@
 #define SIZE_LINEA 36
 #define N_SEMAPHORES 2
 #define MAX_PROCESOS 30
-#define SIZE_CONTROL (int) sizeof(Control)
+#define SIZE_CONTROL (int)sizeof(Control)
 
 typedef struct
 {
@@ -60,7 +60,9 @@ int main(int argc, char *argv[])
     int pagesize = getpagesize();
     int i;
 
-    printf("Ingrese el numero de lineas que desea: ");
+    printf("-------------BIENVENIDO AL INICIALIZADOR DEL SISTEMA-------------\n\n");
+
+    printf("Ingrese el numero de lineas que desea para la memoria compartida: ");
     scanf("%d", &lineas);
 
     // crear los semáforos
@@ -127,8 +129,8 @@ int main(int argc, char *argv[])
     // Separar el segmento de memoria compartida del espacio de direcciones del proceso
     shmdt(shm_ptr);
 
-    printf("Se ha creado la memoria compartida con ID %d de %d bytes dividida en %d lineas.\n", shm_id, SIZE_LINEA * lineas + SIZE_CONTROL, lineas);
-    printf("Se han creado %d semaforos para la memoria.\n", N_SEMAPHORES);
+    printf("\nSe ha creado la memoria compartida con ID %d de %d bytes dividida en %d lineas.\n", shm_id, SIZE_LINEA * lineas + SIZE_CONTROL, lineas);
+    printf("Se han creado %d semaforos para acceder a la memoria.\n", N_SEMAPHORES);
     printf("Se ha creado un semaforo de control.\n");
 
     return 0;

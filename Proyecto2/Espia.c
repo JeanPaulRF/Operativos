@@ -26,6 +26,17 @@ typedef struct
 int main()
 {
     int shm_id;
+    int opcion;
+
+    printf("------------BIENVENIDO AL PROGRAMA ESPIA DEL SISTEMA------------\n\n");
+
+    printf("1. Ver estado de la memoria compartida\n");
+    printf("2. Ver estado de los Writers\n");
+    printf("3. Ver estado de los Readers\n");
+    printf("4. Ver estado de los Readers Egoistas\n");
+    printf("5. Ver estado de todos los procesos\n");
+    scanf("Elija una opcion: %d", &opcion);
+
     key_t key = ftok("memoria_compartida", SHM_KEY); // usar la misma clave que en el otro programa
     if (key == -1)
     {
