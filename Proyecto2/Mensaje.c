@@ -11,5 +11,5 @@ typedef struct
     int minute;
     int second;
     int linea;
-    char *mensaje; // Escrito por writer #999
+    int mensaje; // 0 vacio, 1 lleno
 } Mensaje;

@@ -8,12 +8,12 @@
 
 #define SHM_KEY 1234
 #define SEM_KEY_CONTROL 6666
-#define SEM_KEY_MEMORIA 777
-#define SEM_KEY_ 888
-#define SIZE_LINEA 60
+#define SEM_KEY_MEMORIA 7777
+#define SEM_KEY_READERS 8888
+#define SIZE_LINEA 36
 #define N_SEMAPHORES 2
-#define MAX_PROCESOS 100
-#define SIZE_CONTROL sizeof(Control)
+#define MAX_PROCESOS 30
+#define SIZE_CONTROL (int) sizeof(Control)
 
 typedef struct
 {
@@ -51,13 +51,13 @@ void init_sem(int sem_id, int val)
 
 int main(int argc, char *argv[])
 {
-    int shm_id,
-        int lineas;
+    int shm_id;
+    int lineas;
     int *mem;
     Control *control;
     char *shm_ptr;
     int sem_id_control, sem_id_memoria, sem_id_readers;
-    ;
+    int pagesize = getpagesize();
     int i;
 
     printf("Ingrese el numero de lineas que desea: ");
@@ -66,24 +66,24 @@ int main(int argc, char *argv[])
     // crear los semáforos
 
     // semaforo de control
-    sem_id_control = semget(SEM_KEY, 1, IPC_CREAT | 0666);
-    if (sem_id == -1)
+    sem_id_control = semget(SEM_KEY_CONTROL, 1, IPC_CREAT | 0666);
+    if (sem_id_control == -1)
     {
-        perror("Error en semget");
+        perror("Error en semget control");
     }
 
     // semáforo para la memoria compartida
-    sem_id_memoria = semget(SEM_KEY + 1 + i, 1, IPC_CREAT | 0666);
-    if (sem_ids[i] == -1)
+    sem_id_memoria = semget(SEM_KEY_MEMORIA, 1, IPC_CREAT | 0666);
+    if (sem_id_memoria == -1)
     {
-        perror("Error en semget");
+        perror("Error en semget memoria");
     }
 
     // semaforo para readers
-    sem_id_readers = semget(SEM_KEY2 + 1 + i, 1, IPC_CREAT | 0666);
-    if (sem_reader_ids[i] == -1)
+    sem_id_readers = semget(SEM_KEY_READERS, 1, IPC_CREAT | 0666);
+    if (sem_id_readers == -1)
     {
-        perror("Error en semget");
+        perror("Error en semget readers");
     }
 
     // inicializar los semáforos
@@ -91,10 +91,10 @@ int main(int argc, char *argv[])
     init_sem(sem_id_readers, 1);
 
     // crear la memoria compartida
-    shm_id = shmget(SHM_KEY, SIZE_CONTROL + SIZE_LINEA * lineas, IPC_CREAT | 0666); // Creacion de la memoria compartida
+    shm_id = shmget(SHM_KEY, (SIZE_CONTROL + SIZE_LINEA * lineas), IPC_CREAT | 0666); // Creacion de la memoria compartida
     if (shm_id < 0)
     {
-        perror("Error con shmget");
+        perror("Error con shmget memoria");
         exit(1);
     }
 
@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
     shm_ptr = shmat(shm_id, NULL, 0);
     if (shm_ptr == (char *)-1)
     {
-        perror("shmat");
+        perror("shmat escribir");
         exit(1);
     }
 
@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
 
     // Escribir en la memoria compartida
     control->count = 0;
-    control->sem_id = sem_id;
+    control->sem_id = sem_id_control;
 
     // semaforo de control
     init_sem(control->sem_id, 1);
@@ -127,8 +127,8 @@ int main(int argc, char *argv[])
     // Separar el segmento de memoria compartida del espacio de direcciones del proceso
     shmdt(shm_ptr);
 
-    printf("Se ha creado la memoria compartida con ID %d de %d bytes dividida en %d lineas.\n", shm_id, SIZE_LINEA * lineas, lineas);
-    printf("Se han creado %d semaforos para la memoria.\n", N_SEMAPHORES * lineas);
+    printf("Se ha creado la memoria compartida con ID %d de %d bytes dividida en %d lineas.\n", shm_id, SIZE_LINEA * lineas + SIZE_CONTROL, lineas);
+    printf("Se han creado %d semaforos para la memoria.\n", N_SEMAPHORES);
     printf("Se ha creado un semaforo de control.\n");
 
     return 0;
