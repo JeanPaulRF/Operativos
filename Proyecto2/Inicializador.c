@@ -28,7 +28,6 @@ typedef struct
 {
     Proceso procesos[MAX_PROCESOS];
     int count;
-    int sem_id;
 } Control;
 
 // función auxiliar para inicializar un semáforo
@@ -57,13 +56,15 @@ int main(int argc, char *argv[])
     Control *control;
     char *shm_ptr;
     int sem_id_control, sem_id_memoria, sem_id_readers;
-    int pagesize = getpagesize();
+    int memory_size;
     int i;
 
     printf("-------------BIENVENIDO AL INICIALIZADOR DEL SISTEMA-------------\n\n");
 
     printf("Ingrese el numero de lineas que desea para la memoria compartida: ");
     scanf("%d", &lineas);
+
+    memory_size = SIZE_CONTROL + SIZE_LINEA * lineas;
 
     // crear los semáforos
 
@@ -92,8 +93,15 @@ int main(int argc, char *argv[])
     init_sem(sem_id_memoria, 1);
     init_sem(sem_id_readers, 1);
 
+    // Aumentar el tamaño máximo permitido para la memoria compartida
+    if (sysctlbyname("kernel.shmmax", NULL, NULL, &memory_size, sizeof(memory_size)) == -1)
+    {
+        perror("Error al aumentar el tamaño máximo permitido para la memoria compartida");
+        exit(1);
+    }
+
     // crear la memoria compartida
-    shm_id = shmget(SHM_KEY, (SIZE_CONTROL + SIZE_LINEA * lineas), IPC_CREAT | 0666); // Creacion de la memoria compartida
+    shm_id = shmget(SHM_KEY, memory_size, IPC_CREAT | 0666); // Creacion de la memoria compartida
     if (shm_id < 0)
     {
         perror("Error con shmget memoria");
