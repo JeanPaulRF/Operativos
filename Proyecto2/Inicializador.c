@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/types.h>
-#include <sys/sysctl.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <sys/sem.h>
@@ -11,15 +10,14 @@
 #define SEM_KEY_CONTROL 6666
 #define SEM_KEY_MEMORIA 7777
 #define SEM_KEY_READERS 8888
-#define SIZE_LINEA 36
+#define SIZE_LINEA 40
 #define N_SEMAPHORES 2
-#define MAX_PROCESOS 30
-#define SIZE_CONTROL (int)sizeof(Control)
+#define MAX_PROCESOS 10
+#define SIZE_CONTROL sizeof(Control)
 
 typedef struct
 {
-    int pid_logico;
-    int pid_fisico;
+    int pid;
     int tipo;   // 0 = reader, 1 = writer, 2 = reader egoista
     int estado; // 0 = bloqueado, 1 = dormido, 2 = ejecutando
 } Proceso;
@@ -60,27 +58,6 @@ int main(int argc, char *argv[])
     int memory_size;
     int i;
 
-    int old_val, new_val;
-    size_t old_size = sizeof(old_val), new_size = sizeof(new_val);
-    int name[3] = {CTL_KERN, KERN_SHMMAX, 0};
-
-    // Obtiene el valor actual
-    if (sysctl(name, 2, &old_val, &old_size, NULL, 0) == -1)
-    {
-        perror("Error al obtener el valor actual");
-        exit(EXIT_FAILURE);
-    }
-
-    // Define el nuevo valor
-    new_val = 100000000; // 100 MB
-
-    // Cambia el valor
-    if (sysctl(name, 2, NULL, &new_size, &new_val, sizeof(new_val)) == -1)
-    {
-        perror("Error al cambiar el valor");
-        exit(EXIT_FAILURE);
-    }
-
     printf("-------------BIENVENIDO AL INICIALIZADOR DEL SISTEMA-------------\n\n");
 
     printf("Ingrese el numero de lineas que desea para la memoria compartida: ");
@@ -115,13 +92,6 @@ int main(int argc, char *argv[])
     init_sem(sem_id_memoria, 1);
     init_sem(sem_id_readers, 1);
 
-    // Aumentar el tamaño máximo permitido para la memoria compartida
-    if (sysctlbyname("kernel.shmmax", NULL, NULL, &memory_size, sizeof(memory_size)) == -1)
-    {
-        perror("Error al aumentar el tamaño máximo permitido para la memoria compartida");
-        exit(1);
-    }
-
     // crear la memoria compartida
     shm_id = shmget(SHM_KEY, memory_size, IPC_CREAT | 0666); // Creacion de la memoria compartida
     if (shm_id < 0)
@@ -151,10 +121,9 @@ int main(int argc, char *argv[])
 
     // Escribir en la memoria compartida
     control->count = 0;
-    control->sem_id = sem_id_control;
 
     // semaforo de control
-    init_sem(control->sem_id, 1);
+    init_sem(sem_id_control, 1);
 
     // Separar el segmento de memoria compartida del espacio de direcciones del proceso
     shmdt(shm_ptr);
