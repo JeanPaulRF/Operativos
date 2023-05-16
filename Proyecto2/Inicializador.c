@@ -7,7 +7,6 @@
 #include <sys/shm.h>
 #include <sys/sem.h>
 
-#define SHM_KEY 1234
 #define SEM_KEY_CONTROL 6666
 #define SEM_KEY_MEMORIA 7777
 #define SEM_KEY_READERS 8888
@@ -29,6 +28,7 @@ typedef struct
 {
     Proceso procesos[MAX_PROCESOS];
     int count;
+    int lineas;
 } Control;
 
 // función auxiliar para inicializar un semáforo
@@ -60,33 +60,53 @@ int main(int argc, char *argv[])
     int memory_size;
     int i;
 
-    int old_val, new_val;
-    size_t old_size = sizeof(old_val), new_size = sizeof(new_val);
-    int name[3] = {CTL_KERN, KERN_SHMMAX, 0};
-
-    // Obtiene el valor actual
-    if (sysctl(name, 2, &old_val, &old_size, NULL, 0) == -1)
-    {
-        perror("Error al obtener el valor actual");
-        exit(EXIT_FAILURE);
-    }
-
-    // Define el nuevo valor
-    new_val = 100000000; // 100 MB
-
-    // Cambia el valor
-    if (sysctl(name, 2, NULL, &new_size, &new_val, sizeof(new_val)) == -1)
-    {
-        perror("Error al cambiar el valor");
-        exit(EXIT_FAILURE);
-    }
-
     printf("-------------BIENVENIDO AL INICIALIZADOR DEL SISTEMA-------------\n\n");
 
     printf("Ingrese el numero de lineas que desea para la memoria compartida: ");
     scanf("%d", &lineas);
 
     memory_size = SIZE_CONTROL + SIZE_LINEA * lineas;
+
+    key_t SHM_KEY = ftok("/tmp/memoria_compartida", 'R');
+    if (key == -1)
+    {
+        perror("ftok");
+        exit(1);
+    }
+
+    // crear la memoria compartida
+    shm_id = shmget(SHM_KEY, memory_size, IPC_CREAT | 0666); // Creacion de la memoria compartida
+    if (shm_id < 0)
+    {
+        perror("Error con shmget memoria");
+        exit(1);
+    }
+
+    // Adjuntar la memoria compartida al espacio de direcciones del proceso
+    mem = shmat(shm_id, NULL, 0);
+    if (mem == (void *)-1)
+    {
+        perror("shmat failed");
+        exit(EXIT_FAILURE);
+    }
+
+    // Inicializar el bloque de control
+    for (i = 0; i < SIZE_CONTROL / sizeof(int); i++)
+    {
+        mem[i] = i;
+    }
+
+    // Inicializar los bloques de las líneas
+    for (i = 0; i < lineas; i++)
+    {
+        for (j = 0; j < SIZE_LINEA / sizeof(int); j++)
+        {
+            mem[SIZE_CONTROL / sizeof(int) + i * SIZE_LINEA / sizeof(int) + j] = i * SIZE_LINEA / sizeof(int) + j;
+        }
+    }
+
+    // Separar el segmento de memoria compartida del espacio de direcciones del proceso
+    shmdt(mem);
 
     // crear los semáforos
 
@@ -114,27 +134,7 @@ int main(int argc, char *argv[])
     // inicializar los semáforos
     init_sem(sem_id_memoria, 1);
     init_sem(sem_id_readers, 1);
-
-    // Aumentar el tamaño máximo permitido para la memoria compartida
-    if (sysctlbyname("kernel.shmmax", NULL, NULL, &memory_size, sizeof(memory_size)) == -1)
-    {
-        perror("Error al aumentar el tamaño máximo permitido para la memoria compartida");
-        exit(1);
-    }
-
-    // crear la memoria compartida
-    shm_id = shmget(SHM_KEY, memory_size, IPC_CREAT | 0666); // Creacion de la memoria compartida
-    if (shm_id < 0)
-    {
-        perror("Error con shmget memoria");
-        exit(1);
-    }
-
-    // inicializar la memoria compartida
-    for (i = 0; i < lineas; i++)
-    {
-        mem[i] = 0;
-    }
+    init_sem(sem_id_control, 1);
 
     // Escribir el control
 
@@ -151,10 +151,7 @@ int main(int argc, char *argv[])
 
     // Escribir en la memoria compartida
     control->count = 0;
-    control->sem_id = sem_id_control;
-
-    // semaforo de control
-    init_sem(control->sem_id, 1);
+    control->lineas = lineas;
 
     // Separar el segmento de memoria compartida del espacio de direcciones del proceso
     shmdt(shm_ptr);
