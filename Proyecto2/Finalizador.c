@@ -99,6 +99,10 @@ int main()
         exit(EXIT_FAILURE);
     }
 
+    printf("\nSe finalizo la memoria compartida con id %d.\n", shm_id);
+    printf("Se finalizaron los 2 semaforos para la memoria con id %d y %d.\n", semid_memoria, semid_readers);
+    printf("Se finalizo el semaforo con id %d del control de procesos.\n", semid_control);
+
     // Cerrar el archivo de la bitácora
     FILE *fp = fopen("bitacora.txt", "a");
     if (fp == NULL)
@@ -107,6 +111,8 @@ int main()
         exit(EXIT_FAILURE);
     }
     fclose(fp);
+
+    printf("Se cerro el archivo bitacoa.txt.\n");
 
     return 0;
 }

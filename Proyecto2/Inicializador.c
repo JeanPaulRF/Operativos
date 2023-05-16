@@ -163,9 +163,9 @@ int main(int argc, char *argv[])
     // Separar el segmento de memoria compartida del espacio de direcciones del proceso
     shmdt(shm_ptr);
 
-    printf("\nSe ha creado la memoria compartida con ID %d de %d bytes dividida en %d lineas.\n", shm_id, SIZE_LINEA * lineas + SIZE_CONTROL, lineas);
-    printf("Se han creado %d semaforos para acceder a la memoria.\n", N_SEMAPHORES);
-    printf("Se ha creado un semaforo de control.\n");
+    printf("\nSe ha creado la memoria compartida con id %d de %d bytes dividida en %d lineas.\n", shm_id, SIZE_LINEA * lineas + SIZE_CONTROL, lineas);
+    printf("Se han creado %d semaforos para acceder a la memoria con id %d y %d.\n", N_SEMAPHORES, sem_id_memoria, sem_id_readers);
+    printf("Se ha creado un semaforo de control con id %d.\n", sem_id_control);
 
     return 0;
 }
