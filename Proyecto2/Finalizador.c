@@ -34,7 +34,7 @@ int main()
 {
     int shm_id;
 
-    key_t key = ftok("/tmp/memoria_compartida", 'R'); // Clave IPC única
+    key_t key = ftok("memoria_compartida", 'R'); // Clave IPC única
 
     if (key == -1)
     {

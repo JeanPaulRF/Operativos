@@ -65,7 +65,15 @@ int main(int argc, char *argv[])
 
     memory_size = SIZE_CONTROL + SIZE_LINEA * lineas;
 
-    key_t SHM_KEY = ftok("memoria_compartida.txt", 'R');
+    int fd = open("memoria_compartida", O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
+    if (fd == -1)
+    {
+        perror("open");
+        exit(EXIT_FAILURE);
+    }
+    close(fd);
+
+    key_t SHM_KEY = ftok("memoria_compartida", 'R');
     if (SHM_KEY == -1)
     {
         perror("ftok");
