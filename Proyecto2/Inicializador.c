@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/types.h>
-#include <sys/sysctl.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <sys/sem.h>
@@ -10,15 +9,14 @@
 #define SEM_KEY_CONTROL 6666
 #define SEM_KEY_MEMORIA 7777
 #define SEM_KEY_READERS 8888
-#define SIZE_LINEA 36
+#define SIZE_LINEA 40
 #define N_SEMAPHORES 2
-#define MAX_PROCESOS 30
-#define SIZE_CONTROL (int)sizeof(Control)
+#define MAX_PROCESOS 10
+#define SIZE_CONTROL sizeof(Control)
 
 typedef struct
 {
-    int pid_logico;
-    int pid_fisico;
+    int pid;
     int tipo;   // 0 = reader, 1 = writer, 2 = reader egoista
     int estado; // 0 = bloqueado, 1 = dormido, 2 = ejecutando
 } Proceso;
