@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include <sys/sysctl.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <sys/sem.h>
@@ -58,6 +59,27 @@ int main(int argc, char *argv[])
     int sem_id_control, sem_id_memoria, sem_id_readers;
     int memory_size;
     int i;
+
+    int old_val, new_val;
+    size_t old_size = sizeof(old_val), new_size = sizeof(new_val);
+    int name[3] = {CTL_KERN, KERN_SHMMAX, 0};
+
+    // Obtiene el valor actual
+    if (sysctl(name, 2, &old_val, &old_size, NULL, 0) == -1)
+    {
+        perror("Error al obtener el valor actual");
+        exit(EXIT_FAILURE);
+    }
+
+    // Define el nuevo valor
+    new_val = 100000000; // 100 MB
+
+    // Cambia el valor
+    if (sysctl(name, 2, NULL, &new_size, &new_val, sizeof(new_val)) == -1)
+    {
+        perror("Error al cambiar el valor");
+        exit(EXIT_FAILURE);
+    }
 
     printf("-------------BIENVENIDO AL INICIALIZADOR DEL SISTEMA-------------\n\n");
 
