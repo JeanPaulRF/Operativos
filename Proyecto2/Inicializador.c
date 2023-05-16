@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
     char *shm_ptr;
     int sem_id_control, sem_id_memoria, sem_id_readers;
     int memory_size;
-    int i;
+    int i, j;
 
     printf("-------------BIENVENIDO AL INICIALIZADOR DEL SISTEMA-------------\n\n");
 
@@ -65,8 +65,8 @@ int main(int argc, char *argv[])
 
     memory_size = SIZE_CONTROL + SIZE_LINEA * lineas;
 
-    key_t SHM_KEY = ftok("/tmp/memoria_compartida", 'R');
-    if (key == -1)
+    key_t SHM_KEY = ftok("memoria_compartida.txt", 'R');
+    if (SHM_KEY == -1)
     {
         perror("ftok");
         exit(1);

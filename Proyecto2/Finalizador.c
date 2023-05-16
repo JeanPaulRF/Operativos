@@ -6,7 +6,6 @@
 #include <sys/shm.h>
 #include <sys/sem.h>
 
-#define SHM_KEY 1234
 #define SEM_KEY_CONTROL 6666
 #define SEM_KEY_MEMORIA 7777
 #define SEM_KEY_READERS 8888
@@ -44,7 +43,7 @@ int main()
     }
 
     shm_id = shmget(key, 0, 0);
-    if (shmid == -1)
+    if (shm_id == -1)
     {
         perror("shmget");
         exit(EXIT_FAILURE);
@@ -82,7 +81,7 @@ int main()
         exit(EXIT_FAILURE);
     }
 
-    if (semctl(semid_control, 0, IPC_RMID, ) == -1)
+    if (semctl(semid_control, 0, IPC_RMID) == -1)
     {
         perror("semctl");
         exit(EXIT_FAILURE);
