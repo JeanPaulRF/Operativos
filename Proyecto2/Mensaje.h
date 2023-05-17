@@ -1,5 +1,5 @@
-#include <stdio.h>
-#include <stdlib.h>
+#ifndef MENSAJE_H
+#define MENSAJE_H
 
 typedef struct
 {
@@ -13,3 +13,5 @@ typedef struct
     int linea;
     int mensaje; // 0 vacio, 1 lleno
 } Mensaje;
+
+#endif // MENSAJE_H

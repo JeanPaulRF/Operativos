@@ -1,4 +1,6 @@
-#include "Mensaje.c"
+#include <stdio.h>
+#include <stdlib.h>
+#include "Mensaje.h"
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
@@ -7,6 +9,7 @@
 #define SHM_KEY 1234
 #define SEM_KEY_CONTROL 6666
 #define SEM_KEY_MEMORIA 7777
+#define MAX_PROCESOS 100
 #define SIZE_CONTROL (int)sizeof(Control) // tamaño de la estructura
 
 typedef struct
@@ -40,7 +43,7 @@ void sem_wait(int sem_id)
     sb.sem_op = -1; // Operación wait (P)
     sb.sem_flg = 0; // Sin banderas adicionales
 
-    semop(semid, &sb, 1);
+    semop(sem_id, &sb, 1);
 }
 
 // Función para realizar la operación signal (V) en el semáforo
@@ -56,12 +59,14 @@ void sem_signal(int sem_id)
 
 void estado_memoria()
 {
-    struct Mensaje *mensajes = (struct Mensaje *)shmat(shm_id, NULL, 0);
-    if (mensaje == (void *)-1)
+    void* memoria = shmat(shm_id, NULL, 0);
+    if (memoria == (void *)-1)
     {
         perror("shmat");
         exit(1);
     }
+    
+    Mensaje* mensajes = (Mensaje*)memoria;
 
     // wait semaforo memoria
     sem_wait(semid_memoria);
@@ -69,7 +74,7 @@ void estado_memoria()
     // Extraer los datos de memoria
     for (int i = 0; i < lineas; i++)
     {
-        struct Mensaje *mensaje = &mensajes[i];
+        Mensaje* mensaje = &(mensajes[i]);
 
         if (mensaje == NULL)
             printf("Linea %d vacia\n", i);
@@ -85,18 +90,18 @@ void estado_memoria()
     // signal semaforo memoria
     sem_signal(semid_memoria);
 
-    if (shmdt(mensaje) == -1)
+    if (shmdt(memoria) == -1)
     {
         perror("shmdt");
         exit(1);
     }
-
+	menu();
     return;
 }
 
 void estado_procesos(int tipo)
 {
-    struct Control *control = (struct Control *)shmat(shm_id, NULL, 0);
+    Control *control = (struct Control *)shmat(shm_id, NULL, 0);
     if (control == (void *)-1)
     {
         perror("shmat");
@@ -108,7 +113,7 @@ void estado_procesos(int tipo)
 
     // Extraer los datos de control
     int count = control->count;
-    struct Proceso *procesos = control->procesos;
+    Proceso *procesos = control->procesos;
 
     // signal semaforo control
     sem_signal(semid_control);
@@ -129,6 +134,7 @@ void estado_procesos(int tipo)
             printf("ESTADO: %d\n", estados[procesos[i].estado]);
         }
     }
+	menu();
 
     return;
 }
@@ -143,12 +149,13 @@ void menu()
     printf("4. Ver estado de los Readers Egoistas\n");
     printf("5. Ver estado de todos los procesos\n");
     printf("6. Salir\n");
-    scanf("Elija una opcion: %d", &opcion);
+    printf("\nElija una opcion: ");
+    scanf("%d", &opcion);
 
     switch (opcion)
     {
     case 1:
-        printf("Estado de la memoria compartida:\n\n");
+        printf("\nEstado de la memoria compartida:\n\n");
         estado_memoria();
         break;
     case 2:
@@ -167,17 +174,16 @@ void menu()
         printf("\nEstado de todos los procesos:\n\n");
         estado_procesos(-1);
         break;
-    case 6:
+    default:
         printf("\nSaliendo del programa...\n\n");
-        return;
+        break;
     }
-
-    menu();
+    return;
 }
 
 int main()
 {
-    key_t key = ftok("memoria_compartida", SHM_KEY); // usar la misma clave que en el otro programa
+    key_t key = ftok("memoria_compartida", 'R'); // usar la misma clave que en el otro programa
     if (key == -1)
     {
         perror("ftok");
@@ -194,7 +200,7 @@ int main()
     // wait semaforo control
     sem_wait(semid_control);
 
-    struct Control *control = (struct Control *)shmat(shm_id, NULL, 0);
+    Control *control = (struct Control *)shmat(shm_id, NULL, 0);
     if (control == (void *)-1)
     {
         perror("shmat");

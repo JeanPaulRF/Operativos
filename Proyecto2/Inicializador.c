@@ -12,7 +12,7 @@
 #define SEM_KEY_READERS 8888
 #define SIZE_LINEA 40
 #define N_SEMAPHORES 2
-#define MAX_PROCESOS 10
+#define MAX_PROCESOS 100
 #define SIZE_CONTROL sizeof(Control)
 
 typedef struct
