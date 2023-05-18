@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include "Mensaje.h"
+#include "Reader.c"
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
@@ -53,6 +54,7 @@ int main(int argc, char *argv[])
 {
     int shm_id;
     int lineas;
+	int cantLectores;
     void *mem;
     Control *control;
     char *shm_ptr;
@@ -64,8 +66,11 @@ int main(int argc, char *argv[])
 
     printf("Ingrese el numero de lineas que desea para la memoria compartida: ");
     scanf("%d", &lineas);
-
-    memory_size = SIZE_CONTROL + SIZE_LINEA * lineas;
+	
+	memory_size = SIZE_CONTROL + SIZE_LINEA * lineas;
+	
+	printf("Ingrese el numero de procesos lectores: ");
+	scanf("%d", &cantLectores); 	
 
     int fd = open("memoria_compartida", O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
     if (fd == -1)
@@ -157,6 +162,24 @@ int main(int argc, char *argv[])
     // Escribir en la memoria compartida
     control->count = 0;
     control->lineas = lineas;
+
+	// Crear procesos lectores
+    for (int i = 0; i < cantLectores; i++) {
+        pid_t pid = fork();
+        if (pid == -1) {
+            perror("fork");
+            return 1;
+        } else if (pid == 0) {
+            // Código del proceso hijo (lector)
+            reader(i, 2, 2, SIZE_LINEA); // Ejemplo de tiempo de lectura y tiempo de dormir
+            exit(0);
+        }
+    }
+	
+	// Esperar a que todos los procesos lectores finalicen
+    for (int i = 0; i < cantLectores; i++) {
+        wait(NULL);
+    }
 
     // Separar el segmento de memoria compartida del espacio de direcciones del proceso
     shmdt(shm_ptr);

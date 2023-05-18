@@ -5,9 +5,9 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <sys/sem.h>
-#include "Inicializador.c"
+#include <string.h>
 
-#define SHM_KEY 9999
+//#define SHM_KEY 9999
 #define SEM_KEY 1234
 #define SEM_KEY2 5678
 
@@ -77,9 +77,9 @@ void sem_signal(int sem_id)
 
     semop(sem_id, &sb, 1);
 }
-void reader(int lector_id, int tiempo_lectura, int tiempo_dormir){
+void reader(int lector_id, int tiempo_lectura, int tiempo_dormir, int SIZE_LINEA){
 		// obtener el identificador de la memoria compartida
-    int shm_id = shmget(SHM_KEY, SIZE_LINEA, 0666);		// SIZE_LINEA -> era SHARED_MEMORY_SIZE
+    int shm_id = shmget(9999, SIZE_LINEA, 0666);		// SIZE_LINEA -> era SHARED_MEMORY_SIZE	9999 -> SHM_KEY
     if (shm_id == -1) {
         perror("shmget");
         exit(1);
@@ -106,9 +106,9 @@ void reader(int lector_id, int tiempo_lectura, int tiempo_dormir){
 			//if (semop(sem_id, &sem_lock, 1) == -1) {
 			//		perror("semop");
 			//		exit(1);
-			}//
+			//}
 			
-			sem_wait(sem_id)
+			sem_wait(sem_id);
 
 			// leer todo el mensaje en memoria
 			//printf("Mensaje recibido: %s\n", shm_addr);
