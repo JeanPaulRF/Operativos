@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
 {
     int shm_id;
     int lineas;
-    int *mem;
+    void *mem;
     Control *control;
     char *shm_ptr;
     int sem_id_control, sem_id_memoria, sem_id_readers;
@@ -97,18 +97,15 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    // Inicializar el bloque de control
-    for (i = 0; i < SIZE_CONTROL / sizeof(int); i++)
-    {
-        mem[i] = i;
-    }
+    Mensaje *mensajes = (Mensaje *)mem;
 
     // Inicializar los bloques de las líneas
     for (i = 0; i < lineas; i++)
     {
         for (j = 0; j < SIZE_LINEA / sizeof(int); j++)
         {
-            mem[SIZE_CONTROL / sizeof(int) + i * SIZE_LINEA / sizeof(int) + j] = i * SIZE_LINEA / sizeof(int) + j;
+            Mensaje mensaje = {0};
+            mensajes[i] = mensaje;
         }
     }
 
