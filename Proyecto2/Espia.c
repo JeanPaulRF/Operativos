@@ -59,14 +59,14 @@ void sem_signal(int sem_id)
 
 void estado_memoria()
 {
-    void* memoria = shmat(shm_id, NULL, 0);
+    void *memoria = shmat(shm_id, NULL, 0);
     if (memoria == (void *)-1)
     {
         perror("shmat");
         exit(1);
     }
-    
-    Mensaje* mensajes = (Mensaje*)memoria;
+
+    Mensaje *mensajes = (Mensaje *)memoria;
 
     // wait semaforo memoria
     sem_wait(semid_memoria);
@@ -74,16 +74,16 @@ void estado_memoria()
     // Extraer los datos de memoria
     for (int i = 0; i < lineas; i++)
     {
-        Mensaje* mensaje = &(mensajes[i]);
+        Mensaje mensaje = mensajes[i];
 
-        if (mensaje == NULL)
+        if (mensaje.mensaje = 0)
             printf("Linea %d vacia\n", i);
         else
         {
             printf("Linea: %d - ", i);
-            printf("PID: %d - ", mensaje->pid);
-            printf("Fecha: %d/%d/%d - ", mensaje->day, mensaje->month, mensaje->year);
-            printf("Hora: %d:%d:%d\n", mensaje->hour, mensaje->minute, mensaje->second);
+            printf("PID: %d - ", mensaje.pid);
+            printf("Fecha: %d/%d/%d - ", mensaje.day, mensaje.month, mensaje.year);
+            printf("Hora: %d:%d:%d\n", mensaje.hour, mensaje.minute, mensaje.second);
         }
     }
 
@@ -95,7 +95,7 @@ void estado_memoria()
         perror("shmdt");
         exit(1);
     }
-	menu();
+    menu();
     return;
 }
 
@@ -134,7 +134,7 @@ void estado_procesos(int tipo)
             printf("ESTADO: %d\n", estados[procesos[i].estado]);
         }
     }
-	menu();
+    menu();
 
     return;
 }
