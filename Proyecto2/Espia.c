@@ -76,7 +76,7 @@ void estado_memoria()
     {
         Mensaje mensaje = mensajes[i];
 
-        if (mensaje.mensaje = 0)
+        if (mensaje.mensaje == 0)
             printf("Linea %d vacia\n", i);
         else
         {

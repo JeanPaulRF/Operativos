@@ -112,7 +112,7 @@ int main()
     }
     fclose(fp);
 
-    printf("Se cerro el archivo bitacoa.txt.\n");
+    printf("Se cerro el archivo bitacora.txt.\n");
 
     return 0;
 }
