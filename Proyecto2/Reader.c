@@ -56,6 +56,27 @@ int main(){
 // semget(key_t key, int nsems, int semflg);
 // semop(int semid, struct sembuf *sops, size_t nsops);
 
+// Función para realizar la operación wait (P) en el semáforo
+void sem_wait(int sem_id)
+{
+    struct sembuf sb;
+    sb.sem_num = 0; // Número del semáforo en el conjunto
+    sb.sem_op = -1; // Operación wait (P)
+    sb.sem_flg = 0; // Sin banderas adicionales
+
+    semop(sem_id, &sb, 1);
+}
+
+// Función para realizar la operación signal (V) en el semáforo
+void sem_signal(int sem_id)
+{
+    struct sembuf sb;
+    sb.sem_num = 0; // Número del semáforo en el conjunto
+    sb.sem_op = 1;  // Operación signal (V)
+    sb.sem_flg = 0; // Sin banderas adicionales
+
+    semop(sem_id, &sb, 1);
+}
 void reader(int lector_id, int tiempo_lectura, int tiempo_dormir){
 		// obtener el identificador de la memoria compartida
     int shm_id = shmget(SHM_KEY, SIZE_LINEA, 0666);		// SIZE_LINEA -> era SHARED_MEMORY_SIZE
@@ -80,11 +101,14 @@ void reader(int lector_id, int tiempo_lectura, int tiempo_dormir){
 		// lecturas de memoria
 		while(1) {
 			// bloqueo del semáforo
-			struct sembuf sem_lock = {0, -1, 0};		// {id del semaforo, bloqueo- o desbloqueo+, flag para comportamiento normal }
-			if (semop(sem_id, &sem_lock, 1) == -1) {
-					perror("semop");
-					exit(1);
-			}
+			
+			//struct sembuf sem_lock = {0, -1, 0};		// {id del semaforo, bloqueo- o desbloqueo+, flag para comportamiento normal }
+			//if (semop(sem_id, &sem_lock, 1) == -1) {
+			//		perror("semop");
+			//		exit(1);
+			}//
+			
+			sem_wait(sem_id)
 
 			// leer todo el mensaje en memoria
 			//printf("Mensaje recibido: %s\n", shm_addr);
@@ -93,12 +117,15 @@ void reader(int lector_id, int tiempo_lectura, int tiempo_dormir){
       printf("Lector %d leyendo: %s\n", lector_id, shm_addr);
 
       // desbloqueo del semáforo
-      struct sembuf sem_unlock = {0, 1, 0};
-      if (semop(sem_id, &sem_unlock, 1) == -1) {
-          perror("semop");
-          exit(1);
-      }
-
+	  
+      //struct sembuf sem_unlock = {0, 1, 0};
+      //if (semop(sem_id, &sem_unlock, 1) == -1) {
+      //    perror("semop");
+      //    exit(1);
+      //}
+			sem_signal(sem_id);
+			
+			
       // sleep deseado
       sleep(tiempo_lectura);
 
