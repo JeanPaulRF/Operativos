@@ -52,7 +52,8 @@ void* pwriter(void* arg){
     // si esta despierto busca una linea vacia
     // si esta dormido, simplemente sleep
 
-    // cuando finalize : pthread_exit(NULL);
+    // cuando finalize : 
+    pthread_exit(NULL);
 
 }
 
@@ -102,23 +103,25 @@ int main(int argc, char *argv[])
             exit(EXIT_FAILURE);
         }
     }
+    
     printf("\nVa por aqui 1\n");
     for(int i = 0; i < NE; i++){
         printf("\nVa por aqui 2\n");
-        if(pthread_join(&hilos[i], NULL) != 0) {
+        if(pthread_join(hilos[i], NULL) != 0) {
             perror("pthread_join");
             exit(EXIT_FAILURE);
         }
         printf("\nVa por aqui 3\n");
     }
+    
     /* Por aqui deberia registrar los procesos al Control */
 
     /* Un pequeño menu para ver el progreso de los escritores */
     
     while(bandera01 == 1){
-        printf("--> Opciones: ");
-        printf("----> 0) Exit: ");
-        printf("----> 1) Mostrar Estado: ");
+        printf("\n--> Opciones: \n");
+        printf("----> 0) Exit: \n");
+        printf("----> 1) Mostrar Estado: \n");
         scanf("%d", &opcion);
 
         switch (opcion)
