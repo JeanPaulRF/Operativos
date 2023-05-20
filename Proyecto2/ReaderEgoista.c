@@ -77,6 +77,15 @@ int main(int argc, char *argv[]) {
         exit(EXIT_FAILURE);
     }
 
+    // Obtener el ID de los semáforos
+    sem_id_readers = semget(SEM_KEY_READERS, 0, 0);
+    if (sem_id_readers == -1) {
+        perror("semget readers");
+        exit(EXIT_FAILURE);
+    }
+
+    //wait
+
     // Adjuntar la memoria compartida al espacio de direcciones del proceso
     mem = shmat(shm_id, NULL, 0);
     if (mem == (void *)-1) {
@@ -86,15 +95,8 @@ int main(int argc, char *argv[]) {
 
     Mensaje *mensajes = (Mensaje *)mem;
 
-    // Obtener el ID de los semáforos
-    sem_id_readers = semget(SEM_KEY_READERS, 0, 0);
-    if (sem_id_readers == -1) {
-        perror("semget readers");
-        exit(EXIT_FAILURE);
-    }
-
     // Generar el valor inicial del semáforo readers
-    init_sem(sem_id_readers, 1);
+    //init_sem(sem_id_readers, 1);
 
     // Generar la semilla para la generación de números aleatorios
     srand(time(NULL));

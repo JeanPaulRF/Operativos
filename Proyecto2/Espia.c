@@ -197,6 +197,20 @@ int main()
         exit(1);
     }
 
+    semid_control = semget(SEM_KEY_CONTROL, 1, 0666);
+    if (semid_control == -1)
+    {
+        perror("Error al acceder al semáforo control");
+        exit(1);
+    }
+
+    semid_memoria = semget(SEM_KEY_MEMORIA, 1, 0666);
+    if (semid_control == -1)
+    {
+        perror("Error al acceder al semáforo memoria");
+        exit(1);
+    }
+
     // wait semaforo control
     sem_wait(semid_control);
 
@@ -216,20 +230,6 @@ int main()
     if (shmdt(control) == -1)
     {
         perror("shmdt");
-        exit(1);
-    }
-
-    semid_control = semget(SEM_KEY_CONTROL, 1, 0666);
-    if (semid_control == -1)
-    {
-        perror("Error al acceder al semáforo control");
-        exit(1);
-    }
-
-    semid_memoria = semget(SEM_KEY_MEMORIA, 1, 0666);
-    if (semid_control == -1)
-    {
-        perror("Error al acceder al semáforo memoria");
         exit(1);
     }
 
