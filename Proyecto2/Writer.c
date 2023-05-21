@@ -141,7 +141,7 @@ void *pwriter(void *arg)
                 exit(1);
             }
 
-            Mensaje *mensajes = (Mensaje *)memoria + SIZE_CONTROL;
+            Mensaje *mensajes =  (Mensaje *)(memoria + sizeof(Control));
 
             // wait semaforo memoria
             sem_wait(semid_memoria);
@@ -225,6 +225,37 @@ void *pwriter(void *arg)
             sem_signal(semid_control);
         }
         sleep(1);
+
+        // vista de la memoria
+        void *memoria = shmat(shm_id, NULL, 0);
+        if (memoria == (void *)-1)
+        {
+            perror("shmat");
+            exit(1);
+        }
+        Mensaje *mensajes =  (Mensaje *)(memoria + sizeof(Control));
+
+        // wait semaforo memoria
+        sem_wait(semid_memoria);
+
+        // Extraer los datos de memoria
+        for (int i = 0; i < lineas; i++)
+        {
+            Mensaje mensaje = mensajes[i];
+
+            printf(" PID: %d\n Linea: %d\n Mensaje: %d\n", mensaje.pid, mensaje.linea, mensaje.mensaje);
+            printf(" Fecha actual: %d-%02d-%02d\n", mensaje.year, mensaje.month, mensaje.day);
+            printf(" Hora actual: %02d:%02d:%02d\n", mensaje.hour, mensaje.minute, mensaje.second);
+        }
+
+        // signal semaforo memoria
+        sem_signal(semid_memoria);
+        if (shmdt(memoria) == -1)
+        {
+            perror("shmdt");
+            exit(1);
+        }
+
     }
 
     // cuando finalize :
