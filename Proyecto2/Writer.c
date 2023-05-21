@@ -43,8 +43,6 @@ int shm_id;
 int semid_control;
 int semid_memoria;
 int lineas;
-Control *control;
-Mensaje *mensajes;
 
 // Función para realizar la operación wait (P) en el semáforo
 void sem_wait(int sem_id)
@@ -93,7 +91,7 @@ Mensaje create_message(int pid)
 /* Describe el comportamiento de todo proceso escritor */
 void *pwriter(void *arg)
 {
-
+	void *memoria;
     parametrosEscritor *parametros = (parametrosEscritor *)arg;
     int id = parametros->pid;
     // printf("\n--> ID: %d\n", parametros->pid);
@@ -107,6 +105,15 @@ void *pwriter(void *arg)
     // ciclo while(1)
     // si esta despierto busca una linea vacia
     // si esta dormido, simplemente sleep
+    memoria = shmat(shm_id, NULL, 0);
+    if (memoria == (void *)-1)
+    {
+        perror("shmat");
+        exit(1);
+    }
+
+    Control *control = (Control *)memoria;
+    
     sem_wait(semid_control);
 
     // Manejar datos de control
@@ -114,6 +121,12 @@ void *pwriter(void *arg)
 
     // signal semaforo control
     sem_signal(semid_control);
+    
+    if (shmdt(memoria) == -1)
+    {
+        perror("shmdt");
+        exit(1);
+    }
 
     while (1)
     {
@@ -123,6 +136,14 @@ void *pwriter(void *arg)
         if (pw_tiempo_escribir > 0)
         {
             // comportamiento cuando esta despierto
+            memoria = shmat(shm_id, NULL, 0);
+	    if (memoria == (void *)-1)
+	    {
+		perror("shmat");
+		exit(1);
+	    }
+
+	    Control *control = (Control *)memoria;
 
             // actualizar estado
             sem_wait(semid_control);
@@ -132,9 +153,15 @@ void *pwriter(void *arg)
 
             // signal semaforo control
             sem_signal(semid_control);
+            
+            if (shmdt(memoria) == -1)
+	    {
+		perror("shmdt");
+		exit(1);
+	    }
 
             // entra en memoria
-            void *memoria = shmat(shm_id, NULL, 0);
+            memoria = shmat(shm_id, NULL, 0);
             if (memoria == (void *)-1)
             {
                 perror("shmat");
@@ -200,6 +227,15 @@ void *pwriter(void *arg)
             // relleno el tiempo de dormir
             pw_tiempo_dormir = parametros->tiempo_dormir;
             estado = 0; // lo paso al estado de Descanso
+            
+            memoria = shmat(shm_id, NULL, 0);
+	    if (memoria == (void *)-1)
+	    {
+		perror("shmat");
+		exit(1);
+	    }
+
+	    Control *control = (Control *)memoria;
 
             sem_wait(semid_control);
 
@@ -208,6 +244,12 @@ void *pwriter(void *arg)
 
             // signal semaforo control
             sem_signal(semid_control);
+            
+            if (shmdt(memoria) == -1)
+	    {
+		perror("shmdt");
+		exit(1);
+	    }
         }
         else if (pw_tiempo_dormir == 0 && estado == 0)
         {
@@ -216,6 +258,15 @@ void *pwriter(void *arg)
             pw_tiempo_escribir = parametros->tiempo_escribir;
             estado = 1; // lo paso al estado de Escritura
 
+            memoria = shmat(shm_id, NULL, 0);
+	    if (memoria == (void *)-1)
+	    {
+		perror("shmat");
+		exit(1);
+	    }
+
+	    Control *control = (Control *)memoria;
+
             sem_wait(semid_control);
 
             // Manejar datos de control
@@ -223,6 +274,12 @@ void *pwriter(void *arg)
 
             // signal semaforo control
             sem_signal(semid_control);
+            
+            if (shmdt(memoria) == -1)
+	    {
+		perror("shmdt");
+		exit(1);
+	    }
         }
         sleep(1);
 
@@ -308,15 +365,12 @@ int main(int argc, char *argv[])
     }
 
     semid_memoria = semget(SEM_KEY_MEMORIA, 1, 0666);
-    if (semid_control == -1)
+    if (semid_memoria == -1)
     {
         perror("Error al acceder al semáforo memoria");
         exit(1);
     }
-
-    // wait semaforo control
-    sem_wait(semid_control);
-
+    
     void *memoria = shmat(shm_id, NULL, 0);
     if (memoria == (void *)-1)
     {
@@ -324,7 +378,10 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    Control *control = (struct Control *)memoria;
+    Control *control = (Control *)memoria;
+
+    // wait semaforo control
+    sem_wait(semid_control);
 
     // Extraer las lineas de control
     lineas = control->lineas;
@@ -364,7 +421,7 @@ int main(int argc, char *argv[])
             exit(1);
         }
 
-        control = (struct Control *)memoria;
+        control = (Control *)memoria;
 
         // wait semaforo control
         sem_wait(semid_control);
