@@ -102,6 +102,27 @@ void *pwriter(void *arg)
     // ciclo while(1)
     // si esta despierto busca una linea vacia
     // si esta dormido, simplemente sleep
+    sem_wait(semid_control);
+
+    Control *control = (struct Control *)shmat(shm_id, NULL, 0);
+    if (control == (void *)-1)
+    {
+        perror("shmat");
+        exit(1);
+    }
+
+    // Manejar datos de control
+    control->procesos[n].estado = 2;
+
+    // signal semaforo control
+    sem_signal(semid_control);
+
+    if (shmdt(control) == -1)
+    {
+        perror("shmdt");
+        exit(1);
+    }
+
     while (1)
     {
         // printf("\n\n pw_tiempo_escribir : %d \n", pw_tiempo_escribir);
@@ -110,8 +131,124 @@ void *pwriter(void *arg)
         if (pw_tiempo_escribir > 0)
         {
             // comportamiento cuando esta despierto
-            // wait semaforo control
-            /*
+
+            // entra en memoria
+            void *memoria = shmat(shm_id, NULL, 0);
+            if (memoria == (void *)-1)
+            {
+                perror("shmat");
+                exit(1);
+            }
+
+            Mensaje *mensajes = (Mensaje *)memoria;
+
+            sem_wait(semid_control);
+
+            Control *control = (struct Control *)shmat(shm_id, NULL, 0);
+            if (control == (void *)-1)
+            {
+                perror("shmat");
+                exit(1);
+            }
+
+            // Manejar datos de control
+            control->procesos[n].estado = 0;
+
+            // signal semaforo control
+            sem_signal(semid_control);
+
+            if (shmdt(control) == -1)
+            {
+                perror("shmdt");
+                exit(1);
+            }
+
+            // wait semaforo memoria
+            sem_wait(semid_memoria);
+
+            // Extraer los datos de memoria
+            for (int i = 0; i < lineas; i++)
+            {
+                Mensaje mensaje = mensajes[i];
+
+                if (mensaje.mensaje == 0)
+                {
+                    mensaje.pid = new_ms.pid;
+                    mensaje.year = new_ms.year;
+                    mensaje.month = new_ms.month;
+                    mensaje.day = new_ms.day;
+                    mensaje.hour = new_ms.hour;
+                    mensaje.minute = new_ms.minute;
+                    mensaje.second = new_ms.second;
+                    mensaje.mensaje = 1;
+                }
+            }
+
+            // signal semaforo memoria
+            sem_signal(semid_memoria);
+
+            if (shmdt(memoria) == -1)
+            {
+                perror("shmdt");
+                exit(1);
+            }
+
+            printf("\n\n--> Proceso ID: %d\n", new_ms.pid);
+            printf("--> Fecha actual: %d-%02d-%02d\n", new_ms.year, new_ms.month, new_ms.day);
+            printf("--> Hora actual: %02d:%02d:%02d\n", new_ms.hour, new_ms.minute, new_ms.second);
+            // sleep(5);
+            //  manda a avisar al control que esta despierto
+
+            // resto 1 tiempo por accion
+            pw_tiempo_escribir = pw_tiempo_escribir - 1;
+        }
+        else if (pw_tiempo_dormir > 0)
+        {
+            // comportamiento cuando esta dormido
+            printf("----> ZZzzZZ \n");
+            // sleep(5);
+            //  manda a avisar al control que esta dormido
+
+            // resto 1 tiempo por accion
+            pw_tiempo_dormir = pw_tiempo_dormir - 1;
+        }
+
+        // Para el cambio de estado, y rellenar el tiempo.
+        if (pw_tiempo_escribir == 0 && estado == 1)
+        {
+            // si el tiempo de escribir se agoto y estoy en el estado de Escritura
+            // relleno el tiempo de dormir
+            pw_tiempo_dormir = parametros->tiempo_dormir;
+            estado = 0; // lo paso al estado de Descanso
+
+            sem_wait(semid_control);
+
+            Control *control = (struct Control *)shmat(shm_id, NULL, 0);
+            if (control == (void *)-1)
+            {
+                perror("shmat");
+                exit(1);
+            }
+
+            // Manejar datos de control
+            control->procesos[n].estado = 1;
+
+            // signal semaforo control
+            sem_signal(semid_control);
+
+            if (shmdt(control) == -1)
+            {
+                perror("shmdt");
+                exit(1);
+            }
+        }
+        else if (pw_tiempo_dormir == 0 && estado == 0)
+        {
+            // si el tiempo de dormir se agoto y estoy en el estado de Descanso
+            // relleno el tiempo de escribir
+            pw_tiempo_escribir = parametros->tiempo_escribir;
+            estado = 1; // lo paso al estado de Escritura
+
             sem_wait(semid_control);
 
             Control *control = (struct Control *)shmat(shm_id, NULL, 0);
@@ -132,81 +269,8 @@ void *pwriter(void *arg)
                 perror("shmdt");
                 exit(1);
             }
-
-            // entra en memoria
-            void *memoria = shmat(shm_id, NULL, 0);
-            if (memoria == (void *)-1)
-            {
-                perror("shmat");
-                exit(1);
-            }
-
-            Mensaje *mensajes = (Mensaje *)memoria;
-
-            // wait semaforo memoria
-            sem_wait(semid_memoria);
-
-            // Extraer los datos de memoria
-            for (int i = 0; i < lineas; i++)
-            {
-                Mensaje mensaje = mensajes[i];
-
-                if (mensaje.mensaje == 0)
-                    printf("Linea %d vacia\n", i);
-                else
-                {
-                    printf("Linea: %d - ", i);
-                    printf("PID: %d - ", mensaje.pid);
-                    printf("Fecha: %d/%d/%d - ", mensaje.day, mensaje.month, mensaje.year);
-                    printf("Hora: %d:%d:%d\n", mensaje.hour, mensaje.minute, mensaje.second);
-                }
-            }
-
-            // signal semaforo memoria
-            sem_signal(semid_memoria);
-
-            if (shmdt(memoria) == -1)
-            {
-                perror("shmdt");
-                exit(1);
-            }
-            */
-
-            printf("\n\n--> Proceso ID: %d\n", new_ms.pid);
-            printf("--> Fecha actual: %d-%02d-%02d\n", new_ms.year, new_ms.month, new_ms.day);
-            printf("--> Hora actual: %02d:%02d:%02d\n", new_ms.hour, new_ms.minute, new_ms.second);
-            sleep(5);
-            // manda a avisar al control que esta despierto
-
-            // resto 1 tiempo por accion
-            pw_tiempo_escribir = pw_tiempo_escribir - 1;
         }
-        else if (pw_tiempo_dormir > 0)
-        {
-            // comportamiento cuando esta dormido
-            printf("----> ZZzzZZ \n");
-            sleep(5);
-            // manda a avisar al control que esta dormido
-
-            // resto 1 tiempo por accion
-            pw_tiempo_dormir = pw_tiempo_dormir - 1;
-        }
-
-        // Para el cambio de estado, y rellenar el tiempo.
-        if (pw_tiempo_escribir == 0 && estado == 1)
-        {
-            // si el tiempo de escribir se agoto y estoy en el estado de Escritura
-            // relleno el tiempo de dormir
-            pw_tiempo_dormir = parametros->tiempo_dormir;
-            estado = 0; // lo paso al estado de Descanso
-        }
-        else if (pw_tiempo_dormir == 0 && estado == 0)
-        {
-            // si el tiempo de dormir se agoto y estoy en el estado de Descanso
-            // relleno el tiempo de escribir
-            pw_tiempo_escribir = parametros->tiempo_escribir;
-            estado = 1; // lo paso al estado de Escritura
-        }
+        sleep(1);
     }
 
     // cuando finalize :
@@ -352,12 +416,3 @@ int main(int argc, char *argv[])
 
     return 0;
 }
-
-/*
-while (1)
-{
-    sem_wait(semA);
-    // Acceder a la memoria compartida para el tipo A
-    sem_post(semA);
-    // Realizar otras tareas
-}*/
