@@ -223,6 +223,7 @@ int main()
 
     // Extraer las lineas de control
     lineas = control->lineas;
+    printf("Lineas: %d", lineas);
 
     // signal semaforo control
     sem_signal(semid_control);

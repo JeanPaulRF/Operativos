@@ -3,6 +3,9 @@
 #include <unistd.h>
 #include <time.h>
 #include <pthread.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+#include <sys/sem.h>
 
 #include "Mensaje.h"
 
@@ -112,7 +115,7 @@ void *pwriter(void *arg)
     }
 
     // Manejar datos de control
-    control->procesos[n].estado = 2;
+    control->procesos[control->count].estado = 2;
 
     // signal semaforo control
     sem_signal(semid_control);
@@ -152,7 +155,7 @@ void *pwriter(void *arg)
             }
 
             // Manejar datos de control
-            control->procesos[n].estado = 0;
+            control->procesos[control->count].estado = 0;
 
             // signal semaforo control
             sem_signal(semid_control);
@@ -231,7 +234,7 @@ void *pwriter(void *arg)
             }
 
             // Manejar datos de control
-            control->procesos[n].estado = 1;
+            control->procesos[control->count].estado = 1;
 
             // signal semaforo control
             sem_signal(semid_control);
@@ -259,7 +262,7 @@ void *pwriter(void *arg)
             }
 
             // Manejar datos de control
-            control->procesos[n].estado = 2;
+            control->procesos[control->count].estado = 2;
 
             // signal semaforo control
             sem_signal(semid_control);
