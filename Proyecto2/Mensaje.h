@@ -1,7 +1,7 @@
 #ifndef MENSAJE_H
 #define MENSAJE_H
 
-typedef struct
+typedef struct //size = 36
 {
     int pid;
     int year;

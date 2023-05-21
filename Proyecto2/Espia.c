@@ -9,7 +9,7 @@
 #define SHM_KEY 1234
 #define SEM_KEY_CONTROL 6666
 #define SEM_KEY_MEMORIA 7777
-#define MAX_PROCESOS 100
+#define MAX_PROCESOS 50
 #define SIZE_CONTROL (int)sizeof(Control) // tamaño de la estructura
 
 typedef struct
@@ -66,7 +66,7 @@ void estado_memoria()
         exit(1);
     }
 
-    Mensaje *mensajes = (Mensaje *)memoria + SIZE_CONTROL;
+    Mensaje *mensajes = (Mensaje *)(memoria + sizeof(Control));
 
     // wait semaforo memoria
     sem_wait(semid_memoria);
@@ -108,7 +108,7 @@ void estado_procesos(int tipo)
         exit(1);
     }
 
-    Control *control = (struct Control *)memoria;
+    Control *control = (Control *)memoria;
 
     // wait semaforo control
     sem_wait(semid_control);
@@ -198,6 +198,8 @@ int main()
         perror("shmget");
         exit(1);
     }
+    
+    printf("Utilizando la memoria compartida id: %d\n\n", shm_id);
 
     semid_control = semget(SEM_KEY_CONTROL, 1, 0666);
     if (semid_control == -1)
@@ -207,7 +209,7 @@ int main()
     }
 
     semid_memoria = semget(SEM_KEY_MEMORIA, 1, 0666);
-    if (semid_control == -1)
+    if (semid_memoria == -1)
     {
         perror("Error al acceder al semáforo memoria");
         exit(1);
@@ -220,14 +222,14 @@ int main()
         exit(1);
     }
 
-    Control *control = (struct Control *)memoria;
+    Control *control = (Control *)memoria;
 
     // wait semaforo control
     sem_wait(semid_control);
 
     // Extraer las lineas de control
     lineas = control->lineas;
-    printf("Lineas: %d", lineas);
+    printf("Lineas: %d\n", lineas);
 
     // signal semaforo control
     sem_signal(semid_control);
