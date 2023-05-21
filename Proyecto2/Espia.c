@@ -66,7 +66,7 @@ void estado_memoria()
         exit(1);
     }
 
-    Mensaje *mensajes = (Mensaje *)memoria;
+    Mensaje *mensajes = (Mensaje *)memoria + SIZE_CONTROL;
 
     // wait semaforo memoria
     sem_wait(semid_memoria);
@@ -101,12 +101,14 @@ void estado_memoria()
 
 void estado_procesos(int tipo)
 {
-    Control *control = (struct Control *)shmat(shm_id, NULL, 0);
-    if (control == (void *)-1)
+    void *memoria = shmat(shm_id, NULL, 0);
+    if (memoria == (void *)-1)
     {
         perror("shmat");
         exit(1);
     }
+
+    Control *control = (struct Control *)memoria;
 
     // wait semaforo control
     sem_wait(semid_control);
@@ -118,7 +120,7 @@ void estado_procesos(int tipo)
     // signal semaforo control
     sem_signal(semid_control);
 
-    if (shmdt(control) == -1)
+    if (shmdt(memoria) == -1)
     {
         perror("shmdt");
         exit(1);
@@ -211,15 +213,17 @@ int main()
         exit(1);
     }
 
-    // wait semaforo control
-    sem_wait(semid_control);
-
-    Control *control = (struct Control *)shmat(shm_id, NULL, 0);
-    if (control == (void *)-1)
+    void *memoria = shmat(shm_id, NULL, 0);
+    if (memoria == (void *)-1)
     {
         perror("shmat");
         exit(1);
     }
+
+    Control *control = (struct Control *)memoria;
+
+    // wait semaforo control
+    sem_wait(semid_control);
 
     // Extraer las lineas de control
     lineas = control->lineas;
@@ -228,7 +232,7 @@ int main()
     // signal semaforo control
     sem_signal(semid_control);
 
-    if (shmdt(control) == -1)
+    if (shmdt(memoria) == -1)
     {
         perror("shmdt");
         exit(1);
