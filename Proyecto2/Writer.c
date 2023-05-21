@@ -42,15 +42,55 @@ Mensaje create_message(int pid){ //recibe el id del proceso que lo crea
 void* pwriter(void* arg){
     parametrosEscritor* parametros = (parametrosEscritor*)arg;
     int id = parametros->pid;
-    int estado = 0; // 1 esta escribiendo, 0 esta dormido
+    id = id + 400;
+    
+    int estado = 1; // 1 esta escribiendo, 0 esta dormido
+    int pw_tiempo_escribir = parametros->tiempo_escribir;
+    int pw_tiempo_dormir = 0;
+
     Mensaje new_ms = create_message(id);
 
-    printf(" Proceso ID: %d\n\n", new_ms.pid);
-    printf(" Fecha actual: %d-%02d-%02d\n", new_ms.year, new_ms.month, new_ms.day);
-    printf(" Hora actual: %02d:%02d:%02d\n", new_ms.hour, new_ms.minute, new_ms.second);
     // ciclo while(1)
     // si esta despierto busca una linea vacia
     // si esta dormido, simplemente sleep
+    while(1){
+        printf("\n\n pw_tiempo_escribir : %d \n", pw_tiempo_escribir);
+        printf(" pw_tiempo_dormir : %d\n\n", pw_tiempo_dormir);
+
+        if(pw_tiempo_escribir > 0){
+            // comportamiento cuando esta despierto
+
+            printf(" Proceso ID: %d\n\n", new_ms.pid);
+            printf(" Fecha actual: %d-%02d-%02d\n", new_ms.year, new_ms.month, new_ms.day);
+            printf(" Hora actual: %02d:%02d:%02d\n", new_ms.hour, new_ms.minute, new_ms.second);
+            sleep(5);
+            // manda a avisar al control que esta despierto
+
+            // resto 1 tiempo por accion
+            pw_tiempo_escribir = pw_tiempo_escribir -1 ;
+        }
+        else if(pw_tiempo_dormir > 0){
+            // comportamiento cuando esta dormido
+            printf("  ZZzzZZ \n");
+            sleep(5);
+            //manda a avisar al control que esta dormido
+            
+            // resto 1 tiempo por accion
+            pw_tiempo_dormir = pw_tiempo_dormir - 1 ;
+        }
+
+        if(pw_tiempo_escribir == 0){
+            // relleno el tiempo de dormir
+            printf("  entra a escribir? \n");
+            pw_tiempo_dormir = parametros->tiempo_dormir;
+            
+        }
+        else if(pw_tiempo_dormir == 0){
+            // relleno el tiempo de escribir
+            printf("  entra a dormir? \n");
+            pw_tiempo_escribir = parametros->tiempo_escribir;
+        }
+    }
 
     // cuando finalize : 
     pthread_exit(NULL);
@@ -66,11 +106,8 @@ int main(int argc, char *argv[])
       SD significa Segundos de Dormir
      */
 
-    Mensaje ms1;
-    int opcion = 0;
-    int bandera01 = 1;
-
-    ms1 = create_message(23987);
+    //Mensaje ms1; // para pruubas
+    //ms1 = create_message(23987);
 
     printf("-------------BIENVENIDO AL PROGRAMA ESCRITOR DEL SISTEMA-------------\n\n");
 
@@ -83,9 +120,11 @@ int main(int argc, char *argv[])
     printf("Ingrese el numero segundos que dormiran ");
     scanf("%d", &SD);
 
+    /* // pruebas
     printf(" Numero de procesos: %d\n Segundos de escritura: %d\n Segundos de descanso: %d\n", NE, SE, SD);
     printf(" Fecha actual: %d-%02d-%02d\n", ms1.year, ms1.month, ms1.day);
     printf(" Hora actual: %02d:%02d:%02d\n", ms1.hour, ms1.minute, ms1.second);
+    */
     // %02d es una especificacion formato, para un numero con menos de dos digitos, que rellene un 0
 
     /* Creacion de los threads */
@@ -94,7 +133,7 @@ int main(int argc, char *argv[])
     for(int i = 0; i < NE; i++){
 
         parametrosEscritor par_Writer;
-        par_Writer.pid = 400 + i;
+        par_Writer.pid = i;
         par_Writer.tiempo_escribir = SE;
         par_Writer.tiempo_dormir = SD;
 
@@ -102,39 +141,18 @@ int main(int argc, char *argv[])
             perror("pthread_create");
             exit(EXIT_FAILURE);
         }
+
+        /* Por aqui deberia registrar los procesos al Control */
     }
     
-    printf("\nVa por aqui 1\n");
+    // los hilos no me funcionaban cuando los mandaba con &, ejemplo &hilos[i]
     for(int i = 0; i < NE; i++){
-        printf("\nVa por aqui 2\n");
         if(pthread_join(hilos[i], NULL) != 0) {
             perror("pthread_join");
             exit(EXIT_FAILURE);
         }
-        printf("\nVa por aqui 3\n");
     }
-    
-    /* Por aqui deberia registrar los procesos al Control */
 
-    /* Un pequeño menu para ver el progreso de los escritores */
-    
-    while(bandera01 == 1){
-        printf("\n--> Opciones: \n");
-        printf("----> 0) Exit: \n");
-        printf("----> 1) Mostrar Estado: \n");
-        scanf("%d", &opcion);
-
-        switch (opcion)
-        {
-        case 0:
-            bandera01 = 0; //salgo del menu
-            // cierro los threads
-            break;
-        
-        default:
-            break;
-        }
-    }
 
     return 0;
 }
