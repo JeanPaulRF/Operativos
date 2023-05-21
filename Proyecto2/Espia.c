@@ -9,7 +9,7 @@
 #define SHM_KEY 1234
 #define SEM_KEY_CONTROL 6666
 #define SEM_KEY_MEMORIA 7777
-#define MAX_PROCESOS 100
+#define MAX_PROCESOS 50
 #define SIZE_CONTROL (int)sizeof(Control) // tamaño de la estructura
 
 typedef struct
@@ -209,7 +209,7 @@ int main()
     }
 
     semid_memoria = semget(SEM_KEY_MEMORIA, 1, 0666);
-    if (semid_control == -1)
+    if (semid_memoria == -1)
     {
         perror("Error al acceder al semáforo memoria");
         exit(1);

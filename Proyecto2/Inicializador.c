@@ -113,7 +113,6 @@ int main(int argc, char *argv[])
     Mensaje *mensajes = (Mensaje *)(shm_ptr + sizeof(Control));
 
     // Escribir en la memoria compartida
-    control = malloc(sizeof(Control));
     control->count = 0;
     control->lineas = lineas;
     
@@ -174,7 +173,7 @@ int main(int argc, char *argv[])
     
     
     
-    
+    /*
     
     shm_ptr = shmat(shm_id, NULL, 0);
     if (shm_ptr == (char *)-1)
@@ -209,7 +208,7 @@ int main(int argc, char *argv[])
         exit(1);
     }
     
-    
+    */
 
 
     printf("\nSe ha creado la memoria compartida con id %d de %d bytes dividida en %d lineas.\n", shm_id, SIZE_LINEA * lineas + SIZE_CONTROL, lineas);
