@@ -43,8 +43,8 @@ int shm_id;
 int semid_control;
 int semid_memoria;
 int lineas;
-Control *control;
-Mensaje *mensajes;
+//Control *control;
+//Mensaje *mensajes;
 
 // Función para realizar la operación wait (P) en el semáforo
 void sem_wait(int sem_id)
@@ -93,7 +93,7 @@ Mensaje read_message(int pid)
 /* Describe el comportamiento de todo proceso lector */
 void *preader(void *arg)
 {
-
+	void *memoria;
     parametrosLector *parametros = (parametrosLector *)arg;
     int id = parametros->pid;
     // printf("\n--> ID: %d\n", parametros->pid);
@@ -107,6 +107,15 @@ void *preader(void *arg)
     // ciclo while(1)
     // si esta despierto busca una linea que contenga algo
     // si esta dormido, simplemente sleep
+	memoria = shmat(shm_id, NULL, 0);
+    if (memoria == (void *)-1)
+    {
+        perror("shmat");
+        exit(1);
+    }
+
+    Control *control = (Control *)memoria;
+
     sem_wait(semid_control);
 
     // Manejar datos de control
@@ -114,6 +123,12 @@ void *preader(void *arg)
 
     // signal semaforo control
     sem_signal(semid_control);
+
+    if (shmdt(memoria) == -1)
+    {
+        perror("shmdt");
+        exit(1);
+    }
 
     while (1)
     {
@@ -123,7 +138,15 @@ void *preader(void *arg)
         if (pr_tiempo_leer > 0)
         {
             // comportamiento cuando esta despierto
-
+            memoria = shmat(shm_id, NULL, 0);
+            if (memoria == (void *)-1)
+            {
+                perror("shmat");
+                exit(1);
+            }
+			
+			Control *control = (Control *)memoria;
+			
             // actualizar estado
             sem_wait(semid_control);
 
@@ -133,24 +156,30 @@ void *preader(void *arg)
             // signal semaforo control
             sem_signal(semid_control);
 
+			if (shmdt(memoria) == -1)
+            {
+                perror("shmdt");
+                exit(1);
+            }
+			
             // entra en memoria
-            void *memoria = shmat(shm_id, NULL, 0);
+			memoria = shmat(shm_id, NULL, 0);
             if (memoria == (void *)-1)
             {
                 perror("shmat");
                 exit(1);
             }
 
-            Mensaje *mensajes = (Mensaje *)memoria + SIZE_CONTROL;
+            Mensaje *mensajes = (Mensaje *)(memoria + sizeof(Control));
 
             // wait semaforo memoria
             sem_wait(semid_memoria);
 
             // Extraer los datos de memoria
-            for (int i = 0; i < lineas; i++)
+            for (int i = 0; i <= lineas; i++)
             {
                 Mensaje mensaje = mensajes[i];
-
+				printf("lineas %d", lineas);
                 if (mensaje.mensaje == 1)
                 {
                     printf("\n\n--> Proceso ID: %d\n", mensaje.pid);
@@ -196,6 +225,15 @@ void *preader(void *arg)
             // relleno el tiempo de dormir
             pr_tiempo_dormir = parametros->tiempo_dormir;
             estado = 0; // lo paso al estado de Descanso
+			
+			memoria = shmat(shm_id, NULL, 0);
+            if (memoria == (void *)-1)
+            {
+                perror("shmat");
+                exit(1);
+            }
+
+            Control *control = (Control *)memoria;
 
             sem_wait(semid_control);
 
@@ -204,6 +242,12 @@ void *preader(void *arg)
 
             // signal semaforo control
             sem_signal(semid_control);
+			
+			if (shmdt(memoria) == -1)
+            {
+                perror("shmdt");
+                exit(1);
+            }
         }
         else if (pr_tiempo_dormir == 0 && estado == 0)
         {
@@ -212,6 +256,15 @@ void *preader(void *arg)
             pr_tiempo_leer = parametros->tiempo_leer;
             estado = 1; // lo paso al estado de lectura
 
+			memoria = shmat(shm_id, NULL, 0);
+            if (memoria == (void *)-1)
+            {
+                perror("shmat");
+                exit(1);
+            }
+
+            Control *control = (Control *)memoria;
+
             sem_wait(semid_control);
 
             // Manejar datos de control
@@ -219,8 +272,44 @@ void *preader(void *arg)
 
             // signal semaforo control
             sem_signal(semid_control);
+			
+			if (shmdt(memoria) == -1)
+            {
+                perror("shmdt");
+                exit(1);
+            }
         }
         sleep(1);
+		// vista de la memoria
+        void *memoria = shmat(shm_id, NULL, 0);
+        if (memoria == (void *)-1)
+        {
+            perror("shmat");
+            exit(1);
+        }
+
+        Mensaje *mensajes = (Mensaje *)(memoria + sizeof(Control));
+        
+        // wait semaforo memoria
+        sem_wait(semid_memoria);
+        
+        // Extraer los datos de memoria
+        for (int i = 0; i <= lineas; i++)
+        {
+            Mensaje mensaje = mensajes[i];
+            printf("lineas %d", lineas);
+            printf(" PID: %d\n Linea: %d\n Mensaje: %d\n", mensaje.pid, mensaje.linea, mensaje.mensaje);
+            printf(" Fecha actual: %d-%02d-%02d\n", mensaje.year, mensaje.month, mensaje.day);
+            printf(" Hora actual: %02d:%02d:%02d\n", mensaje.hour, mensaje.minute, mensaje.second);
+        }
+
+        // signal semaforo memoria
+        sem_signal(semid_memoria);
+        if (shmdt(memoria) == -1)
+        {
+            perror("shmdt");
+            exit(1);
+        }
     }
 
     // cuando finalize :
@@ -273,23 +362,23 @@ int main(int argc, char *argv[])
     }
 
     semid_memoria = semget(SEM_KEY_MEMORIA, 1, 0666);
-    if (semid_control == -1)
+    if (semid_memoria == -1)
     {
         perror("Error al acceder al semáforo memoria");
         exit(1);
     }
 
-    // wait semaforo control
-    sem_wait(semid_control);
-
-    void *memoria = shmat(shm_id, NULL, 0);
+	void *memoria = shmat(shm_id, NULL, 0);
     if (memoria == (void *)-1)
     {
         perror("shmat");
         exit(1);
     }
 
-    Control *control = (struct Control *)memoria;
+    Control *control = (Control *)memoria;
+	
+    // wait semaforo control
+    sem_wait(semid_control);
 
     // Extraer las lineas de control
     lineas = control->lineas;
@@ -329,7 +418,7 @@ int main(int argc, char *argv[])
             exit(1);
         }
 
-        control = (struct Control *)memoria;
+        control = (Control *)memoria;
 
         // wait semaforo control
         sem_wait(semid_control);
@@ -370,91 +459,3 @@ int main(int argc, char *argv[])
 
     return 0;
 }
-
-/************************************************************************************************
-//***********************************************************************************************
-
-
-void reader(int lector_id, int tiempo_lectura, int tiempo_dormir)
-{
-	key_t key = ftok("memoria_compartida", 'R'); // usar la misma clave que en el otro programa
-    if (key == -1)
-    {
-        perror("ftok");
-        exit(1);
-    }
-    int shm_id = shmget(key, 0, 0666);
-    // obtener el identificador de la memoria compartida
-    if (shm_id == -1)
-    {
-        perror("shmget");
-        exit(1);
-    }
-
-    // adjuntar el segmento de memoria compartida
-    char *shm_addr = shmat(shm_id, NULL, 0);
-    if (shm_addr == (char *)-1)
-    {
-        perror("shmat");
-        exit(1);
-    }
-
-    // wait
-
-    // obtener el identificador del conjunto de semáforos
-    int sem_id = semget(SEM_KEY2, 1, 0); // primer parámetro SEMAPHORE_KEY
-    if (sem_id == -1)
-    {
-        perror("semget");
-        exit(1);
-    }
-
-    // signal
-
-    // lecturas de memoria
-    while (1)
-    {
-        // bloqueo del semáforo
-        struct sembuf sem_lock = {0, -1, 0}; // {id del semaforo, bloqueo- o desbloqueo+, flag para comportamiento normal }
-        if (semop(sem_id, &sem_lock, 1) == -1)
-        {
-            perror("semop");
-            exit(1);
-        }
-
-        // leer todo el mensaje en memoria
-        // printf("Mensaje recibido: %s\n", shm_addr);
-
-        // lectura de una línea de memoria
-        printf("Lector %d leyendo: %s\n", lector_id, shm_addr);
-
-        // desbloqueo del semáforo
-        struct sembuf sem_unlock = {0, 1, 0};
-        if (semop(sem_id, &sem_unlock, 1) == -1)
-        {
-            perror("semop");
-            exit(1);
-        }
-
-        // sleep deseado
-        sleep(tiempo_lectura);
-
-        // moverse a la siguiente linea de memoria para leerla
-        shm_addr += strlen(shm_addr) + 1;
-
-        // verificación de final de memoria para volver al inicio
-        if (shm_addr >= shm_addr + SIZE_LINEA)
-        {
-            // Reiniciar al comienzo de la memoria compartida
-            shm_addr = shmat(shm_id, NULL, 0);
-        }
-
-        // sleep deseado
-        sleep(tiempo_dormir);
-    }
-
-    // detach (aqui o en main?)
-    shmdt(shm_addr);
-}
-
-*/
