@@ -48,6 +48,21 @@ int main()
         perror("shmget");
         exit(EXIT_FAILURE);
     }
+    
+    key_t key_control = ftok("memoria_compartida_control", 'R'); // Clave IPC única
+
+    if (key == -1)
+    {
+        perror("ftok");
+        exit(EXIT_FAILURE);
+    }
+
+    int shm_id_control = shmget(key_control, 0, 0);
+    if (shm_id == -1)
+    {
+        perror("shmget");
+        exit(EXIT_FAILURE);
+    }
 
     // Obtener el identificador del conjunto de semáforos
     int semid_control = semget(SEM_KEY_CONTROL, 0, 0);
@@ -76,6 +91,12 @@ int main()
 
     // Borramos la zona de memoria compartida y el semáforo
     if (shmctl(shm_id, IPC_RMID, NULL) == -1)
+    {
+        perror("shmctl");
+        exit(EXIT_FAILURE);
+    }
+    
+    if (shmctl(shm_id_control, IPC_RMID, NULL) == -1)
     {
         perror("shmctl");
         exit(EXIT_FAILURE);

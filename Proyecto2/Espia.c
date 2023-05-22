@@ -29,6 +29,7 @@ typedef struct
 
 int lineas;
 int shm_id;
+int shm_id_control;
 int semid_control;
 int semid_memoria;
 int opcion;
@@ -59,18 +60,14 @@ void sem_signal(int sem_id)
 
 void estado_memoria()
 {
-    void *memoria = shmat(shm_id, NULL, 0);
-    if (memoria == (void *)-1)
+    char *memoria = shmat(shm_id, NULL, 0);
+    if (memoria == (char *)-1)
     {
         perror("shmat");
         exit(1);
     }
 
-    Mensaje *mensajes = (Mensaje *)(memoria + sizeof(Control));
-    if(mensajes == (Mensaje *)(-1)){
-    	perror("shmget");
-    	exit(1);
-    }
+    Mensaje *mensajes = (Mensaje *)memoria;
 
     // wait semaforo memoria
     sem_wait(semid_memoria);
@@ -106,8 +103,8 @@ void estado_memoria()
 void estado_procesos(int tipo)
 {
 
-    void *memoria = shmat(shm_id, NULL, 0);
-    if (memoria == (void *)-1)
+    char *memoria = shmat(shm_id, NULL, 0);
+    if (memoria == (char *)-1)
     {
         perror("shmat");
         exit(1);
@@ -207,15 +204,22 @@ int main()
         perror("shmget");
         exit(1);
     }
-
-    printf("Utilizando la memoria compartida id: %d\n\n", shm_id);
-
-    semid_control = semget(SEM_KEY_CONTROL, 1, 0666);
-    if (semid_control == -1)
+    
+    key_t key_control = ftok("memoria_compartida_control", 'R'); // usar la misma clave que en el otro programa
+    if (key == -1)
     {
-        perror("Error al acceder al semáforo control");
+        perror("ftok");
         exit(1);
     }
+
+    shm_id_control = shmget(key_control, 0, 0666);
+    if (shm_id == -1)
+    {
+        perror("shmget");
+        exit(1);
+    }
+    
+    printf("Utilizando la memoria compartida id: %d\n\n", shm_id);
 
     semid_memoria = semget(SEM_KEY_MEMORIA, 1, 0666);
     if (semid_memoria == -1)
@@ -224,8 +228,8 @@ int main()
         exit(1);
     }
 
-    void *memoria = shmat(shm_id, NULL, 0);
-    if (memoria == (void *)-1)
+    char *memoria = shmat(shm_id, NULL, 0);
+    if (memoria == (char *)-1)
     {
         perror("shmat");
         exit(1);

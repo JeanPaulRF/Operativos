@@ -28,6 +28,7 @@ typedef struct
 } Control;
 
 int shm_id;
+int shm_id_control;
 int semid_control;
 int semid_memoria;
 int lineas;
@@ -59,8 +60,8 @@ void sem_signal(int sem_id)
 
 void estado_memoria()
 {
-    void *memoria = shmat(shm_id, NULL, 0);
-    if (memoria == (void *)-1)
+    char *memoria = shmat(shm_id, NULL, 0);
+    if (memoria == (char *)-1)
     {
         perror("shmat");
         exit(1);
@@ -101,12 +102,14 @@ void estado_memoria()
 
 void estado_procesos(int tipo)
 {
-    Control *control = (struct Control *)shmat(shm_id, NULL, 0);
-    if (control == (void *)-1)
+    char *mem = shmat(shm_id_control, NULL, 0);
+    if (mem == (char *)-1)
     {
         perror("shmat");
         exit(1);
     }
+    
+    Control *control = (Control *)mem;
 
     // wait semaforo control
     sem_wait(semid_control);
@@ -196,29 +199,21 @@ int main()
         perror("shmget");
         exit(1);
     }
-
-    // wait semaforo control
-    sem_wait(semid_control);
-
-    Control *control = (struct Control *)shmat(shm_id, NULL, 0);
-    if (control == (void *)-1)
+    
+    key_t key_control = ftok("memoria_compartida_control", 'R'); // usar la misma clave que en el otro programa
+    if (key == -1)
     {
-        perror("shmat");
+        perror("ftok");
         exit(1);
     }
 
-    // Extraer las lineas de control
-    lineas = control->lineas;
-
-    // signal semaforo control
-    sem_signal(semid_control);
-
-    if (shmdt(control) == -1)
+    shm_id_control = shmget(key_control, 0, 0666);
+    if (shm_id == -1)
     {
-        perror("shmdt");
+        perror("shmget");
         exit(1);
     }
-
+    
     semid_control = semget(SEM_KEY_CONTROL, 1, 0666);
     if (semid_control == -1)
     {
@@ -230,6 +225,31 @@ int main()
     if (semid_control == -1)
     {
         perror("Error al acceder al semáforo memoria");
+        exit(1);
+    }
+    
+    
+    char *mem = shmat(shm_id_control, NULL, 0);
+    if (mem == (char *)-1)
+    {
+        perror("shmat");
+        exit(1);
+    }
+    
+    Control *control = (Control *)mem;
+
+    // wait semaforo control
+    sem_wait(semid_control);
+
+    // Extraer las lineas de control
+    lineas = control->lineas;
+
+    // signal semaforo control
+    sem_signal(semid_control);
+
+    if (shmdt(control) == -1)
+    {
+        perror("shmdt");
         exit(1);
     }
 
