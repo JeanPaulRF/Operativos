@@ -183,7 +183,7 @@ void *preader(void *arg)
                 if (mensaje.mensaje == 1)
                 {
                     printf("\n\n--> Proceso ID: %d\n", mensaje.pid);
-					printf("--> Fecha leídal: %d-%02d-%02d\n", mensaje.year, mensaje.month, mensaje.day);
+					printf("--> Fecha leída: %d-%02d-%02d\n", mensaje.year, mensaje.month, mensaje.day);
 					printf("--> Hora leida: %02d:%02d:%02d\n", mensaje.hour, mensaje.minute, mensaje.second);
                 }
             }

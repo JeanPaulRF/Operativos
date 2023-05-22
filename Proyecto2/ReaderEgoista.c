@@ -1,166 +1,482 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <fcntl.h>
-#include <sys/types.h>
+#include <time.h>
+#include <pthread.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <sys/sem.h>
-#include <time.h>
+
 #include "Mensaje.h"
 
+#define SHM_KEY 1234
 #define SEM_KEY_CONTROL 6666
 #define SEM_KEY_MEMORIA 7777
-#define SEM_KEY_READERS 8888
-#define SIZE_LINEA 40
-#define N_SEMAPHORES 2
 #define MAX_PROCESOS 100
-#define SIZE_CONTROL sizeof(Control)
+#define SIZE_CONTROL (int)sizeof(Control) // tamaño de la estructura
 
-typedef struct {
+typedef struct
+{
     int pid;
     int tipo;   // 0 = reader, 1 = writer, 2 = reader egoista
     int estado; // 0 = bloqueado, 1 = dormido, 2 = ejecutando
 } Proceso;
 
 // estructura para el control de procesos
-typedef struct {
+typedef struct
+{
     Proceso procesos[MAX_PROCESOS];
     int count;
     int lineas;
 } Control;
 
-// función auxiliar para inicializar un semáforo
-void init_sem(int sem_id, int val) {
-    union semun {
-        int val;
-        struct semid_ds *buf;
-        unsigned short *array;
-    } arg;
+/* Parametros a mandar para el proceso */
+typedef struct
+{
+    int pid;
+    int tiempo_leer;
+    int tiempo_dormir;
+} parametrosLector;
 
-    arg.val = val;
+// parametros globales memoria compartida
+int shm_id;
+int semid_control;
+int semid_memoria;
+int lineas;
 
-    if (semctl(sem_id, 0, SETVAL, arg) == -1) {
-        perror("Error en semctl (SETVAL)");
-        exit(EXIT_FAILURE);
-    }
+//Control *control;
+//Mensaje *mensajes;
+
+// Función para realizar la operación wait (P) en el semáforo
+void sem_wait(int sem_id)
+{
+    struct sembuf sb;
+    sb.sem_num = 0; // Número del semáforo en el conjunto
+    sb.sem_op = -1; // Operación wait (P)
+    sb.sem_flg = 0; // Sin banderas adicionales
+
+    semop(sem_id, &sb, 1);
 }
 
-int main(int argc, char *argv[]) {
-    int shm_id;
-    void *mem;
-    Control *control;
-    char *shm_ptr;
-    int sem_id_control, sem_id_memoria, sem_id_readers;
-    int memory_size;
-    int i, j;
+// Función para realizar la operación signal (V) en el semáforo
+void sem_signal(int sem_id)
+{
+    struct sembuf sb;
+    sb.sem_num = 0; // Número del semáforo en el conjunto
+    sb.sem_op = 1;  // Operación signal (V)
+    sb.sem_flg = 0; // Sin banderas adicionales
 
-    if (argc < 4) {
-        printf("Uso: ./reader_egoista <cantidad_lectores_egoistas> <tiempo_lectura> <tiempo_dormir>\n");
-        return 1;
-    }
+    semop(sem_id, &sb, 1);
+}
 
-    int cantidad_lectores_egoistas = atoi(argv[1]);
-    int tiempo_lectura = atoi(argv[2]);
-    int tiempo_dormir = atoi(argv[3]);
+/* Leer el mensaje  */
+Mensaje read_message(int pid)
+{                     // recibe el id del proceso que lo crea
+    Mensaje MS = {0}; // Todos los miembros inicializan en 0.
 
-    key_t SHM_KEY = ftok("memoria_compartida", 'R');
-    if (SHM_KEY == -1) {
-        perror("ftok");
-        exit(EXIT_FAILURE);
-    }
+    time_t tiempoActual; // declaro variable
+    time(&tiempoActual); // obtengo el tiempo
 
-    // Obtener el ID de la memoria compartida
-    shm_id = shmget(SHM_KEY, 0, 0);
-    if (shm_id == -1) {
-        perror("shmget");
-        exit(EXIT_FAILURE);
-    }
+    struct tm *fechaHora = localtime(&tiempoActual);
 
-    // Obtener el ID de los semáforos
-    sem_id_readers = semget(SEM_KEY_READERS, 0, 0);
-    if (sem_id_readers == -1) {
-        perror("semget readers");
-        exit(EXIT_FAILURE);
-    }
+    MS.pid = pid;
+    MS.year = fechaHora->tm_year + 1900;
+    MS.month = fechaHora->tm_mon + 1;
+    MS.day = fechaHora->tm_mday;
+    MS.hour = fechaHora->tm_hour;
+    MS.minute = fechaHora->tm_min;
+    MS.second = fechaHora->tm_sec;
+    MS.mensaje = 1; // esta lleno
 
-    //wait
+    return MS;
+}
 
-    // Adjuntar la memoria compartida al espacio de direcciones del proceso
-    mem = shmat(shm_id, NULL, 0);
-    if (mem == (void *)-1) {
-        perror("shmat failed");
-        exit(EXIT_FAILURE);
-    }
+/* Describe el comportamiento de todo proceso lector */
+void *preader(void *arg)
+{
+	void *memoria;
+    parametrosLector *parametros = (parametrosLector *)arg;
+    int id = parametros->pid;
+    // printf("\n--> ID: %d\n", parametros->pid);
 
-    Mensaje *mensajes = (Mensaje *)mem;
-
-    // Generar el valor inicial del semáforo readers
-    //init_sem(sem_id_readers, 1);
-
-    // Generar la semilla para la generación de números aleatorios
-    srand(time(NULL));
-
-    // Variables para controlar el número de readers egoístas consecutivos
+    int estado = 1; // 1 esta escribiendo, 0 esta dormido
+    int pr_tiempo_leer = parametros->tiempo_leer;
+    int pr_tiempo_dormir = 0;
     int consecutivo_egoistas = 0;
-    int max_consecutivo_egoistas = 3;
+    int max_consecutivo_egoistas =  3;
 
-    while (1) {
-        // Bloquear el semáforo readers para asegurar acceso exclusivo
-        struct sembuf sem_op;
-        sem_op.sem_num = 0;
-        sem_op.sem_op = -1;
-        sem_op.sem_flg = 0;
-        semop(sem_id_readers, &sem_op, 1);
+    // Mensaje new_ms = create_message(id);	// se movio al for 
 
-        // Verificar si se alcanzó el límite de readers egoístas consecutivos
-        if (consecutivo_egoistas >= max_consecutivo_egoistas) {
-            // Desbloquear el semáforo readers
-            sem_op.sem_op = 1;
-            semop(sem_id_readers, &sem_op, 1);
+    // ciclo while(1)
+    // si esta despierto busca una linea que contenga algo
+    // si esta dormido, simplemente sleep
+	memoria = shmat(shm_id, NULL, 0);
+    if (memoria == (void *)-1)
+    {
+        perror("shmat");
+        exit(1);
+    }
 
-            // Esperar un tiempo antes de volver a intentar acceder
-            sleep(tiempo_dormir);
-            continue;
+    Control *control = (Control *)memoria;
+
+    sem_wait(semid_control);
+
+    // Manejar datos de control
+    control->procesos[id].estado = 2;
+
+    // signal semaforo control
+    sem_signal(semid_control);
+
+    if (shmdt(memoria) == -1)
+    {
+        perror("shmdt");
+        exit(1);
+    }
+
+    while (1)
+    {
+        // printf("\n\n pw_tiempo_escribir : %d \n", pw_tiempo_escribir);
+        // printf(" pw_tiempo_dormir : %d\n\n", pw_tiempo_dormir);
+
+        if (pr_tiempo_leer > 0)
+        {
+            // comportamiento cuando esta despierto
+            memoria = shmat(shm_id, NULL, 0);
+            if (memoria == (void *)-1)
+            {
+                perror("shmat");
+                exit(1);
+            }
+			
+			Control *control = (Control *)memoria;
+			
+            // actualizar estado
+            sem_wait(semid_control);
+
+            if (consecutivo_egoistas >= 3){
+                sem_signal(semid_control);
+
+                sleep(pr_tiempo_dormir);
+                consecutivo_egoistas = 0;
+                continue;
+            }
+
+
+            // Manejar datos de control
+            control->procesos[id].estado = 0;
+
+            // signal semaforo control
+            sem_signal(semid_control);
+
+			if (shmdt(memoria) == -1)
+            {
+                perror("shmdt");
+                exit(1);
+            }
+			
+            // entra en memoria
+			memoria = shmat(shm_id, NULL, 0);
+            if (memoria == (void *)-1)
+            {
+                perror("shmat");
+                exit(1);
+            }
+
+            Mensaje *mensajes = (Mensaje *)(memoria + sizeof(Control));
+
+            // wait semaforo memoria
+            sem_wait(semid_memoria);
+
+
+            // Elegir una entrada aleatoria en la memoria compartida
+            int entrada_aleatoria = rand() % lineas;
+
+            // Leer el mensaje de la entrada seleccionada
+             Mensaje mensaje = mensajes[entrada_aleatoria];
+
+            // Verificar si la entrada tiene un mensaje
+            if (mensaje.mensaje == 1) {
+
+
+                printf("\n\n--> Proceso ID: %d\n", mensaje.pid);
+                printf("--> Fecha leída: %d-%02d-%02d\n", mensaje.year, mensaje.month, mensaje.day);
+                printf("--> Hora leida: %02d:%02d:%02d\n", mensaje.hour, mensaje.minute, mensaje.second);
+
+                // Actualizar el estado de la entrada como vacía
+                mensajes[entrada_aleatoria].mensaje = 0;
+
+                // Incrementar el contador de lectores egoístas consecutivos
+                consecutivo_egoistas++;
+
+            } else {
+                sem_signal(semid_memoria);
+            }
+
+            if (shmdt(memoria) == -1)
+            {
+                perror("shmdt");
+                exit(1);
+            }
+			/*
+			printf("Print fuera del for");
+            printf("\n\n--> Proceso ID: %d\n", mensaje.pid);
+            printf("--> Fecha leídal: %d-%02d-%02d\n", mensaje.year, mensaje.month, mensaje.day);
+            printf("--> Hora leida: %02d:%02d:%02d\n", mensaje.hour, mensaje.minute, mensaje.second);*/
+            // sleep(5);
+            //  manda a avisar al control que esta despierto
+
+            // resto 1 tiempo por accion
+            pr_tiempo_leer = pr_tiempo_leer - 1;
+        }
+        else if (pr_tiempo_dormir > 0)
+        {
+            // comportamiento cuando esta dormido
+            printf("----> ZZzzZZ \n");
+            // sleep(5);
+            //  manda a avisar al control que esta dormido
+
+            // resto 1 tiempo por accion
+            pr_tiempo_dormir = pr_tiempo_dormir - 1;
         }
 
-        // Elegir una entrada aleatoria en la memoria compartida
-        int entrada_aleatoria = rand() % control->lineas;
+        // Para el cambio de estado, y rellenar el tiempo.
+        if (pr_tiempo_leer == 0 && estado == 1)
+        {
+            // si el tiempo de escribir se agoto y estoy en el estado de lectura
+            // relleno el tiempo de dormir
+            pr_tiempo_dormir = parametros->tiempo_dormir;
+            estado = 0; // lo paso al estado de Descanso
+			
+			memoria = shmat(shm_id, NULL, 0);
+            if (memoria == (void *)-1)
+            {
+                perror("shmat");
+                exit(1);
+            }
 
-        // Leer el mensaje de la entrada seleccionada
-        Mensaje mensaje = mensajes[entrada_aleatoria];
+            Control *control = (Control *)memoria;
 
-        // Verificar si la entrada tiene un mensaje
-        if (mensaje.mensaje == 1) {
-            // Actualizar el estado de la entrada como vacía
-            mensajes[entrada_aleatoria].mensaje = 0;
+            sem_wait(semid_control);
 
-            // Incrementar el contador de lectores egoístas consecutivos
-            consecutivo_egoistas++;
+            // Manejar datos de control
+            control->procesos[id].estado = 1;
 
-            // Desbloquear el semáforo readers
-            sem_op.sem_op = 1;
-            semop(sem_id_readers, &sem_op, 1);
+            // signal semaforo control
+            sem_signal(semid_control);
+			
+			if (shmdt(memoria) == -1)
+            {
+                perror("shmdt");
+                exit(1);
+            }
+        }
+        else if (pr_tiempo_dormir == 0 && estado == 0)
+        {
+            // si el tiempo de dormir se agoto y estoy en el estado de Descanso
+            // relleno el tiempo de leer
+            pr_tiempo_leer = parametros->tiempo_leer;
+            estado = 1; // lo paso al estado de lectura
 
-            // Leer el mensaje
-            printf("Lector egoísta (PID: %d) - Mensaje: PID: %d, Fecha: %d-%d-%d %d:%d:%d, Línea: %d\n",
-                   getpid(), mensaje.pid, mensaje.year, mensaje.month, mensaje.day, mensaje.hour,
-                   mensaje.minute, mensaje.second, mensaje.linea);
+			memoria = shmat(shm_id, NULL, 0);
+            if (memoria == (void *)-1)
+            {
+                perror("shmat");
+                exit(1);
+            }
 
-            // Esperar el tiempo de lectura
-            sleep(tiempo_lectura);
+            Control *control = (Control *)memoria;
 
-            // Reiniciar el contador de lectores egoístas consecutivos
-            consecutivo_egoistas = 0;
-        } else {
-            // Desbloquear el semáforo readers
-            sem_op.sem_op = 1;
-            semop(sem_id_readers, &sem_op, 1);
+            sem_wait(semid_control);
+
+            // Manejar datos de control
+            control->procesos[id].estado = 2;
+
+            // signal semaforo control
+            sem_signal(semid_control);
+			
+			if (shmdt(memoria) == -1)
+            {
+                perror("shmdt");
+                exit(1);
+            }
+        }
+        sleep(1);
+		// vista de la memoria
+        void *memoria = shmat(shm_id, NULL, 0);
+        if (memoria == (void *)-1)
+        {
+            perror("shmat");
+            exit(1);
+        }
+
+        Mensaje *mensajes = (Mensaje *)(memoria + sizeof(Control));
+        
+        // wait semaforo memoria
+        sem_wait(semid_memoria);
+        
+        // Extraer los datos de memoria
+        for (int i = 0; i <= lineas; i++)
+        {
+            Mensaje mensaje = mensajes[i];
+            printf("lineas %d", lineas);
+            printf(" PID: %d\n Linea: %d\n Mensaje: %d\n", mensaje.pid, mensaje.linea, mensaje.mensaje);
+            printf(" Fecha actual: %d-%02d-%02d\n", mensaje.year, mensaje.month, mensaje.day);
+            printf(" Hora actual: %02d:%02d:%02d\n", mensaje.hour, mensaje.minute, mensaje.second);
+        }
+
+        // signal semaforo memoria
+        sem_signal(semid_memoria);
+        if (shmdt(memoria) == -1)
+        {
+            perror("shmdt");
+            exit(1);
         }
     }
 
-    // Desasociar la memoria compartida
-    shmdt(mem);
+    // cuando finalize :
+    pthread_exit(NULL);
+}
+
+int main(int argc, char *argv[])
+{
+    int NL, SL, SD;
+    /*
+      NL significa Numero de Lectores
+      SL siginifica Segundos de Lectura
+      SD significa Segundos de Dormir
+     */
+
+    // Mensaje ms1; // para pruubas
+    // ms1 = create_message(23987);
+
+    printf("-------------BIENVENIDO AL PROGRAMA LECTOR EGOISTA DEL SISTEMA-------------\n\n");
+
+    printf("Ingrese el numero de procesos lectores egoistas: ");
+    scanf("%d", &NL);
+
+    printf("Ingrese el numero segundos que leeran: ");
+    scanf("%d", &SL);
+
+    printf("Ingrese el numero segundos que dormiran ");
+    scanf("%d", &SD);
+
+    // id de los procesos
+    key_t key = ftok("memoria_compartida", 'R'); // usar la misma clave que en el otro programa
+    if (key == -1)
+    {
+        perror("ftok");
+        exit(1);
+    }
+
+    shm_id = shmget(key, 0, 0666);
+    if (shm_id == -1)
+    {
+        perror("shmget");
+        exit(1);
+    }
+
+    semid_control = semget(SEM_KEY_CONTROL, 1, 0666);
+    if (semid_control == -1)
+    {
+        perror("Error al acceder al semáforo control");
+        exit(1);
+    }
+
+    semid_memoria = semget(SEM_KEY_MEMORIA, 1, 0666);
+    if (semid_memoria == -1)
+    {
+        perror("Error al acceder al semáforo memoria");
+        exit(1);
+    }
+
+	void *memoria = shmat(shm_id, NULL, 0);
+    if (memoria == (void *)-1)
+    {
+        perror("shmat");
+        exit(1);
+    }
+
+    Control *control = (Control *)memoria;
+	
+    // wait semaforo control
+    sem_wait(semid_control);
+
+    // Extraer las lineas de control
+    lineas = control->lineas;
+
+    // signal semaforo control
+    sem_signal(semid_control);
+
+    if (shmdt(memoria) == -1)
+    {
+        perror("shmdt");
+        exit(1);
+    }
+    // fin memoria compartida
+
+    /* // pruebas
+    printf(" Numero de procesos: %d\n Segundos de escritura: %d\n Segundos de descanso: %d\n", NE, SE, SD);
+    printf(" Fecha actual: %d-%02d-%02d\n", ms1.year, ms1.month, ms1.day);
+    printf(" Hora actual: %02d:%02d:%02d\n", ms1.hour, ms1.minute, ms1.second);
+    */
+    // %02d es una especificacion formato, para un numero con menos de dos digitos, que rellene un 0
+
+    /* Creacion de los threads */
+    pthread_t hilos[NL];
+    parametrosLector par_Reader[NL];
+
+    for (int i = 0; i < NL; i++)
+    {
+        par_Reader[i].tiempo_leer = SL;
+        par_Reader[i].tiempo_dormir = SD;
+
+        /* Por aqui deberia registrar los procesos al Control */
+
+        void *memoria = shmat(shm_id, NULL, 0);
+        if (memoria == (void *)-1)
+        {
+            perror("shmat");
+            exit(1);
+        }
+
+        control = (Control *)memoria;
+
+        // wait semaforo control
+        sem_wait(semid_control);
+
+        // Manejar datos de control
+        int n = control->count;
+        par_Reader[i].pid = n;
+        control->procesos[n].pid = n;
+        control->procesos[n].estado = 1;
+        control->procesos[n].tipo = 0;
+        control->count = n + 1;
+
+        // signal semaforo control
+        sem_signal(semid_control);
+
+        if (shmdt(memoria) == -1)
+        {
+            perror("shmdt");
+            exit(1);
+        }
+
+        if (pthread_create(&hilos[i], NULL, preader, (void *)&par_Reader[i]) != 0)
+        {
+            perror("pthread_create");
+            exit(EXIT_FAILURE);
+        }
+    }
+
+    // los hilos no me funcionaban cuando los mandaba con &, ejemplo &hilos[i]
+    for (int i = 0; i < NL; i++)
+    {
+        if (pthread_join(hilos[i], NULL) != 0)
+        {
+            perror("pthread_join");
+            exit(EXIT_FAILURE);
+        }
+    }
 
     return 0;
 }
