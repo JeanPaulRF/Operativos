@@ -102,7 +102,9 @@ void registrar_en_memoria( Mensaje* MS ){
     }
 
     fprintf(archivo, "%s", intro);
-    fwrite(MS, sizeof(Mensaje), 1, archivo);
+    fprintf(archivo, "--> Proceso ID: %d\n", MS->pid);
+    fprintf(archivo, "--> Fecha actual: %d-%02d-%02d\n", MS->year, MS->month, MS->day);
+    fprintf(archivo, "--> Hora actual: %02d:%02d:%02d\n", MS->hour, MS->minute, MS->second);
 
     fclose(archivo);
 }
@@ -207,6 +209,7 @@ void *pwriter(void *arg)
                     mensajes[i].minute = new_ms.minute;
                     mensajes[i].second = new_ms.second;
                     mensajes[i].mensaje = 1;
+                    printf("aqui va ----------------------- \n");
                     registrar_en_memoria(&new_ms);
                     break;
                 }
