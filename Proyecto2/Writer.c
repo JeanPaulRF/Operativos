@@ -91,7 +91,7 @@ Mensaje create_message(int pid)
 /* Describe el comportamiento de todo proceso escritor */
 void *pwriter(void *arg)
 {
-	void *memoria;
+    void *memoria;
     parametrosEscritor *parametros = (parametrosEscritor *)arg;
     int id = parametros->pid;
     // printf("\n--> ID: %d\n", parametros->pid);
@@ -113,7 +113,7 @@ void *pwriter(void *arg)
     }
 
     Control *control = (Control *)memoria;
-    
+
     sem_wait(semid_control);
 
     // Manejar datos de control
@@ -121,7 +121,7 @@ void *pwriter(void *arg)
 
     // signal semaforo control
     sem_signal(semid_control);
-    
+
     if (shmdt(memoria) == -1)
     {
         perror("shmdt");
@@ -137,13 +137,13 @@ void *pwriter(void *arg)
         {
             // comportamiento cuando esta despierto
             memoria = shmat(shm_id, NULL, 0);
-	    if (memoria == (void *)-1)
-	    {
-		perror("shmat");
-		exit(1);
-	    }
+            if (memoria == (void *)-1)
+            {
+                perror("shmat");
+                exit(1);
+            }
 
-	    Control *control = (Control *)memoria;
+            Control *control = (Control *)memoria;
 
             // actualizar estado
             sem_wait(semid_control);
@@ -153,12 +153,12 @@ void *pwriter(void *arg)
 
             // signal semaforo control
             sem_signal(semid_control);
-            
+
             if (shmdt(memoria) == -1)
-	    {
-		perror("shmdt");
-		exit(1);
-	    }
+            {
+                perror("shmdt");
+                exit(1);
+            }
 
             // entra en memoria
             memoria = shmat(shm_id, NULL, 0);
@@ -168,7 +168,7 @@ void *pwriter(void *arg)
                 exit(1);
             }
 
-            Mensaje *mensajes =  (Mensaje *)(memoria + sizeof(Control));
+            Mensaje *mensajes = (Mensaje *)(memoria + sizeof(Control));
 
             // wait semaforo memoria
             sem_wait(semid_memoria);
@@ -227,15 +227,15 @@ void *pwriter(void *arg)
             // relleno el tiempo de dormir
             pw_tiempo_dormir = parametros->tiempo_dormir;
             estado = 0; // lo paso al estado de Descanso
-            
-            memoria = shmat(shm_id, NULL, 0);
-	    if (memoria == (void *)-1)
-	    {
-		perror("shmat");
-		exit(1);
-	    }
 
-	    Control *control = (Control *)memoria;
+            memoria = shmat(shm_id, NULL, 0);
+            if (memoria == (void *)-1)
+            {
+                perror("shmat");
+                exit(1);
+            }
+
+            Control *control = (Control *)memoria;
 
             sem_wait(semid_control);
 
@@ -244,12 +244,12 @@ void *pwriter(void *arg)
 
             // signal semaforo control
             sem_signal(semid_control);
-            
+
             if (shmdt(memoria) == -1)
-	    {
-		perror("shmdt");
-		exit(1);
-	    }
+            {
+                perror("shmdt");
+                exit(1);
+            }
         }
         else if (pw_tiempo_dormir == 0 && estado == 0)
         {
@@ -259,13 +259,13 @@ void *pwriter(void *arg)
             estado = 1; // lo paso al estado de Escritura
 
             memoria = shmat(shm_id, NULL, 0);
-	    if (memoria == (void *)-1)
-	    {
-		perror("shmat");
-		exit(1);
-	    }
+            if (memoria == (void *)-1)
+            {
+                perror("shmat");
+                exit(1);
+            }
 
-	    Control *control = (Control *)memoria;
+            Control *control = (Control *)memoria;
 
             sem_wait(semid_control);
 
@@ -274,15 +274,15 @@ void *pwriter(void *arg)
 
             // signal semaforo control
             sem_signal(semid_control);
-            
+
             if (shmdt(memoria) == -1)
-	    {
-		perror("shmdt");
-		exit(1);
-	    }
+            {
+                perror("shmdt");
+                exit(1);
+            }
         }
         sleep(1);
-
+        
         // vista de la memoria
         void *memoria = shmat(shm_id, NULL, 0);
         if (memoria == (void *)-1)
@@ -290,16 +290,17 @@ void *pwriter(void *arg)
             perror("shmat");
             exit(1);
         }
-        Mensaje *mensajes =  (Mensaje *)(memoria + sizeof(Control));
 
+        Mensaje *mensajes = (Mensaje *)(memoria + sizeof(Control));
+        
         // wait semaforo memoria
         sem_wait(semid_memoria);
-
+        
         // Extraer los datos de memoria
         for (int i = 0; i < lineas; i++)
         {
             Mensaje mensaje = mensajes[i];
-
+            
             printf(" PID: %d\n Linea: %d\n Mensaje: %d\n", mensaje.pid, mensaje.linea, mensaje.mensaje);
             printf(" Fecha actual: %d-%02d-%02d\n", mensaje.year, mensaje.month, mensaje.day);
             printf(" Hora actual: %02d:%02d:%02d\n", mensaje.hour, mensaje.minute, mensaje.second);
@@ -312,7 +313,6 @@ void *pwriter(void *arg)
             perror("shmdt");
             exit(1);
         }
-
     }
 
     // cuando finalize :
@@ -370,7 +370,7 @@ int main(int argc, char *argv[])
         perror("Error al acceder al semáforo memoria");
         exit(1);
     }
-    
+
     void *memoria = shmat(shm_id, NULL, 0);
     if (memoria == (void *)-1)
     {
