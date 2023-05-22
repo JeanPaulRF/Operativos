@@ -101,40 +101,6 @@ void estado_memoria()
 
 void estado_procesos(int tipo)
 {
-	shm_ptr = shmat(shm_id, NULL, 0);
-    if (shm_ptr == (char *)-1)
-    {
-        perror("shmat escribir");
-        exit(1);
-    }
-
-    // Convertir el puntero a la memoria compartida a un puntero a una estructura Control y mensaje
-    control = (Control *)shm_ptr;
-    Mensaje *mensajesa = (Mensaje *)(shm_ptr + sizeof(Control));
-
-    // Escribir en la memoria compartida
-    printf("count: %d\n", control->count);
-    printf("lineas: %d\n", control->lineas);
-    
-    for (i = 0; i < MAX_PROCESOS; i++)
-    {
-    	printf("proceso pid: %d\n", control->procesos[i].pid);
-    }
-
-    // Inicializar los bloques de las líneas
-    for (i = 0; i < lineas; i++)
-    {
-    	printf("linea pid: %d\n", mensajesa[i].pid);
-    }
-
-    // Separar el segmento de memoria compartida del espacio de direcciones del proceso
-    if (shmdt(shm_ptr) == -1)
-    {
-        perror("shmdt");
-        exit(1);
-    }
-    
-    
 
     void *memoria = shmat(shm_id, NULL, 0);
     if (memoria == (void *)-1)

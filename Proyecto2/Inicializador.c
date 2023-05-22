@@ -68,6 +68,35 @@ int main(int argc, char *argv[])
     memory_size = SIZE_CONTROL + (SIZE_LINEA * lineas);
     
     //printf("%d\n", memory_size);
+    
+    // crear los semáforos
+
+    // semaforo de control
+    sem_id_control = semget(SEM_KEY_CONTROL, 1, IPC_CREAT | 0666);
+    if (sem_id_control == -1)
+    {
+        perror("Error en semget control");
+    }
+
+    // semáforo para la memoria compartida
+    sem_id_memoria = semget(SEM_KEY_MEMORIA, 1, IPC_CREAT | 0666);
+    if (sem_id_memoria == -1)
+    {
+        perror("Error en semget memoria");
+    }
+
+    // semaforo para readers
+    sem_id_readers = semget(SEM_KEY_READERS, 1, IPC_CREAT | 0666);
+    if (sem_id_readers == -1)
+    {
+        perror("Error en semget readers");
+    }
+
+    // inicializar los semáforos
+    init_sem(sem_id_memoria, 1);
+    init_sem(sem_id_readers, 1);
+    init_sem(sem_id_control, 1);
+    
 
     int fd = open("memoria_compartida", O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
     if (fd == -1)
@@ -118,7 +147,7 @@ int main(int argc, char *argv[])
     
     for (i = 0; i < MAX_PROCESOS; i++)
     {
-        control->procesos[i].pid = 1;
+        control->procesos[i].pid = 0;
         control->procesos[i].tipo = 0;
         control->procesos[i].estado = 0;
     }
@@ -142,38 +171,7 @@ int main(int argc, char *argv[])
         perror("shmdt");
         exit(1);
     }
-
-    // crear los semáforos
-
-    // semaforo de control
-    sem_id_control = semget(SEM_KEY_CONTROL, 1, IPC_CREAT | 0666);
-    if (sem_id_control == -1)
-    {
-        perror("Error en semget control");
-    }
-
-    // semáforo para la memoria compartida
-    sem_id_memoria = semget(SEM_KEY_MEMORIA, 1, IPC_CREAT | 0666);
-    if (sem_id_memoria == -1)
-    {
-        perror("Error en semget memoria");
-    }
-
-    // semaforo para readers
-    sem_id_readers = semget(SEM_KEY_READERS, 1, IPC_CREAT | 0666);
-    if (sem_id_readers == -1)
-    {
-        perror("Error en semget readers");
-    }
-
-    // inicializar los semáforos
-    init_sem(sem_id_memoria, 1);
-    init_sem(sem_id_readers, 1);
-    init_sem(sem_id_control, 1);
     
-    
-    
-    /*
     
     shm_ptr = shmat(shm_id, NULL, 0);
     if (shm_ptr == (char *)-1)
@@ -181,6 +179,8 @@ int main(int argc, char *argv[])
         perror("shmat escribir");
         exit(1);
     }
+    
+    printf("puntero: %d", shm_ptr);
 
     // Convertir el puntero a la memoria compartida a un puntero a una estructura Control y mensaje
     control = (Control *)shm_ptr;
@@ -208,7 +208,7 @@ int main(int argc, char *argv[])
         exit(1);
     }
     
-    */
+    
 
 
     printf("\nSe ha creado la memoria compartida con id %d de %d bytes dividida en %d lineas.\n", shm_id, SIZE_LINEA * lineas + SIZE_CONTROL, lineas);
