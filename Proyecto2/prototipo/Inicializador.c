@@ -150,6 +150,7 @@ int main(int argc, char *argv[])
     {
           Mensaje mensaje = {0};
           mensajes[i] = mensaje;
+          mensajes[i].linea = i;
     }
 
     // Separar el segmento de memoria compartida del espacio de direcciones del proceso

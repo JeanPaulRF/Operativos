@@ -116,7 +116,11 @@ void estado_procesos(int tipo)
 
     // Extraer los datos de control
     int count = control->count;
-    Proceso *procesos = control->procesos;
+    //printf("COUNT: %d\n", count);
+    Proceso procesos = control->procesos;
+    
+    printf("aaa: %d\n", procesos);
+    
 
     // signal semaforo control
     sem_signal(semid_control);
