@@ -27,10 +27,10 @@ typedef struct
     int lineas;
 } Control;
 
+int lineas;
 int shm_id;
 int semid_control;
 int semid_memoria;
-int lineas;
 int opcion;
 char *tipos[] = {"Reader", "Writer", "Reader Egoista"};
 char *estados[] = {"Bloqueado", "Dormido", "Ejecutando"};
@@ -199,7 +199,7 @@ int main()
         perror("shmget");
         exit(1);
     }
-    
+
     printf("Utilizando la memoria compartida id: %d\n\n", shm_id);
 
     semid_control = semget(SEM_KEY_CONTROL, 1, 0666);
