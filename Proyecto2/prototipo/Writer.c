@@ -89,6 +89,24 @@ Mensaje create_message(int pid)
     return MS;
 }
 
+// funcion para registrar en bitacora
+void registrar_en_memoria( Mensaje* MS ){
+    printf("Escribiendo \n");
+    FILE* archivo = fopen("bitacora.txt", "a");
+
+    char* intro = "\n Escribir a memoria: \n";
+
+    if(archivo == NULL){
+        perror("Error al abrir el archivo");
+        return;
+    }
+
+    fprintf(archivo, "%s", intro);
+    fwrite(MS, sizeof(Mensaje), 1, archivo);
+
+    fclose(archivo);
+}
+
 /* Describe el comportamiento de todo proceso escritor */
 void *pwriter(void *arg)
 {
@@ -181,14 +199,16 @@ void *pwriter(void *arg)
 
                 if (mensaje.mensaje == 0)
                 {
-                    mensaje.pid = new_ms.pid;
-                    mensaje.year = new_ms.year;
-                    mensaje.month = new_ms.month;
-                    mensaje.day = new_ms.day;
-                    mensaje.hour = new_ms.hour;
-                    mensaje.minute = new_ms.minute;
-                    mensaje.second = new_ms.second;
-                    mensaje.mensaje = 1;
+                    mensajes[i].pid = new_ms.pid;
+                    mensajes[i].year = new_ms.year;
+                    mensajes[i].month = new_ms.month;
+                    mensajes[i].day = new_ms.day;
+                    mensajes[i].hour = new_ms.hour;
+                    mensajes[i].minute = new_ms.minute;
+                    mensajes[i].second = new_ms.second;
+                    mensajes[i].mensaje = 1;
+                    registrar_en_memoria(&new_ms);
+                    break;
                 }
             }
 
@@ -302,7 +322,7 @@ void *pwriter(void *arg)
         {
             Mensaje mensaje = mensajes[i];
             
-            printf(" PID: %d\n Linea: %d\n Mensaje: %d\n", mensaje.pid, mensaje.linea, mensaje.mensaje);
+            printf("\n\n PID: %d\n Linea: %d\n Mensaje: %d\n", mensaje.pid, mensaje.linea, mensaje.mensaje);
             printf(" Fecha actual: %d-%02d-%02d\n", mensaje.year, mensaje.month, mensaje.day);
             printf(" Hora actual: %02d:%02d:%02d\n", mensaje.hour, mensaje.minute, mensaje.second);
         }
