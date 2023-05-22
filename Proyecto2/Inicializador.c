@@ -66,6 +66,72 @@ int main(int argc, char *argv[])
     scanf("%d", &lineas);
 
     memory_size = SIZE_CONTROL + (SIZE_LINEA * lineas);
+    
+    int fd = open("memoria_compartida", O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
+    if (fd == -1)
+    {
+        perror("open");
+        exit(EXIT_FAILURE);
+    }
+    close(fd);
+
+    key_t SHM_KEY = ftok("memoria_compartida", 'R');
+    if (SHM_KEY == -1)
+    {
+        perror("ftok");
+        exit(1);
+    }
+
+    // printf("key creada\n");
+
+    // crear la memoria compartida
+    shm_id = shmget(SHM_KEY, memory_size, IPC_CREAT | 0666); // Creacion de la memoria compartida
+    if (shm_id < 0)
+    {
+        perror("Error con shmget memoria");
+        exit(1);
+    }
+    
+    // Adjuntar el segmento de memoria compartida al espacio de direcciones del proceso
+    mem = shmat(shm_id, NULL, 0);
+    if (shm_ptr == (char *)-1)
+    {
+        perror("shmat escribir");
+        exit(1);
+    }
+    
+    Mensaje *mensajes = (Mensaje *)(mem + sizeof(Control));
+    if(mensajes == (Mensaje *)(-1)){
+    	perror("shmget");
+    	exit(1);
+    }
+
+    // Inicializar los bloques de las líneas
+    // Inicializar los bloques de las líneas
+    for (i = 0; i < lineas; i++)
+    {
+    	for (j = 0; j < SIZE_LINEA / sizeof(int); j++){
+    		Mensaje mensaje = {0};
+    		mensajes[i] = mensaje;
+    	}
+    /*
+        mensajes[i].pid = 0;
+        mensajes[i].year = 0;
+        mensajes[i].month = 0;
+        mensajes[i].day = 0;
+        mensajes[i].hour = 0;
+        mensajes[i].minute = 0;
+        mensajes[i].second = 0;
+        mensajes[i].mensaje = 0;
+        */
+    }
+
+    // Separar el segmento de memoria compartida del espacio de direcciones del proceso
+    if (shmdt(mem) == -1)
+    {
+        perror("shmdt");
+        exit(1);
+    }
 
     // printf("%d\n", memory_size);
 
@@ -117,30 +183,7 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    int fd = open("memoria_compartida", O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
-    if (fd == -1)
-    {
-        perror("open");
-        exit(EXIT_FAILURE);
-    }
-    close(fd);
-
-    key_t SHM_KEY = ftok("memoria_compartida", 'R');
-    if (SHM_KEY == -1)
-    {
-        perror("ftok");
-        exit(1);
-    }
-
-    // printf("key creada\n");
-
-    // crear la memoria compartida
-    shm_id = shmget(SHM_KEY, memory_size, IPC_CREAT | 0666); // Creacion de la memoria compartida
-    if (shm_id < 0)
-    {
-        perror("Error con shmget memoria");
-        exit(1);
-    }
+    
 
     // printf("ID: %d\n", shm_id);
 
@@ -158,30 +201,21 @@ int main(int argc, char *argv[])
 
     // Convertir el puntero a la memoria compartida a un puntero a una estructura Control y mensaje
     control = (Control *)shm_ptr;
-    Mensaje *mensajes = (Mensaje *)(shm_ptr + sizeof(Control));
+    if(control == (Control *)(-1)){
+    	perror("shmget");
+    	exit(1);
+    }
 
     // Escribir en la memoria compartida
     control->count = 0;
     control->lineas = lineas;
+    printf("LINEAS: %d\n", lineas);
 
     for (i = 0; i < MAX_PROCESOS; i++)
     {
         control->procesos[i].pid = 0;
         control->procesos[i].tipo = 0;
         control->procesos[i].estado = 0;
-    }
-
-    // Inicializar los bloques de las líneas
-    for (i = 0; i < lineas; i++)
-    {
-        mensajes[i].pid = 0;
-        mensajes[i].year = 0;
-        mensajes[i].month = 0;
-        mensajes[i].day = 0;
-        mensajes[i].hour = 0;
-        mensajes[i].minute = 0;
-        mensajes[i].second = 0;
-        mensajes[i].mensaje = 0;
     }
 
     // Separar el segmento de memoria compartida del espacio de direcciones del proceso
@@ -191,6 +225,7 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
+/*
     shm_ptr = shmat(shm_id, NULL, 0);
     if (shm_ptr == (char *)-1)
     {
@@ -202,11 +237,21 @@ int main(int argc, char *argv[])
 
     // Convertir el puntero a la memoria compartida a un puntero a una estructura Control y mensaje
     control = (Control *)shm_ptr;
+    if(control == (Control *)(-1)){
+    	perror("shmget");
+    	exit(1);
+    }
+    
     Mensaje *mensajesa = (Mensaje *)(shm_ptr + sizeof(Control));
+    if(mensajes == (Mensaje *)(-1)){
+    	perror("shmget");
+    	exit(1);
+    }
 
     // Escribir en la memoria compartida
     printf("count: %d\n", control->count);
     printf("lineas: %d\n", control->lineas);
+
 
     for (i = 0; i < MAX_PROCESOS; i++)
     {
@@ -225,6 +270,7 @@ int main(int argc, char *argv[])
         perror("shmdt");
         exit(1);
     }
+    */
 
     printf("\nSe ha creado la memoria compartida con id %d de %d bytes dividida en %d lineas.\n", shm_id, SIZE_LINEA * lineas + SIZE_CONTROL, lineas);
     printf("Se han creado %d semaforos para acceder a la memoria con id %d y %d.\n", N_SEMAPHORES, sem_id_memoria, sem_id_readers);

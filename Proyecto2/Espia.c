@@ -67,6 +67,10 @@ void estado_memoria()
     }
 
     Mensaje *mensajes = (Mensaje *)(memoria + sizeof(Control));
+    if(mensajes == (Mensaje *)(-1)){
+    	perror("shmget");
+    	exit(1);
+    }
 
     // wait semaforo memoria
     sem_wait(semid_memoria);
@@ -110,6 +114,10 @@ void estado_procesos(int tipo)
     }
 
     Control *control = (Control *)memoria;
+    if(control == (Control *)(-1)){
+    	perror("shmget");
+    	exit(1);
+    }
 
     // wait semaforo control
     sem_wait(semid_control);
@@ -224,6 +232,10 @@ int main()
     }
 
     Control *control = (Control *)memoria;
+    if(control == (Control *)(-1)){
+    	perror("shmget");
+    	exit(1);
+    }
 
     // wait semaforo control
     sem_wait(semid_control);
