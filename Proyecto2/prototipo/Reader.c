@@ -302,7 +302,7 @@ void *preader(void *arg)
             }
         }
         sleep(1);
-		// vista de la memoria
+		/* vista de la memoria
         char *memoria = shmat(shm_id, NULL, 0);
         if (memoria == (char *)-1)
         {
@@ -332,7 +332,7 @@ void *preader(void *arg)
         {
             perror("shmdt");
             exit(1);
-        }
+        }*/
     }
 
     // cuando finalize :
