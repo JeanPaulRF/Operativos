@@ -91,6 +91,26 @@ Mensaje read_message(int pid)
     return MS;
 }
 
+// funcion para registrar en bitacora
+void registrar_en_memoria( Mensaje* MS ){
+    printf("Leyendo \n");
+    FILE* archivo = fopen("bitacora.txt", "a");
+
+    char* intro = "\n Leer a memoria: \n";
+
+    if(archivo == NULL){
+        perror("Error al abrir el archivo");
+        return;
+    }
+
+    fprintf(archivo, "%s", intro);
+    fprintf(archivo, "--> Proceso ID: %d\n", MS->pid);
+    fprintf(archivo, "--> Fecha actual: %d-%02d-%02d\n", MS->year, MS->month, MS->day);
+    fprintf(archivo, "--> Hora actual: %02d:%02d:%02d\n", MS->hour, MS->minute, MS->second);
+
+    fclose(archivo);
+}
+
 /* Describe el comportamiento de todo proceso lector */
 void *preader(void *arg)
 {
@@ -186,6 +206,7 @@ void *preader(void *arg)
                     printf("\n\n--> Proceso ID: %d\n", mensaje.pid);
 					printf("--> Fecha leída: %d-%02d-%02d\n", mensaje.year, mensaje.month, mensaje.day);
 					printf("--> Hora leida: %02d:%02d:%02d\n", mensaje.hour, mensaje.minute, mensaje.second);
+                    registrar_en_memoria(&mensajes[i]);
                 }
             }
 
@@ -302,6 +323,7 @@ void *preader(void *arg)
             printf(" PID: %d\n Linea: %d\n Mensaje: %d\n", mensaje.pid, mensaje.linea, mensaje.mensaje);
             printf(" Fecha actual: %d-%02d-%02d\n", mensaje.year, mensaje.month, mensaje.day);
             printf(" Hora actual: %02d:%02d:%02d\n", mensaje.hour, mensaje.minute, mensaje.second);
+            registrar_en_memoria(&mensajes[i]);
         }
 
         // signal semaforo memoria
