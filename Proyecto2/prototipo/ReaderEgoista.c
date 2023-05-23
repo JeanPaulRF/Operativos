@@ -44,6 +44,7 @@ int shm_id_control;
 int semid_control;
 int semid_memoria;
 int lineas;
+int consecutivo_egoistas;
 //Control *control;
 //Mensaje *mensajes;
 
@@ -123,7 +124,6 @@ void *preader(void *arg)
     int estado = 1; // 1 esta escribiendo, 0 esta dormido
     int pr_tiempo_leer = parametros->tiempo_leer;
     int pr_tiempo_dormir = 0;
-    int consecutivo_egoistas = 0;
     int max_consecutivo_egoistas =  3;
 
     // Mensaje new_ms = create_message(id);	// se movio al for 
@@ -177,9 +177,10 @@ void *preader(void *arg)
             sem_wait(semid_control);
 
             if (consecutivo_egoistas >= 3){
+                printf("\n\n--Demasiados egositas consecutivos--");
                 sem_signal(semid_control);
 
-                sleep(pr_tiempo_dormir);
+                sleep(parametros->tiempo_dormir);
                 consecutivo_egoistas = 0;
                 continue;
             }
@@ -322,7 +323,7 @@ void *preader(void *arg)
             }
         }
         sleep(1);
-        
+
 		// // vista de la memoria
         // char *memoria = shmat(shm_id, NULL, 0);
         // if (memoria == (char *)-1)
