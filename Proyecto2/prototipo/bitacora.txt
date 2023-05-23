@@ -1,45 +1,75 @@
 
  Escribir a memoria: 
---> Proceso ID: 2
---> Fecha actual: 2023-05-22
---> Hora actual: 17:09:11
-
- Escribir a memoria: 
---> Proceso ID: 1
---> Fecha actual: 2023-05-22
---> Hora actual: 17:09:11
-
- Escribir a memoria: 
 --> Proceso ID: 0
 --> Fecha actual: 2023-05-22
---> Hora actual: 17:09:11
-
- Escribir a memoria: 
---> Proceso ID: 0
---> Fecha actual: 2023-05-22
---> Hora actual: 17:09:11
-
- Escribir a memoria: 
---> Proceso ID: 1
---> Fecha actual: 2023-05-22
---> Hora actual: 17:09:11
+--> Hora actual: 18:28:12
 
  Escribir a memoria: 
 --> Proceso ID: 2
 --> Fecha actual: 2023-05-22
---> Hora actual: 17:09:11
+--> Hora actual: 18:28:12
 
  Escribir a memoria: 
 --> Proceso ID: 1
 --> Fecha actual: 2023-05-22
---> Hora actual: 17:09:11
+--> Hora actual: 18:28:12
 
  Escribir a memoria: 
---> Proceso ID: 2
+--> Proceso ID: 3
 --> Fecha actual: 2023-05-22
---> Hora actual: 17:09:11
+--> Hora actual: 18:28:12
 
  Escribir a memoria: 
 --> Proceso ID: 0
 --> Fecha actual: 2023-05-22
---> Hora actual: 17:09:11
+--> Hora actual: 18:28:12
+
+ Escribir a memoria: 
+--> Proceso ID: 2
+--> Fecha actual: 2023-05-22
+--> Hora actual: 18:28:12
+
+ Escribir a memoria: 
+--> Proceso ID: 1
+--> Fecha actual: 2023-05-22
+--> Hora actual: 18:28:12
+
+ Escribir a memoria: 
+--> Proceso ID: 3
+--> Fecha actual: 2023-05-22
+--> Hora actual: 18:28:12
+
+ Escribir a memoria: 
+--> Proceso ID: 0
+--> Fecha actual: 2023-05-22
+--> Hora actual: 18:28:12
+
+ Escribir a memoria: 
+--> Proceso ID: 2
+--> Fecha actual: 2023-05-22
+--> Hora actual: 18:28:12
+
+ Escribir a memoria: 
+--> Proceso ID: 1
+--> Fecha actual: 2023-05-22
+--> Hora actual: 18:28:12
+
+ Escribir a memoria: 
+--> Proceso ID: 3
+--> Fecha actual: 2023-05-22
+--> Hora actual: 18:28:12
+
+ Escribir a memoria: 
+--> Proceso ID: 1
+--> Fecha actual: 2023-05-22
+--> Hora actual: 18:28:12
+
+ Escribir a memoria: 
+--> Proceso ID: 3
+--> Fecha actual: 2023-05-22
+--> Hora actual: 18:28:12
+
+ Escribir a memoria: 
+--> Proceso ID: 0
+--> Fecha actual: 2023-05-22
+--> Hora actual: 18:28:12

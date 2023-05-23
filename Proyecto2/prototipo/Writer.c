@@ -209,8 +209,11 @@ void *pwriter(void *arg)
                     mensajes[i].minute = new_ms.minute;
                     mensajes[i].second = new_ms.second;
                     mensajes[i].mensaje = 1;
-                    printf("aqui va ----------------------- \n");
-                    registrar_en_memoria(&new_ms);
+                    //printf("aqui va ----------------------- \n");
+                    printf("\n\n--> Proceso ID: %d\n", new_ms.pid);
+                    printf("--> Fecha actual: %d-%02d-%02d\n", new_ms.year, new_ms.month, new_ms.day);
+                    printf("--> Hora actual: %02d:%02d:%02d\n", new_ms.hour, new_ms.minute, new_ms.second);
+                    registrar_en_memoria(&mensajes[i]);
                     break;
                 }
             }
@@ -223,10 +226,6 @@ void *pwriter(void *arg)
                 perror("shmdt");
                 exit(1);
             }
-
-            printf("\n\n--> Proceso ID: %d\n", new_ms.pid);
-            printf("--> Fecha actual: %d-%02d-%02d\n", new_ms.year, new_ms.month, new_ms.day);
-            printf("--> Hora actual: %02d:%02d:%02d\n", new_ms.hour, new_ms.minute, new_ms.second);
             // sleep(5);
             //  manda a avisar al control que esta despierto
 
@@ -236,7 +235,7 @@ void *pwriter(void *arg)
         else if (pw_tiempo_dormir > 0)
         {
             // comportamiento cuando esta dormido
-            printf("----> ZZzzZZ \n");
+            printf("\n----> ZZzzZZ \n");
             // sleep(5);
             //  manda a avisar al control que esta dormido
 
@@ -308,6 +307,7 @@ void *pwriter(void *arg)
         sleep(1);
         
         // vista de la memoria
+        /*
         char *memoria = shmat(shm_id, NULL, 0);
         if (memoria == (char *)-1)
         {
@@ -337,6 +337,7 @@ void *pwriter(void *arg)
             perror("shmdt");
             exit(1);
         }
+        */
     }
 
     // cuando finalize :
