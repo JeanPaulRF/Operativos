@@ -91,6 +91,26 @@ Mensaje read_message(int pid)
     return MS;
 }
 
+// funcion para registrar en bitacora
+void registrar_en_memoria( Mensaje* MS ){
+    printf("Leyendo y Borrando \n");
+    FILE* archivo = fopen("bitacora.txt", "a");
+
+    char* intro = "\n Leer y borrar en memoria: \n";
+
+    if(archivo == NULL){
+        perror("Error al abrir el archivo");
+        return;
+    }
+
+    fprintf(archivo, "%s", intro);
+    fprintf(archivo, "--> Proceso ID: %d\n", MS->pid);
+    fprintf(archivo, "--> Fecha actual: %d-%02d-%02d\n", MS->year, MS->month, MS->day);
+    fprintf(archivo, "--> Hora actual: %02d:%02d:%02d\n", MS->hour, MS->minute, MS->second);
+
+    fclose(archivo);
+}
+
 /* Describe el comportamiento de todo proceso lector */
 void *preader(void *arg)
 {
@@ -200,7 +220,7 @@ void *preader(void *arg)
                 printf("\n\n--> Proceso ID: %d\n", mensaje.pid);
                 printf("--> Fecha leída: %d-%02d-%02d\n", mensaje.year, mensaje.month, mensaje.day);
                 printf("--> Hora leida: %02d:%02d:%02d\n", mensaje.hour, mensaje.minute, mensaje.second);
-
+                registrar_en_memoria(&mensajes[entrada_aleatoria]);
                 // Actualizar el estado de la entrada como vacía
                 mensajes[entrada_aleatoria].mensaje = 0;
 
@@ -302,48 +322,49 @@ void *preader(void *arg)
             }
         }
         sleep(1);
-		// vista de la memoria
-        char *memoria = shmat(shm_id, NULL, 0);
-        if (memoria == (char *)-1)
-        {
-            perror("shmat");
-            exit(1);
-        }
-
-        Mensaje *mensajes = (Mensaje *)memoria;
         
-        // wait semaforo memoria
-        sem_wait(semid_memoria);
+		// // vista de la memoria
+        // char *memoria = shmat(shm_id, NULL, 0);
+        // if (memoria == (char *)-1)
+        // {
+        //     perror("shmat");
+        //     exit(1);
+        // }
+
+        // Mensaje *mensajes = (Mensaje *)memoria;
+        
+        // // wait semaforo memoria
+        // sem_wait(semid_memoria);
         
         
-        // Leer el mensaje de la entrada seleccionada
-        Mensaje mensaje = mensajes[entrada_aleatoria];
+        // // Leer el mensaje de la entrada seleccionada
+        // Mensaje mensaje = mensajes[entrada_aleatoria];
 
-        // Verificar si la entrada tiene un mensaje
-        if (mensaje.mensaje == 1) {
+        // // Verificar si la entrada tiene un mensaje
+        // if (mensaje.mensaje == 1) {
 
 
-            printf("\n\n--> Proceso ID: %d\n", mensaje.pid);
-            printf("--> Fecha leída: %d-%02d-%02d\n", mensaje.year, mensaje.month, mensaje.day);
-            printf("--> Hora leida: %02d:%02d:%02d\n", mensaje.hour, mensaje.minute, mensaje.second);
+        //     printf("\n\n--> Proceso ID: %d\n", mensaje.pid);
+        //     printf("--> Fecha leída: %d-%02d-%02d\n", mensaje.year, mensaje.month, mensaje.day);
+        //     printf("--> Hora leida: %02d:%02d:%02d\n", mensaje.hour, mensaje.minute, mensaje.second);
 
-            // Actualizar el estado de la entrada como vacía
-            mensajes[entrada_aleatoria].mensaje = 0;
+        //     // Actualizar el estado de la entrada como vacía
+        //     mensajes[entrada_aleatoria].mensaje = 0;
 
-            // Incrementar el contador de lectores egoístas consecutivos
-            consecutivo_egoistas++;
+        //     // Incrementar el contador de lectores egoístas consecutivos
+        //     consecutivo_egoistas++;
 
-            // signal semaforo memoria
-            sem_signal(semid_memoria);
-        } else {
-            sem_signal(semid_memoria);
-        }
+        //     // signal semaforo memoria
+        //     sem_signal(semid_memoria);
+        // } else {
+        //     sem_signal(semid_memoria);
+        // }
 
-        if (shmdt(memoria) == -1)
-        {
-            perror("shmdt");
-            exit(1);
-        }
+        // if (shmdt(memoria) == -1)
+        // {
+        //     perror("shmdt");
+        //     exit(1);
+        // }
         
     }
 
