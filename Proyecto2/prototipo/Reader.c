@@ -200,12 +200,12 @@ void *preader(void *arg)
             for (int i = 0; i < lineas; i++)
             {
                 Mensaje mensaje = mensajes[i];
-				printf("lineas %d", lineas);
+				//printf("lineas %d", lineas);
                 if (mensaje.mensaje == 1)
                 {
                     printf("\n\n--> Proceso ID: %d\n", mensaje.pid);
 					printf("--> Fecha leída: %d-%02d-%02d\n", mensaje.year, mensaje.month, mensaje.day);
-					printf("--> Hora leida: %02d:%02d:%02d\n", mensaje.hour, mensaje.minute, mensaje.second);
+					printf("--> Hora leida: %02d:%02d:%02d\n\n", mensaje.hour, mensaje.minute, mensaje.second);
                     registrar_en_memoria(&mensajes[i]);
                 }
             }

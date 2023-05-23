@@ -123,3 +123,53 @@
 --> Proceso ID: 1
 --> Fecha actual: 2023-05-22
 --> Hora actual: 18:53:45
+
+ Escribir a memoria: 
+--> Proceso ID: 5
+--> Fecha actual: 2023-05-22
+--> Hora actual: 20:27:55
+
+ Escribir a memoria: 
+--> Proceso ID: 6
+--> Fecha actual: 2023-05-22
+--> Hora actual: 20:27:55
+
+ Escribir a memoria: 
+--> Proceso ID: 7
+--> Fecha actual: 2023-05-22
+--> Hora actual: 20:27:55
+
+ Escribir a memoria: 
+--> Proceso ID: 9
+--> Fecha actual: 2023-05-22
+--> Hora actual: 20:27:55
+
+ Escribir a memoria: 
+--> Proceso ID: 8
+--> Fecha actual: 2023-05-22
+--> Hora actual: 20:27:55
+
+ Escribir a memoria: 
+--> Proceso ID: 5
+--> Fecha actual: 2023-05-22
+--> Hora actual: 20:27:55
+
+ Escribir a memoria: 
+--> Proceso ID: 9
+--> Fecha actual: 2023-05-22
+--> Hora actual: 20:27:55
+
+ Escribir a memoria: 
+--> Proceso ID: 6
+--> Fecha actual: 2023-05-22
+--> Hora actual: 20:27:55
+
+ Escribir a memoria: 
+--> Proceso ID: 7
+--> Fecha actual: 2023-05-22
+--> Hora actual: 20:27:55
+
+ Escribir a memoria: 
+--> Proceso ID: 8
+--> Fecha actual: 2023-05-22
+--> Hora actual: 20:27:55

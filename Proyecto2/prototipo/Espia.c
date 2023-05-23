@@ -116,10 +116,10 @@ void estado_procesos(int tipo)
 
     // Extraer los datos de control
     int count = control->count;
-    //printf("COUNT: %d\n", count);
-    Proceso procesos = control->procesos;
+    printf("Cantidad de procesos: %d\n", count);
+    Proceso *procesos = control->procesos;
     
-    printf("aaa: %d\n", procesos);
+    //printf("aaa: %d\n", procesos);
     
 
     // signal semaforo control
@@ -132,6 +132,7 @@ void estado_procesos(int tipo)
     }
 
     // Imprimir los datos
+    /*
     for (int i = 0; i < count; i++)
     {
         if (tipo < 0 || procesos[i].tipo == tipo)
@@ -141,6 +142,7 @@ void estado_procesos(int tipo)
             printf("ESTADO: %d\n", estados[procesos[i].estado]);
         }
     }
+    */
     menu();
 
     return;
