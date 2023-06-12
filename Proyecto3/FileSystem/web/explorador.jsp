@@ -100,7 +100,7 @@ body {
   <div class="container">
     <div class="file-explorer">
       <div class="file-explorer-header">
-        <h2>Drive</h2>
+        <h2>Drive: <%= request.getParameter("directory") %>/</h2>
       </div>
       <ul class="file-list">
         <li class="file-list-item">
@@ -131,5 +131,4 @@ body {
 </body>
 
 </html>
-
 

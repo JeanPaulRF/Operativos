@@ -1,7 +1,11 @@
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-   "http://www.w3.org/TR/html4/loose.dtd">
+<%-- 
+    Document   : register
+    Created on : Jun 5, 2023, 10:42:10 PM
+    Author     : jeanp
+--%>
 
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
 <html>
 
 <head>
@@ -16,7 +20,7 @@
 html {
   height: 100%;
   margin: 0;
-}    
+}
 
 body {
   background-color: #222222;
@@ -125,26 +129,30 @@ input[type=password]:hover {
   text-align: center;
   font-size: 12px;
 }
-
-    
   </style>
+  
+<script>
+    function mostrarMensaje() {
+      alert("Usuario creado con exito.");
+    }
+</script>
 
 </head>
 
 <body>
 <div class="container">
   <div class="login-card">
-    <h1>Drive Log-in</h1><br>
-  <form action="login" method="post">
-    <input type="text" name="user" placeholder="Username" required>
-    <input type="password" name="pass" placeholder="Password" required>
-    <input type="submit" name="log-in" class="login login-submit" value="log-in">
+    <h1>Drive Registrar</h1><br>
+  <form action="#" method="get">
+    <input type="text" name="user" placeholder="Username">
+    <input type="password" name="pass" placeholder="Password">
+    <input type="submit" name="login" class="login login-submit" value="Registrar" onclick="mostrarMensaje(); return false;">
   </form>
-
     
   <div class="login-help">
-    <a href="register.jsp">Register</a> 
+    <a href="index.jsp">Atras</a> 
   </div>
+
 </div>
 
 <!-- <div id="error"><img src="https://dl.dropboxusercontent.com/u/23299152/Delete-icon.png" /> Your caps-lock is on.</div> -->
