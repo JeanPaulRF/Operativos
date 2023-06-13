@@ -4,7 +4,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package graphNodes;
+package model;
 
 /**
  *
@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NodoUsuario extends Nodo{
-    private List<NodoUsuario> Compartido;
     private List<NodoCarpeta> Carpetas;
     private String password;
     
@@ -23,15 +22,11 @@ public class NodoUsuario extends Nodo{
         
         this.password = clave;
         this.Carpetas = new ArrayList<>();
-        this.Compartido = new ArrayList<>();
+        this.Carpetas.add(new NodoCarpeta("Compartido"));
     }
     
     public void agregarCarpeta(NodoCarpeta newCarpeta) {
         Carpetas.add(newCarpeta);
-    }
-    
-    public void agregarUsuario(NodoUsuario newUser) {
-        Compartido.add(newUser);
     }
     
     public String getPassword() {

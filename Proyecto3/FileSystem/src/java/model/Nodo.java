@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package graphNodes;
+package model;
 
 /**
  *
@@ -16,12 +16,14 @@ public class Nodo {
     protected String tipoNodo;
     protected Date fechaCreacion;
     protected Date fechaMod;
+    protected String absolutePath;
     
     public Nodo(String nombre, String tiponodo) {
         this.nombre = nombre;
         this.tipoNodo = tiponodo;
         this.fechaCreacion = new Date(); // Establecer la fecha de creación al momento de crear el nodo
         this.fechaMod = new Date();
+        this.absolutePath = "";
     }
     
     public String getNombre() {

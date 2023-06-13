@@ -3,7 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package graphNodes;
+package model;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -11,10 +14,12 @@ package graphNodes;
  */
 public class NodoArchivo extends Nodo {
     private String nombreArchivo;
+    private List<NodoUsuario> usuariosCompartido;
     
     public NodoArchivo(String nombre, String nombArch) {
         super(nombre, "Archivo");
         this.nombreArchivo = nombArch;
+        this.usuariosCompartido = new ArrayList<>();
     }
     
     public String getNombreArchivo() {

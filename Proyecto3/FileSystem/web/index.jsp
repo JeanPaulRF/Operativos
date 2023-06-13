@@ -125,6 +125,23 @@
           text-align: center;
           font-size: 12px;
         }
+        
+
+          .alert {
+            color: #721c24;
+            background-color: #222222;
+            border-color: #222222;
+            padding: .75rem 1.25rem;
+            margin-bottom: 1rem;
+            border: 1px solid transparent;
+            border-radius: .25rem;
+        }
+        .alert-danger {
+            color: #721c24;
+            background-color: #222222;
+            border-color: #222222;
+        }
+
 
 
         </style>
@@ -132,6 +149,7 @@
     </head>
 
     <body>
+
     <div class="container">
       <div class="login-card">
         <h1>Drive Log-in</h1><br>
@@ -145,12 +163,19 @@
       <div class="login-help">
         <a href="register.jsp">Register</a> 
       </div>
+        
+          <%-- Verificar si existe el atributo errorMessage --%>
+            <c:if test="${not empty errorMessage}">
+                <div class="alert alert-danger">${errorMessage}</div>
+            </c:if>
+        
     </div>
 
     <!-- <div id="error"><img src="https://dl.dropboxusercontent.com/u/23299152/Delete-icon.png" /> Your caps-lock is on.</div> -->
 
       <script src='http://codepen.io/assets/libs/fullpage/jquery_and_jqueryui.js'></script>
     </div>
+        
     </body>
 
 </html>

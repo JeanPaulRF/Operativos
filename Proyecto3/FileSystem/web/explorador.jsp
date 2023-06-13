@@ -103,6 +103,12 @@ body {
         <h2>Drive: <%= request.getParameter("directory") %>/</h2>
       </div>
       <ul class="file-list">
+          
+        <c:forEach var="nodo" items="${nodo}">
+          <!-- Código HTML para cada elemento -->
+          <p>${element}</p>
+        </c:forEach>
+          
         <li class="file-list-item">
           <img class="file-icon" src="icons/carpeta.png" alt="Icono de carpeta">
           <div class="file-info">

@@ -10,6 +10,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import model.*;
 
 /**
  *
@@ -22,15 +23,40 @@ public class LoginServlet extends HttpServlet {
             throws ServletException, IOException {
         String user = request.getParameter("user");
         String pass = request.getParameter("pass");
-        
+
         // Validar las credenciales aquí
+        boolean credentialsValid = true;
         
-        // Obtener la URL de redirección con el parámetro user en la URL
-        String redirectUrl = request.getContextPath() + "/explorador.jsp?directory=" + user;
-        
-        // Redirigir a la página explorador.html
-        response.sendRedirect(redirectUrl);
+        // obtener el nodo
+        Drive drive = Drive.getInstance();
+        Nodo nodo = (Nodo) drive.getUsuarios().get(1);
+
+        if (credentialsValid) {
+            // Obtener la URL de redirección con el parámetro user en la URL
+            String redirectUrl = request.getContextPath() + "/explorador.jsp";
+
+            // Agregar el objeto UserObject como atributo en el request
+            request.setAttribute("userObject", nodo);
+
+            // Redirigir a la página explorador.html
+            response.sendRedirect(redirectUrl);
+        } else {
+            // Los datos ingresados son incorrectos, mostrar alerta
+            String errorMessage = "Credenciales incorrectas. Por favor, inténtalo de nuevo.";
+
+            // Agregar el mensaje de alerta como atributo en el request
+            request.setAttribute("errorMessage", errorMessage);
+
+            // Obtener el objeto RequestDispatcher para redirigir al JSP de inicio de sesión
+            RequestDispatcher dispatcher = request.getRequestDispatcher("/index.jsp");
+
+            // Reenviar el request al JSP de inicio de sesión
+            dispatcher.forward(request, response);
+        }
     }
+
+
+
 
     /**
      * Returns a short description of the servlet.

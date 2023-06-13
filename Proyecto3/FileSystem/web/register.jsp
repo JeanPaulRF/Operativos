@@ -143,7 +143,7 @@ input[type=password]:hover {
 <div class="container">
   <div class="login-card">
     <h1>Drive Registrar</h1><br>
-  <form action="#" method="get">
+  <form action="register" method="post">
     <input type="text" name="user" placeholder="Username">
     <input type="password" name="pass" placeholder="Password">
     <input type="submit" name="login" class="login login-submit" value="Registrar" onclick="mostrarMensaje(); return false;">
