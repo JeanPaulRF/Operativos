@@ -14,14 +14,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NodoUsuario extends Nodo{
-    private List<NodoCarpeta> Carpetas;
-    private String password;
+    public List<NodoCarpeta> Carpetas;
+    public List<NodoArchivo> Archivos;
+    public String password;
     
     public NodoUsuario(String user, String clave){
         super(user, "Usuario");
         
         this.password = clave;
         this.Carpetas = new ArrayList<>();
+        this.Archivos = new ArrayList<>();
         this.Carpetas.add(new NodoCarpeta("Compartido"));
     }
     

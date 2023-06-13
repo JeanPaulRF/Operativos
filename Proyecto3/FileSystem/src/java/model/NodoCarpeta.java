@@ -13,9 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NodoCarpeta extends Nodo{
-    private List<NodoCarpeta> Carpetas;
-    private List<NodoArchivo> Archivos;
-    private NodoCarpeta Padre;
+    public List<NodoCarpeta> Carpetas;
+    public List<NodoArchivo> Archivos;
+    public NodoCarpeta Padre;
     
     public NodoCarpeta(String nombre){
         super(nombre, "Carpeta");

@@ -28,8 +28,9 @@ public class LoginServlet extends HttpServlet {
         boolean credentialsValid = true;
         
         // obtener el nodo
-        Drive drive = Drive.getInstance();
-        Nodo nodo = (Nodo) drive.getUsuarios().get(1);
+        NodoUsuario nodo = new NodoUsuario(user, pass);
+        nodo.Carpetas.add(new NodoCarpeta("Desktop"));
+        nodo.Carpetas.get(0).get
 
         if (credentialsValid) {
             // Obtener la URL de redirección con el parámetro user en la URL

@@ -100,29 +100,28 @@ body {
   <div class="container">
     <div class="file-explorer">
       <div class="file-explorer-header">
-        <h2>Drive: <%= request.getParameter("directory") %>/</h2>
+        <h2>Drive: ${nodo.nombre}/</h2>
       </div>
       <ul class="file-list">
           
-        <c:forEach var="nodo" items="${nodo}">
-          <!-- Código HTML para cada elemento -->
-          <p>${element}</p>
+        <c:forEach var="carpeta" items="${nodo.Carpetas}">
+          <li class="file-list-item">
+            <img class="file-icon" src="icons/carpeta.png" alt="Icono de carpeta">
+            <div class="file-info">
+              <span class="file-name">${carpeta.nombre}</span>
+            </div>
+            <div class="file-actions">
+              <a href="#">Abrir</a>
+              <a href="#">Eliminar</a>
+            </div>
+          </li>
         </c:forEach>
-          
-        <li class="file-list-item">
-          <img class="file-icon" src="icons/carpeta.png" alt="Icono de carpeta">
-          <div class="file-info">
-            <span class="file-name">Carpeta 1</span>
-          </div>
-          <div class="file-actions">
-            <a href="#">Abrir</a>
-            <a href="#">Eliminar</a>
-          </div>
-        </li>
-        <li class="file-list-item">
+            
+        <c:forEach var="archivo" items="${nodo.Carpetas}">
+          <li class="file-list-item">
           <img class="file-icon" src="icons/expediente.png" alt="Icono de archivo">
           <div class="file-info">
-            <span class="file-name">Archivo 1.txt</span>
+            <span class="file-name">${archivo.nombre}</span>
             <!-- <span class="file-size">1.2 MB</span> -->
           </div>
           <div class="file-actions">
@@ -130,6 +129,8 @@ body {
             <a href="#">Eliminar</a>
           </div>
         </li>
+        </c:forEach>
+          
         <!-- Agrega más elementos de la lista según sea necesario -->
       </ul>
     </div>
