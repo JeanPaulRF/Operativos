@@ -23,4 +23,33 @@ public class NodoRaiz extends Nodo{
     public void agregarUsuario(NodoUsuario newUser) {
         Usuarios.add(newUser);
     }
+    
+    public boolean existeUsuario(String nombreUser) {
+        for (NodoUsuario usuario : Usuarios) {
+            if (usuario.getNombre().equals(nombreUser)) {
+                return true; // El nombre de usuario ya existe
+            }
+        }
+        return false; // El nombre de usuario no existe
+    }
+    
+    public void crearUsuario(String nombreUser, String contrasena) {
+        // Verificar si el nombre del usuario ya existe
+        if (existeUsuario(nombreUser)) {
+            System.out.println("El nombre de usuario ya existe. No se puede crear.");
+            return;
+        }
+
+        // Crear un nuevo NodoUsuario
+        NodoUsuario nuevoUsuario = new NodoUsuario(nombreUser, contrasena);
+        
+        // Crear la carpeta inicial del nuevo usuario
+        NodoCarpeta carpetaPrincipal = new NodoCarpeta("V");
+        nuevoUsuario.agregarCarpeta(carpetaPrincipal);
+
+        // Agregar el nuevo usuario a la lista de usuarios
+        agregarUsuario(nuevoUsuario);
+
+        System.out.println("Usuario creado exitosamente.");
+    }
 }

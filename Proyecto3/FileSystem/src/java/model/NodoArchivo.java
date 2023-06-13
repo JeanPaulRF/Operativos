@@ -13,20 +13,20 @@ import java.util.List;
  * @author david
  */
 public class NodoArchivo extends Nodo {
-    private String nombreArchivo;
+    private String pathArchivo;
     private List<NodoUsuario> usuariosCompartido;
     
-    public NodoArchivo(String nombre, String nombArch) {
+    public NodoArchivo(String nombre) {
         super(nombre, "Archivo");
-        this.nombreArchivo = nombArch;
+        this.pathArchivo = "/" + nombre;
         this.usuariosCompartido = new ArrayList<>();
     }
     
-    public String getNombreArchivo() {
-        return nombreArchivo;
+    public String getPathArchivo() {
+        return pathArchivo;
     }
     
-    public void setNombreArchivo(String nombreArch){
-        this.nombreArchivo = nombreArch;
+    public void setNombreArchivo(String pathArch){
+        this.pathArchivo = pathArch;
     }
 }
