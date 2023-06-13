@@ -113,7 +113,7 @@ body {
               <span class="file-name">${carpeta.nombre}</span>
             </div>
             <div class="file-actions">
-              <a href="#">Abrir</a>
+              <a href="exploradorCarpeta?carpeta=${carpeta.nombre}" method="post">Abrir</a>
               <a href="#">Eliminar</a>
             </div>
           </li>

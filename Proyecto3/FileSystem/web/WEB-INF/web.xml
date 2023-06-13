@@ -8,6 +8,10 @@
         <servlet-name>RegisterServlet</servlet-name>
         <servlet-class>RegisterServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ExploradorCarpetaServlet</servlet-name>
+        <servlet-class>ExploradorCarpetaServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>LoginServlet</servlet-name>
         <url-pattern>/explorador</url-pattern>
@@ -16,14 +20,14 @@
         <servlet-name>RegisterServlet</servlet-name>
         <url-pattern>/register</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ExploradorCarpetaServlet</servlet-name>
+        <url-pattern>/exploradorCarpeta</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>
             30
         </session-timeout>
     </session-config>
-
-
     <!-- JSTL -->
-    
-
 </web-app>
