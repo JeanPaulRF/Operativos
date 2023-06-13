@@ -26,7 +26,7 @@ public class NodoArchivo extends Nodo {
         return pathArchivo;
     }
     
-    public void setNombreArchivo(String pathArch){
+    public void setPathArchivo(String pathArch){
         this.pathArchivo = pathArch;
     }
 }
