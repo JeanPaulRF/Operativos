@@ -21,4 +21,9 @@
             30
         </session-timeout>
     </session-config>
+
+
+    <!-- JSTL -->
+    
+
 </web-app>

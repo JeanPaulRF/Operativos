@@ -4,7 +4,9 @@
     Author     : jeanp
 --%>
 
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page import="model.*" %>
 <!DOCTYPE html>
 <html>
 
@@ -102,9 +104,9 @@ body {
       <div class="file-explorer-header">
         <h2>Drive: ${nodo.nombre}/</h2>
       </div>
+      
       <ul class="file-list">
-          
-        <c:forEach var="carpeta" items="${nodo.Carpetas}">
+        <c:forEach var="carpeta" items="${nodo.getCarpetas()}">
           <li class="file-list-item">
             <img class="file-icon" src="icons/carpeta.png" alt="Icono de carpeta">
             <div class="file-info">
@@ -117,7 +119,7 @@ body {
           </li>
         </c:forEach>
             
-        <c:forEach var="archivo" items="${nodo.Carpetas}">
+        <c:forEach var="archivo" items="${nodo.getArchivos()}">
           <li class="file-list-item">
           <img class="file-icon" src="icons/expediente.png" alt="Icono de archivo">
           <div class="file-info">

@@ -30,17 +30,20 @@ public class LoginServlet extends HttpServlet {
         // obtener el nodo
         NodoUsuario nodo = new NodoUsuario(user, pass);
         nodo.Carpetas.add(new NodoCarpeta("Desktop"));
-        nodo.Carpetas.get(0).get
+        nodo.Carpetas.get(0).Carpetas.add(new NodoCarpeta("Docs"));
+        nodo.Archivos.add(new NodoArchivo("word", "word"));
 
         if (credentialsValid) {
             // Obtener la URL de redirección con el parámetro user en la URL
-            String redirectUrl = request.getContextPath() + "/explorador.jsp";
+            //String redirectUrl = request.getContextPath() + "/explorador.jsp";
 
             // Agregar el objeto UserObject como atributo en el request
-            request.setAttribute("userObject", nodo);
+            request.setAttribute("nodo", nodo);
+            
+            request.getRequestDispatcher("explorador.jsp").forward(request, response);
 
             // Redirigir a la página explorador.html
-            response.sendRedirect(redirectUrl);
+            //response.sendRedirect(redirectUrl);
         } else {
             // Los datos ingresados son incorrectos, mostrar alerta
             String errorMessage = "Credenciales incorrectas. Por favor, inténtalo de nuevo.";

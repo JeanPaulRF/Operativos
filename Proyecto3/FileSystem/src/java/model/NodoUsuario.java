@@ -38,4 +38,14 @@ public class NodoUsuario extends Nodo{
     public void setPassword(String newPass){
         this.password = newPass;
     }
+
+    public List<NodoCarpeta> getCarpetas() {
+        return Carpetas;
+    }
+
+    public List<NodoArchivo> getArchivos() {
+        return Archivos;
+    }
+    
+    
 }
