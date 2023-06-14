@@ -66,9 +66,7 @@ public class AbrirCarpetaServlet extends HttpServlet {
         RequestDispatcher dispatcher = request.getRequestDispatcher("explorador.jsp");
         dispatcher.forward(request, response);
     }
-    
-
-
+   
 
 
     /**

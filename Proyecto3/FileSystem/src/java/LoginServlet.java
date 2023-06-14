@@ -31,7 +31,7 @@ public class LoginServlet extends HttpServlet {
         NodoUsuario nodo = new NodoUsuario(user, pass);
         nodo.Carpetas.add(new NodoCarpeta("Desktop"));
         nodo.Carpetas.get(0).Carpetas.add(new NodoCarpeta("Docs"));
-        nodo.Archivos.add(new NodoArchivo("word", "word"));
+        nodo.Archivos.add(new NodoArchivo("word"));
 
         if (credentialsValid) {
             // Obtener la URL de redirección con el parámetro user en la URL
