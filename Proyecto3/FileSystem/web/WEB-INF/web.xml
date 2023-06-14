@@ -9,20 +9,84 @@
         <servlet-class>RegisterServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>ExploradorCarpetaServlet</servlet-name>
-        <servlet-class>ExploradorCarpetaServlet</servlet-class>
+        <servlet-name>AbrirCarpetaServlet</servlet-name>
+        <servlet-class>AbrirCarpetaServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CrearArchivoServlet</servlet-name>
+        <servlet-class>CrearArchivoServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CrearCarpetaServlet</servlet-name>
+        <servlet-class>CrearCarpetaServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CompartirServlet</servlet-name>
+        <servlet-class>CompartirServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CopiarServlet</servlet-name>
+        <servlet-class>CopiarServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>MoverServlet</servlet-name>
+        <servlet-class>MoverServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>EliminarServlet</servlet-name>
+        <servlet-class>EliminarServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>PropiedadesServlet</servlet-name>
+        <servlet-class>PropiedadesServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>AbrirArchivoServlet</servlet-name>
+        <servlet-class>AbrirArchivoServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>LoginServlet</servlet-name>
-        <url-pattern>/explorador</url-pattern>
+        <url-pattern>/login</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>RegisterServlet</servlet-name>
         <url-pattern>/register</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>ExploradorCarpetaServlet</servlet-name>
-        <url-pattern>/exploradorCarpeta</url-pattern>
+        <servlet-name>AbrirCarpetaServlet</servlet-name>
+        <url-pattern>/abrirCarpeta</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CrearArchivoServlet</servlet-name>
+        <url-pattern>/crearArchivo</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CrearCarpetaServlet</servlet-name>
+        <url-pattern>/crearCarpeta</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CompartirServlet</servlet-name>
+        <url-pattern>/compartir</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CopiarServlet</servlet-name>
+        <url-pattern>/copiar</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>MoverServlet</servlet-name>
+        <url-pattern>/mover</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>EliminarServlet</servlet-name>
+        <url-pattern>/eliminar</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>PropiedadesServlet</servlet-name>
+        <url-pattern>/propiedades</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AbrirArchivoServlet</servlet-name>
+        <url-pattern>/abrirArchivo</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

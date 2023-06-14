@@ -5,20 +5,16 @@
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import model.NodoArchivo;
-import model.NodoCarpeta;
-import model.NodoUsuario;
 
 /**
  *
  * @author jeanp
  */
-public class ExploradorCarpetaServlet extends HttpServlet {
+public class EliminarServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -29,6 +25,22 @@ public class ExploradorCarpetaServlet extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        response.setContentType("text/html;charset=UTF-8");
+        try ( PrintWriter out = response.getWriter()) {
+            /* TODO output your page here. You may use following sample code. */
+            out.println("<!DOCTYPE html>");
+            out.println("<html>");
+            out.println("<head>");
+            out.println("<title>Servlet EliminarServlet</title>");            
+            out.println("</head>");
+            out.println("<body>");
+            out.println("<h1>Servlet EliminarServlet at " + request.getContextPath() + "</h1>");
+            out.println("</body>");
+            out.println("</html>");
+        }
+    }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
@@ -42,7 +54,7 @@ public class ExploradorCarpetaServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+        processRequest(request, response);
     }
 
     /**
@@ -53,36 +65,11 @@ public class ExploradorCarpetaServlet extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String carpetaSeleccionada = request.getParameter("carpeta");
-
-        // Obtén el nodo de carpeta correspondiente según el nombre seleccionado
-        NodoCarpeta nodoSeleccionado = obtenerNodoCarpeta(carpetaSeleccionada);
-
-        // Agrega el nodo seleccionado como atributo en el objeto HttpServletRequest
-        request.setAttribute("nodo", nodoSeleccionado);
-
-        // Redirige nuevamente a explorador.jsp
-        RequestDispatcher dispatcher = request.getRequestDispatcher("explorador.jsp");
-        dispatcher.forward(request, response);
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        processRequest(request, response);
     }
-    
-    private NodoCarpeta obtenerNodoCarpeta(String nombreCarpeta) {
-        // Realiza la lógica para encontrar el nodo de carpeta según el nombre seleccionado
-        // Puedes recorrer tu estructura de carpetas y buscar por nombre o utilizar algún otro criterio
-
-        // Ejemplo: Iterar a través de las carpetas en el nodo raíz y encontrar la coincidencia por nombre
-        for (NodoCarpeta carpeta : nodoRaiz.getCarpetas()) {
-            if (carpeta.getNombre().equals(nombreCarpeta)) {
-                return carpeta;
-            }
-        }
-
-        // Si no se encuentra la carpeta, puedes manejar el caso de error o devolver null
-        return null;
-    }
-
-
 
     /**
      * Returns a short description of the servlet.

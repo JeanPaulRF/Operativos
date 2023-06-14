@@ -35,11 +35,14 @@ body {
 }
 
 .file-explorer-header {
+  display: flex;
   background-color: #4d90fe;
   padding: 10px;
   border-bottom: 1px solid #757de8; /* Borde azul */
   color: #fff; /* Color de texto */
 }
+
+
 
 .file-explorer-header h2 {
   margin: 0;
@@ -103,6 +106,8 @@ body {
     <div class="file-explorer">
       <div class="file-explorer-header">
         <h2>Drive: ${nodo.nombre}/</h2>
+        <a href="crearCarpeta?nombre=${nodo.nombre}" class="file-actions" method="post">Crear Carpeta</a>
+        <a href="crearArchivo?nombre=${nodo.nombre}" class="file-actions" method="post">Crear Archivo</a>
       </div>
       
       <ul class="file-list">
@@ -113,8 +118,12 @@ body {
               <span class="file-name">${carpeta.nombre}</span>
             </div>
             <div class="file-actions">
-              <a href="exploradorCarpeta?carpeta=${carpeta.nombre}" method="post">Abrir</a>
-              <a href="#">Eliminar</a>
+              <a href="abrirCarpeta?carpeta=${carpeta.nombre}" method="post">Abrir</a>
+              <a href="compartir" method="post">Compartir</a>
+              <a href="copiar" method="post">Copiar</a>
+              <a href="mover" method="post">Mover</a>
+              <a href="eliminar" method="post">Eliminar</a>
+              <a href="propiedades" method="post">Propiedades</a>
             </div>
           </li>
         </c:forEach>
@@ -127,8 +136,12 @@ body {
             <!-- <span class="file-size">1.2 MB</span> -->
           </div>
           <div class="file-actions">
-            <a href="editor.jsp">Abrir</a>
-            <a href="#">Eliminar</a>
+              <a href="editor.jsp">Abrir</a>
+              <a href="compartir" method="post">Compartir</a>
+              <a href="copiar" method="post">Copiar</a>
+              <a href="mover" method="post">Mover</a>
+              <a href="eliminar" method="post">Eliminar</a>
+              <a href="propiedades" method="post">Propiedades</a>
           </div>
         </li>
         </c:forEach>

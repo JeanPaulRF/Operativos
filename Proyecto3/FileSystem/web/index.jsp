@@ -153,7 +153,7 @@
     <div class="container">
       <div class="login-card">
         <h1>Drive Log-in</h1><br>
-      <form action="explorador" method="post">
+      <form action="login" method="post">
         <input type="text" name="user" placeholder="Username" required>
         <input type="password" name="pass" placeholder="Password" required>
         <input type="submit" name="log-in" class="login login-submit" value="log-in">
