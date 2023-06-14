@@ -57,16 +57,17 @@ public class ExploradorCarpetaServlet extends HttpServlet {
         String carpetaSeleccionada = request.getParameter("carpeta");
 
         // Obtén el nodo de carpeta correspondiente según el nombre seleccionado
-        NodoCarpeta nodoSeleccionado = obtenerNodoCarpeta(carpetaSeleccionada);
+        //NodoCarpeta nodoSeleccionado = obtenerNodoCarpeta(carpetaSeleccionada);
 
         // Agrega el nodo seleccionado como atributo en el objeto HttpServletRequest
-        request.setAttribute("nodo", nodoSeleccionado);
+        //request.setAttribute("nodo", nodoSeleccionado);
 
         // Redirige nuevamente a explorador.jsp
         RequestDispatcher dispatcher = request.getRequestDispatcher("explorador.jsp");
         dispatcher.forward(request, response);
     }
     
+    /*
     private NodoCarpeta obtenerNodoCarpeta(String nombreCarpeta) {
         // Realiza la lógica para encontrar el nodo de carpeta según el nombre seleccionado
         // Puedes recorrer tu estructura de carpetas y buscar por nombre o utilizar algún otro criterio
@@ -81,7 +82,7 @@ public class ExploradorCarpetaServlet extends HttpServlet {
         // Si no se encuentra la carpeta, puedes manejar el caso de error o devolver null
         return null;
     }
-
+    */
 
 
     /**

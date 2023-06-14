@@ -18,7 +18,7 @@ public class NodoArchivo extends Nodo {
     
     public NodoArchivo(String nombre) {
         super(nombre, "Archivo");
-        this.pathArchivo = "/" + nombre;
+        this.pathArchivo = nombre ;
         this.usuariosCompartido = new ArrayList<>();
     }
     

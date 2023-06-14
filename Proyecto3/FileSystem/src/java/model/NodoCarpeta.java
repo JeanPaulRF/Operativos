@@ -22,7 +22,7 @@ public class NodoCarpeta extends Nodo{
         super(nombre, "Carpeta");
         // El nodo padre podria ser null, al ser el primero
         this.Padre = null;
-        this.pathCarpeta = "/" + nombre; 
+        this.pathCarpeta = nombre + "/"; 
         this.Carpetas = new ArrayList<>();
         this.Archivos = new ArrayList<>();
     }
@@ -40,11 +40,11 @@ public class NodoCarpeta extends Nodo{
         return false; // El nombre de la carpeta no existe
     }
     
-    public NodoCarpeta crearNuevaCarpeta(NodoCarpeta carpetaPadre, String nombreCarpeta){
+    public void crearNuevaCarpeta(NodoCarpeta carpetaPadre, String nombreCarpeta){
         // Verificar si el nombre de la carpeta ya existe
         if (existeCarpeta(nombreCarpeta)) {
             System.out.println("El nombre de la carpeta ya existe. No se puede crear.");
-            return carpetaPadre; // lo retorna sin modificarlo
+            return;
         }
         
         // Crear un nuevo nodo carpeta
@@ -61,7 +61,6 @@ public class NodoCarpeta extends Nodo{
         agregarCarpeta(nuevaCarpeta);
 
         System.out.println("Carpeta creada exitosamente.");
-        return carpetaPadre; // retorno el mismo pero con una carta hija más
     }
     
     public void agregarArchivo(NodoArchivo newArchivo) {
@@ -88,6 +87,7 @@ public class NodoCarpeta extends Nodo{
         NodoArchivo nuevoArchivo = new NodoArchivo(nombreArchivo);
         
         // Creo el path para el archivo
+        // agregar si es null: 
         String nuevoPath = getCarpetaPadre().getPathCarpeta() + nuevoArchivo.getPathArchivo();
         
         nuevoArchivo.setPathArchivo(nuevoPath);

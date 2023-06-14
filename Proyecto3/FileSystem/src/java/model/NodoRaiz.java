@@ -44,7 +44,7 @@ public class NodoRaiz extends Nodo{
         NodoUsuario nuevoUsuario = new NodoUsuario(nombreUser, contrasena);
         
         // Crear la carpeta inicial del nuevo usuario
-        NodoCarpeta carpetaPrincipal = new NodoCarpeta("V");
+        NodoCarpeta carpetaPrincipal = new NodoCarpeta("V:");
         nuevoUsuario.agregarCarpeta(carpetaPrincipal);
 
         // Agregar el nuevo usuario a la lista de usuarios
@@ -52,4 +52,6 @@ public class NodoRaiz extends Nodo{
 
         System.out.println("Usuario creado exitosamente.");
     }
+    
+    //funcion para buscar un archivo o carpeta por el path
 }
