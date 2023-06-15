@@ -54,4 +54,11 @@ public class NodoRaiz extends Nodo{
     }
     
     //funcion para buscar un archivo o carpeta por el path
+    public NodoArchivo buscarArchivo(NodoUsuario user, String path){
+        // se le inserta el usuario al que se le aplicara la busqueda
+        // y luego el path con el cual empezara a buscar
+        NodoArchivo archivoBuscado = user.buscarArchivo(path);
+        
+        return archivoBuscado;
+    }
 }

@@ -10,6 +10,7 @@ package model;
  * @author david
  */
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class NodoCarpeta extends Nodo{
@@ -25,6 +26,38 @@ public class NodoCarpeta extends Nodo{
         this.pathCarpeta = nombre + "/"; 
         this.Carpetas = new ArrayList<>();
         this.Archivos = new ArrayList<>();
+    }
+    
+    public NodoArchivo buscarArchivo(String path){
+        // primero voy descomponiendo el path
+        NodoArchivo archivoError = new NodoArchivo("No existe, error 101");
+        
+        //primero desgloso el path
+        String[] partes = path.split("/");
+        
+        if (partes.length == 1){
+            // quiere decir que estoy en el ultmo nivel de busqueda
+            for (NodoArchivo archivo : Archivos) {
+                if (archivo.getNombre().equals(partes[0])) {
+                    return archivo;
+                }
+            }
+            System.out.println("Error el archivo no existe.");
+            return archivoError; // En caso de que no exista
+        }
+        else{
+            // Si partes es > 1, entonces aun me falta profundizar
+            for (NodoCarpeta carpeta :Carpetas){
+                if (carpeta.getNombre().equals(partes[0])) {
+                    // si encuentra una coincidencia, busca en la carpeta
+                    String newpath = String.join("/", Arrays.copyOfRange(partes, 1, partes.length));
+                    return carpeta.buscarArchivo(newpath);
+                }
+            }
+            // no lo encontro
+            System.out.println("Error en el path. La carpeta no existe en el usuario");
+            return archivoError;
+        }
     }
     
     public void agregarCarpeta(NodoCarpeta newCarpeta) {
