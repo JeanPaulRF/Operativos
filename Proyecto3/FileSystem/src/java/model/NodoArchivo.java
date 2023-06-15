@@ -54,4 +54,15 @@ public class NodoArchivo extends Nodo {
     public void setPathArchivo(String pathArch){
         this.pathArchivo = pathArch;
     }
+    
+    public ArrayList<String> verPropiedades() {
+        ArrayList<String> propiedades = new ArrayList<String>();
+        propiedades.add("Nombre: " + this.getNombre());
+        propiedades.add("Extension: .txt");
+        propiedades.add("Fecha de creacion: " + this.getFechaCreacion().toString());
+        propiedades.add("Fecha de modificacion: " + this.getFechaModificacion().toString());
+        propiedades.add("Tamaño: " + this.getBytes());
+    
+        return propiedades;
+    }
 }

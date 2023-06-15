@@ -146,4 +146,21 @@ public class NodoCarpeta extends Nodo{
     public void setPathCarpeta(String pathCarp){
         this.pathCarpeta = pathCarp;
     }
+    
+    public ArrayList<String> listarDirectorio() {
+        ArrayList<String> contenido = new ArrayList<>();
+        contenido.add("CARPETAS:");
+        
+        for(NodoCarpeta carpeta :Carpetas) {
+            contenido.add(carpeta.getNombre());
+        }
+        
+        contenido.add("ARCHIVOS:");
+        
+        for(NodoArchivo archivo :Archivos) {
+            contenido.add(archivo.getNombre());
+        }
+        
+        return contenido;
+    }
 }
