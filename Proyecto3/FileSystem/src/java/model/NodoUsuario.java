@@ -17,17 +17,20 @@ import java.util.List;
 public class NodoUsuario extends Nodo{
     public List<NodoCarpeta> Carpetas;
     public List<NodoArchivo> Archivos;
+    private String pathUsuario;
     public String password;
     
     public NodoUsuario(String user, String clave){
         super(user, "Usuario");
         
         this.password = clave;
+        this.pathUsuario = user + "/"; 
         this.Carpetas = new ArrayList<>();
         this.Archivos = new ArrayList<>();
         this.Carpetas.add(new NodoCarpeta("Compartido"));
     }
     
+    // buscar el archivo, dentro del usuario
     public NodoArchivo buscarArchivo(String path){
         // Aqui podemos buscar primero en los archivos sueltos, si el path no tiene /
         // luego aplicamos el desglose.
@@ -65,8 +68,41 @@ public class NodoUsuario extends Nodo{
         }
     }
     
+    public void crearCarpeta(String pathPadre, String nombreCarpeta){
+        
+        NodoCarpeta nuevaCarpeta = new NodoCarpeta(nombreCarpeta);
+        
+        // Declarando el nuevo path: user/ + nombreCarpeta/
+        String nuevoPath = getPath() + nuevaCarpeta.getPathCarpeta();
+        
+        // asigno el path para que se herede a los demas archivo
+        nuevaCarpeta.setPathCarpeta(nuevoPath);
+        
+        // añado la carpeta
+        agregarCarpeta(nuevaCarpeta);
+        
+    }
+    
+    public void crearArchivo(String pathPadre, String nombreArchivo){
+        
+        NodoArchivo nuevoArchivo = new NodoArchivo(nombreArchivo);
+        
+        // Declarando el nuevo path: user/ + nombreArchivo/
+        String nuevoPath = getPath() + nuevoArchivo.getPathArchivo();
+        
+        // asigno el path
+        nuevoArchivo.setPathArchivo(nuevoPath);
+        
+        // añado el archivo
+        agregarArchivo(nuevoArchivo);
+    }
+    
     public void agregarCarpeta(NodoCarpeta newCarpeta) {
         Carpetas.add(newCarpeta);
+    }
+    
+    public void agregarArchivo(NodoArchivo newArchivo) {
+        Archivos.add(newArchivo);
     }
     
     public String getPassword() {
@@ -76,6 +112,10 @@ public class NodoUsuario extends Nodo{
     public void setPassword(String newPass){
         this.password = newPass;
     }
+    
+    public String getPath() {
+        return this.pathUsuario;
+    }
 
     public List<NodoCarpeta> getCarpetas() {
         return Carpetas;
@@ -83,7 +123,5 @@ public class NodoUsuario extends Nodo{
 
     public List<NodoArchivo> getArchivos() {
         return Archivos;
-    }
-    
-    
+    }   
 }

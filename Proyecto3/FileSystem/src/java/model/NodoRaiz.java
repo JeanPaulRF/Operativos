@@ -10,6 +10,7 @@ package model;
  * @author david
  */
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class NodoRaiz extends Nodo{
@@ -56,8 +57,7 @@ public class NodoRaiz extends Nodo{
         NodoUsuario nuevoUsuario = new NodoUsuario(nombreUser, contrasena);
         
         // Crear la carpeta inicial del nuevo usuario
-        NodoCarpeta carpetaPrincipal = new NodoCarpeta("V:");
-        nuevoUsuario.agregarCarpeta(carpetaPrincipal);
+        nuevoUsuario.crearCarpeta(nuevoUsuario.getPath() ,"V:");
 
         // Agregar el nuevo usuario a la lista de usuarios
         agregarUsuario(nuevoUsuario);
@@ -66,11 +66,25 @@ public class NodoRaiz extends Nodo{
     }
     
     //funcion para buscar un archivo o carpeta por el path
-    public NodoArchivo buscarArchivo(NodoUsuario user, String path){
-        // se le inserta el usuario al que se le aplicara la busqueda
-        // y luego el path con el cual empezara a buscar
-        NodoArchivo archivoBuscado = user.buscarArchivo(path);
+    // > quitar el nodoUsuario, agregar el path al usuario
+    public NodoArchivo buscarArchivo(String path){
         
-        return archivoBuscado;
+        // creamso al archivo de error
+         NodoArchivo archivoError = new NodoArchivo("No existe, error 101");
+         
+         // Primero partimos el path
+        String[] partes = path.split("/");
+        
+        // Buscamos al usuario que coincida con el partes[0]
+        for(NodoUsuario user :Usuarios){
+            if(user.getNombre().equals(partes[0])){
+                // si encuentra una coincidencia, busca en el usuario
+                String newpath = String.join("/", Arrays.copyOfRange(partes, 1, partes.length));
+                return user.buscarArchivo(newpath);
+            }
+        }
+        // no lo encontro
+        System.out.println("Error en el path. El usuario no existe.");
+        return archivoError;
     }
 }
