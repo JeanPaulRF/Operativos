@@ -13,14 +13,14 @@ import java.util.List;
  * @author david
  */
 public class NodoArchivo extends Nodo {
-    private String pathArchivo;
+    private String absolutePath;
     private String contenido;
     private int cantidadbytes;
     private List<NodoUsuario> usuariosCompartido;
     
     public NodoArchivo(String nombre) {
         super(nombre, "Archivo");
-        this.pathArchivo = nombre ;
+        this.absolutePath = nombre ;
         this.contenido = "";
         this.cantidadbytes = 0;
         this.usuariosCompartido = new ArrayList<>();
@@ -48,11 +48,11 @@ public class NodoArchivo extends Nodo {
     }
     
     public String getPathArchivo() {
-        return pathArchivo;
+        return absolutePath;
     }
     
     public void setPathArchivo(String pathArch){
-        this.pathArchivo = pathArch;
+        this.absolutePath = pathArch;
     }
     
     public ArrayList<String> verPropiedades() {

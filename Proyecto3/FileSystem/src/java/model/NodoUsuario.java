@@ -17,14 +17,14 @@ import java.util.List;
 public class NodoUsuario extends Nodo{
     public List<NodoCarpeta> Carpetas;
     public List<NodoArchivo> Archivos;
-    private String pathUsuario;
+    private String absolutePath;
     public String password;
     
     public NodoUsuario(String user, String clave){
         super(user, "Usuario");
         
         this.password = clave;
-        this.pathUsuario = user + "/"; 
+        this.absolutePath = user + "/"; 
         this.Carpetas = new ArrayList<>();
         this.Archivos = new ArrayList<>();
         this.Carpetas.add(new NodoCarpeta("Compartido"));
@@ -151,7 +151,7 @@ public class NodoUsuario extends Nodo{
     }
     
     public String getPath() {
-        return this.pathUsuario;
+        return this.absolutePath;
     }
 
     public List<NodoCarpeta> getCarpetas() {

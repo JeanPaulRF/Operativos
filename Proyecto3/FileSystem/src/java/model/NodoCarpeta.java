@@ -16,14 +16,14 @@ import java.util.List;
 public class NodoCarpeta extends Nodo{
     public List<NodoCarpeta> Carpetas;
     public List<NodoArchivo> Archivos;
-    private String pathCarpeta;
+    private String absolutePath;
     //public NodoCarpeta Padre;
     
     public NodoCarpeta(String nombre){
         super(nombre, "Carpeta");
         // El nodo padre podria ser null, al ser el primero
         //this.Padre = null;
-        this.pathCarpeta = nombre + "/"; 
+        this.absolutePath = nombre + "/"; 
         this.Carpetas = new ArrayList<>();
         this.Archivos = new ArrayList<>();
     }
@@ -170,11 +170,11 @@ public class NodoCarpeta extends Nodo{
     }
     
     public String getPathCarpeta() {
-        return pathCarpeta;
+        return absolutePath;
     }
     
     public void setPathCarpeta(String pathCarp){
-        this.pathCarpeta = pathCarp;
+        this.absolutePath = pathCarp;
     }
     
     public ArrayList<String> listarDirectorio() {
