@@ -12,11 +12,11 @@ package model;
 import java.util.Date;
 
 public class Nodo {
-    protected String nombre;
-    protected String tipoNodo;
-    protected Date fechaCreacion;
-    protected Date fechaMod;
-    protected String absolutePath;
+    public String nombre;
+    public String tipoNodo;
+    public Date fechaCreacion;
+    public Date fechaMod;
+    public String absolutePath;
     
     public Nodo(String nombre, String tiponodo) {
         this.nombre = nombre;
@@ -45,4 +45,10 @@ public class Nodo {
     public void setFechaModificacion(Date fechaModif){
         this.fechaMod = fechaModif;
     }
+
+    public String getAbsolutePath() {
+        return absolutePath;
+    }
+    
+    
 }
