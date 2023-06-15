@@ -27,7 +27,7 @@ public class NodoArchivo extends Nodo {
     }
     
     public void escribir(String palabras){
-        this.contenido = this.contenido + palabras;
+        this.contenido = palabras;
     }
     
     public void recetearContenido(){

@@ -87,4 +87,25 @@ public class NodoRaiz extends Nodo{
         System.out.println("Error en el path. El usuario no existe.");
         return archivoError;
     }
+    
+    public NodoCarpeta buscarCarpeta(String path){
+        
+        // creamos la carpeta de error
+        NodoCarpeta carpetaError = new NodoCarpeta("No existe, error 102");
+        
+         // Primero partimos el path
+        String[] partes = path.split("/");
+        
+        // Buscamos al usuario que coincida con el partes[0]
+        for(NodoUsuario user :Usuarios){
+            if(user.getNombre().equals(partes[0])){
+                // si encuentra una coincidencia, busca en el usuario
+                String newpath = String.join("/", Arrays.copyOfRange(partes, 1, partes.length));
+                return user.buscarCarpeta(newpath);
+            }
+        }
+        // no lo encontro
+        System.out.println("Error en el path. El usuario no existe.");
+        return carpetaError;
+    }
 }

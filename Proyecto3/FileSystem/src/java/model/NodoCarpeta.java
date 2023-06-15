@@ -61,6 +61,43 @@ public class NodoCarpeta extends Nodo{
         }
     }
     
+    public NodoCarpeta buscarCarpeta(String path){
+        NodoCarpeta carpetaError = new NodoCarpeta("No existe, error 102");
+        
+        // Primero partimos el path
+        String[] partes = path.split("/");
+        
+        // si el path es de uno ya estamos en el nivel
+        if (partes.length == 1){
+            
+            for (NodoCarpeta carpeta : Carpetas) {
+                if (carpeta.getNombre().equals(partes[0])) {
+                    return carpeta;
+                }
+            }
+            System.out.println("Error la carpeta no existe.");
+            return carpetaError; // En caso de que no exista
+        }
+        else if(partes.length > 1){
+            // Si es mayor que 1, la primera parte es la primera carpeta
+            // aqui es recursiva
+            for (NodoCarpeta carpeta :Carpetas){
+                if (carpeta.getNombre().equals(partes[0])) {
+                    // si encuentra una coincidencia, busca en la carpeta
+                    String newpath = String.join("/", Arrays.copyOfRange(partes, 1, partes.length));
+                    return carpeta.buscarCarpeta(newpath);
+                }
+            }
+            // no lo encontro
+            System.out.println("Error en el path. La carpeta no existe en el usuario");
+            return carpetaError;
+        }
+        else{
+            System.out.println("Error en el path.");
+            return carpetaError;
+        }
+    }
+    
     public void agregarCarpeta(NodoCarpeta newCarpeta) {
         Carpetas.add(newCarpeta);
     }
