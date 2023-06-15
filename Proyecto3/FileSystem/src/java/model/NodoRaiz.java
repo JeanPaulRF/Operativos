@@ -13,11 +13,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NodoRaiz extends Nodo{
+    private static NodoRaiz instance;
     private List<NodoUsuario> Usuarios;
     
-    public NodoRaiz(){
+    private NodoRaiz(){
         super("Origen", "Raiz");
         this.Usuarios = new ArrayList<>();
+    }
+    
+    public static NodoRaiz getInstance() {
+        if (instance == null) {
+            synchronized (NodoRaiz.class) {
+                if (instance == null) {
+                    instance = new NodoRaiz();
+                }
+            }
+        }
+        return instance;
     }
     
     public void agregarUsuario(NodoUsuario newUser) {
