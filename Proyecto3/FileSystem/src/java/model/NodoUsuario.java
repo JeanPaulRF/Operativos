@@ -16,7 +16,6 @@ import java.util.List;
 
 public class NodoUsuario extends Nodo{
     public List<NodoCarpeta> Carpetas;
-    public List<NodoArchivo> Archivos;
     private String absolutePath;
     public String password;
     
@@ -26,8 +25,6 @@ public class NodoUsuario extends Nodo{
         this.password = clave;
         this.absolutePath = user + "/"; 
         this.Carpetas = new ArrayList<>();
-        this.Archivos = new ArrayList<>();
-        this.Carpetas.add(new NodoCarpeta("Compartido"));
     }
     
     // buscar el archivo, dentro del usuario
@@ -41,11 +38,13 @@ public class NodoUsuario extends Nodo{
         
         if (partes.length == 1){
             //indica que busca un archivo suelto
+            /*
             for (NodoArchivo archivo : Archivos) {
                 if (archivo.getNombre().equals(partes[0])) {
                     return archivo;
                 }
             }
+            */
             System.out.println("Error el archivo no existe.");
             return archivoError; // En caso de que no exista
         }
@@ -105,12 +104,12 @@ public class NodoUsuario extends Nodo{
         }
     }
     
-    public void crearCarpeta(String pathPadre, String nombreCarpeta){
+    public void crearCarpeta(String nombreCarpeta){
         
         NodoCarpeta nuevaCarpeta = new NodoCarpeta(nombreCarpeta);
         
         // Declarando el nuevo path: user/ + nombreCarpeta/
-        String nuevoPath = getPath() + nuevaCarpeta.getPathCarpeta();
+        String nuevoPath = getAbsolutePath() + nuevaCarpeta.getPathCarpeta();
         
         // asigno el path para que se herede a los demas archivo
         nuevaCarpeta.setPathCarpeta(nuevoPath);
@@ -119,13 +118,13 @@ public class NodoUsuario extends Nodo{
         agregarCarpeta(nuevaCarpeta);
         
     }
-    
-    public void crearArchivo(String pathPadre, String nombreArchivo){
+    /*
+    public void crearArchivo(String nombreArchivo){
         
         NodoArchivo nuevoArchivo = new NodoArchivo(nombreArchivo);
         
         // Declarando el nuevo path: user/ + nombreArchivo/
-        String nuevoPath = getPath() + nuevoArchivo.getPathArchivo();
+        String nuevoPath = getAbsolutePath() + nuevoArchivo.getPathArchivo();
         
         // asigno el path
         nuevoArchivo.setPathArchivo(nuevoPath);
@@ -133,14 +132,11 @@ public class NodoUsuario extends Nodo{
         // añado el archivo
         agregarArchivo(nuevoArchivo);
     }
-    
+    */
     public void agregarCarpeta(NodoCarpeta newCarpeta) {
         Carpetas.add(newCarpeta);
     }
     
-    public void agregarArchivo(NodoArchivo newArchivo) {
-        Archivos.add(newArchivo);
-    }
     
     public String getPassword() {
         return password;
@@ -157,8 +153,5 @@ public class NodoUsuario extends Nodo{
     public List<NodoCarpeta> getCarpetas() {
         return Carpetas;
     }
-
-    public List<NodoArchivo> getArchivos() {
-        return Archivos;
-    }   
+   
 }

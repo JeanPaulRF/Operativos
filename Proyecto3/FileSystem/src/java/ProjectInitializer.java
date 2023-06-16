@@ -22,10 +22,10 @@ public class ProjectInitializer implements ServletContextListener {
         // Puedes realizar cualquier acción que necesites al inicio del proyecto
         // Por ejemplo, inicializar tus datos o configuraciones
         // Aquí puedes inicializar el ArrayList de Usuarios en la clase Drive
-        Drive drive = Drive.getInstance();
+        //Drive drive = Drive.getInstance();
         // Añade los usuarios que necesites a la lista de usuarios
-        drive.getUsuarios().add(new NodoUsuario("admin", "admin"));
-        drive.getUsuarios().add(new NodoUsuario("123", "123"));
+        //drive.getUsuarios().add(new NodoUsuario("admin", "admin"));
+        //drive.getUsuarios().add(new NodoUsuario("123", "123"));
         // Establece la lista de usuarios en el objeto Drive
     }
 

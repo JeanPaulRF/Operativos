@@ -23,16 +23,19 @@ public class LoginServlet extends HttpServlet {
             throws ServletException, IOException {
         String user = request.getParameter("user");
         String pass = request.getParameter("pass");
+        
+        NodoRaiz raiz = NodoRaiz.getInstance();
+        raiz.crearUsuario(user, pass);
+        raiz.Usuarios.get(0).Carpetas.get(0).crearNuevaCarpeta("Docs");
+        raiz.Usuarios.get(0).Carpetas.get(0).crearNuevaCarpeta("Desktop");
+        raiz.Usuarios.get(0).Carpetas.get(0).Carpetas.get(0).crearNuevoArchivo("DocWord");
+        
+        NodoUsuario nodo = raiz.Usuarios.get(0);
+
 
         // Validar las credenciales aquí
         boolean credentialsValid = true;
         
-        // obtener el nodo
-        NodoUsuario nodo = new NodoUsuario(user, pass);
-        nodo.Carpetas.add(new NodoCarpeta("Desktop"));
-        nodo.Carpetas.get(0).Carpetas.add(new NodoCarpeta("Docs"));
-        nodo.Archivos.add(new NodoArchivo("word"));
-        nodo.absolutePath = "/raiz/";
 
         if (credentialsValid) {
             // Obtener la URL de redirección con el parámetro user en la URL

@@ -113,7 +113,7 @@ public class NodoCarpeta extends Nodo{
     
     // para cuando se crea una carpeta, estando dentro de otra carpeta
     //   se llamaria a la funcion con un getPathCarpeta(), nuevacarpeta
-    public void crearNuevaCarpeta(String pathPadre, String nombreCarpeta){
+    public void crearNuevaCarpeta(String nombreCarpeta){
         // Verificar si el nombre de la carpeta ya existe
         if (existeCarpeta(nombreCarpeta)) {
             System.out.println("El nombre de la carpeta ya existe. No se puede crear.");
@@ -125,7 +125,7 @@ public class NodoCarpeta extends Nodo{
         
         // Establezco el nuevo path, añadiendo al padre
         //   este primer getPathCarpeta no estaria contaminado: nombre/
-        String nuevoPath = pathPadre + getPathCarpeta();
+        String nuevoPath = getAbsolutePath() + getPathCarpeta();
         setPathCarpeta(nuevoPath);
         
         // Agregar la nueva carpeta a la lista de carpetas
@@ -149,7 +149,7 @@ public class NodoCarpeta extends Nodo{
     
     // para cuando se crea un archivo, estando dentro de otra carpeta
     //   se llamaria a la funcion con un getPathCarpeta(), nuevoArchivo
-    public void crearNuevoArchivo(String pathPadre, String nombreArchivo){
+    public void crearNuevoArchivo(String nombreArchivo){
         // Verificar si el nombre del archivo ya existe
         if (existeArchivo(nombreArchivo)) {
             System.out.println("El nombre del archivo ya existe. No se puede crear.");
@@ -160,7 +160,7 @@ public class NodoCarpeta extends Nodo{
         NodoArchivo nuevoArchivo = new NodoArchivo(nombreArchivo);
         
         // Creo el path para el archivo
-        String nuevoPath = pathPadre + nuevoArchivo.getPathArchivo();
+        String nuevoPath = getAbsolutePath() + nuevoArchivo.getPathArchivo();
         nuevoArchivo.setPathArchivo(nuevoPath);
         
         // Agregar el nuevo archivo a la lista de carpetas

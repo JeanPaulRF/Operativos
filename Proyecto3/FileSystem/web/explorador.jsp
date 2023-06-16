@@ -247,7 +247,7 @@ body {
     
     <div id="formularioEmergenteCrearArchivo" class="formulario-emergente">
         <div class="formulario-emergente-contenido">
-          <h3>Nombre del archivo</h3>
+          <h3>Nombre del archivo: </h3>
           <form action="crearArchivo" method="post">
             <input type="hidden" id="archivoPath" name="archivoPath" value="">
             <input type="text" name="nombre" required>
@@ -271,7 +271,7 @@ body {
     
     <div id="formularioEmergenteCopiarArchivo" class="formulario-emergente">
         <div class="formulario-emergente-contenido">
-          <h3>Copiar Carpeta <span id="nombreArchivoCopiarSpan"></span></h3>
+          <h3>Copiar Archivo <span id="nombreArchivoCopiarSpan"></span></h3>
           <form action="copiar" method="post">
             <input type="hidden" id="nombreArchivoCopiar" name="nombreCopiar" value="">
             <input type="text" name="pathCopiar" required>
@@ -283,12 +283,72 @@ body {
     
     <div id="formularioEmergenteCompartirCarpeta" class="formulario-emergente">
         <div class="formulario-emergente-contenido">
-          <h3>Copiar Carpeta <span id="nombreCarpetaCompartirSpan"></span></h3>
-          <form action="copiar" method="post">
+          <h3>Compartir Carpeta <span id="nombreCarpetaCompartirSpan"></span></h3>
+          <form action="compartir" method="post">
             <input type="hidden" id="nombreCarpetaCompartir" name="nombreCompartir" value="">
-            <input type="text" name="pathCopiarCarpeta" required>
+            <input type="text" name="pathCompartir" required>
             <button type="submit">Compartir</button>
-            <button type="button" onclick="ocultarFormularioCopiarCarpeta()">Cancelar</button>
+            <button type="button" onclick="ocultarFormularioCompartirCarpeta()">Cancelar</button>
+          </form>
+        </div>
+      </div>
+    
+    <div id="formularioEmergenteCompartirArchivo" class="formulario-emergente">
+        <div class="formulario-emergente-contenido">
+          <h3>Compartir Archivo <span id="nombreArchivoCompartirSpan"></span></h3>
+          <form action="compartir" method="post">
+            <input type="hidden" id="nombreArchivoCompartir" name="nombreCompartir" value="">
+            <input type="text" name="pathCompartir" required>
+            <button type="submit">Compartir</button>
+            <button type="button" onclick="ocultarFormularioCompartirArchivo()">Cancelar</button>
+          </form>
+        </div>
+      </div>
+    
+    <div id="formularioEmergenteMoverCarpeta" class="formulario-emergente">
+        <div class="formulario-emergente-contenido">
+          <h3>Mover Carpeta <span id="nombreCarpetaMoverSpan"></span></h3>
+          <form action="mover" method="post">
+            <input type="hidden" id="nombreCarpetaMover" name="nombreMover" value="">
+            <input type="text" name="pathMover" required>
+            <button type="submit">Mover</button>
+            <button type="button" onclick="ocultarFormularioMoverCarpeta()">Cancelar</button>
+          </form>
+        </div>
+      </div>
+    
+    <div id="formularioEmergenteMoverArchivo" class="formulario-emergente">
+        <div class="formulario-emergente-contenido">
+          <h3>Compartir Archivo <span id="nombreArchivoMoverSpan"></span></h3>
+          <form action="mover" method="post">
+            <input type="hidden" id="nombreArchivoMover" name="nombreMover" value="">
+            <input type="text" name="pathMover" required>
+            <button type="submit">Mover</button>
+            <button type="button" onclick="ocultarFormularioMoverArchivo()">Cancelar</button>
+          </form>
+        </div>
+      </div>
+    
+    <div id="formularioEmergenteEliminarCarpeta" class="formulario-emergente">
+        <div class="formulario-emergente-contenido">
+          <h3>Eliminar Carpeta <span id="nombreCarpetaEliminarSpan"></span></h3>
+          <form action="eliminar" method="post">
+            <input type="hidden" id="nombreCarpetaEliminar" name="nombreEliminar" value="">
+            <input type="text" name="pathEliminar" required>
+            <button type="submit">Eliminar</button>
+            <button type="button" onclick="ocultarFormularioEliminarCarpeta()">Cancelar</button>
+          </form>
+        </div>
+      </div>
+    
+    <div id="formularioEmergenteEliminarArchivo" class="formulario-emergente">
+        <div class="formulario-emergente-contenido">
+          <h3>Compartir Archivo <span id="nombreArchivoEliminarSpan"></span></h3>
+          <form action="eliminar" method="post">
+            <input type="hidden" id="nombreArchivoEliminar" name="nombreEliminar" value="">
+            <input type="text" name="pathEliminar" required>
+            <button type="submit">Eliminar</button>
+            <button type="button" onclick="ocultarFormularioEliminarArchivo()">Cancelar</button>
           </form>
         </div>
       </div>
@@ -309,7 +369,7 @@ body {
               <span class="file-name">${carpeta.nombre}</span>
             </div>
             <div class="file-actions">
-              <a href="abrirCarpeta?carpeta=${carpeta.nombre}" method="post">Abrir</a>
+              <a href="abrirCarpeta?carpeta=${carpeta.nombre}">Abrir</a>
               <a href="compartir" method="post">Compartir</a>
               <a href="#" onclick="mostrarFormularioCopiarCarpeta('${carpeta.getAbsolutePath()}')">Copiar</a>
               <a href="mover" method="post">Mover</a>
