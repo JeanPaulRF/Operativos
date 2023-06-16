@@ -198,7 +198,7 @@ public class NodoCarpeta extends Nodo {
     
     public List<NodoArchivo> getArchivos() {
         return Archivos;
-
+    }
 
     public void borrarArchivo(String nombreArchivo) {
         if (existeArchivo(nombreArchivo)) { //primero verifico que exista
