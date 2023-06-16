@@ -13,29 +13,30 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class NodoCarpeta extends Nodo{
+public class NodoCarpeta extends Nodo {
+
     public List<NodoCarpeta> Carpetas;
     public List<NodoArchivo> Archivos;
     //public NodoCarpeta Padre;
-    
-    public NodoCarpeta(String nombre){
+
+    public NodoCarpeta(String nombre) {
         super(nombre, "Carpeta");
         // El nodo padre podria ser null, al ser el primero
         //this.Padre = null;
-        this.absolutePath = nombre + "/"; 
+        this.absolutePath = nombre + "/";
         this.Carpetas = new ArrayList<>();
         this.Archivos = new ArrayList<>();
     }
-    
+
     // buscar un archivo dentro de una carpeta
-    public NodoArchivo buscarArchivo(String path){
+    public NodoArchivo buscarArchivo(String path) {
         // primero voy descomponiendo el path
         NodoArchivo archivoError = new NodoArchivo("No existe, error 101");
-        
+
         //primero desgloso el path
         String[] partes = path.split("/");
-        
-        if (partes.length == 1){
+
+        if (partes.length == 1) {
             // quiere decir que estoy en el ultmo nivel de busqueda
             for (NodoArchivo archivo : Archivos) {
                 if (archivo.getNombre().equals(partes[0])) {
@@ -44,10 +45,9 @@ public class NodoCarpeta extends Nodo{
             }
             System.out.println("Error el archivo no existe.");
             return archivoError; // En caso de que no exista
-        }
-        else{
+        } else {
             // Si partes es > 1, entonces aun me falta profundizar
-            for (NodoCarpeta carpeta :Carpetas){
+            for (NodoCarpeta carpeta : Carpetas) {
                 if (carpeta.getNombre().equals(partes[0])) {
                     // si encuentra una coincidencia, busca en la carpeta
                     String newpath = String.join("/", Arrays.copyOfRange(partes, 1, partes.length));
@@ -59,16 +59,16 @@ public class NodoCarpeta extends Nodo{
             return archivoError;
         }
     }
-    
-    public NodoCarpeta buscarCarpeta(String path){
+
+    public NodoCarpeta buscarCarpeta(String path) {
         NodoCarpeta carpetaError = new NodoCarpeta("No existe, error 102");
-        
+
         // Primero partimos el path
         String[] partes = path.split("/");
-        
+
         // si el path es de uno ya estamos en el nivel
-        if (partes.length == 1){
-            
+        if (partes.length == 1) {
+
             for (NodoCarpeta carpeta : Carpetas) {
                 if (carpeta.getNombre().equals(partes[0])) {
                     return carpeta;
@@ -76,11 +76,10 @@ public class NodoCarpeta extends Nodo{
             }
             System.out.println("Error la carpeta no existe.");
             return carpetaError; // En caso de que no exista
-        }
-        else if(partes.length > 1){
+        } else if (partes.length > 1) {
             // Si es mayor que 1, la primera parte es la primera carpeta
             // aqui es recursiva
-            for (NodoCarpeta carpeta :Carpetas){
+            for (NodoCarpeta carpeta : Carpetas) {
                 if (carpeta.getNombre().equals(partes[0])) {
                     // si encuentra una coincidencia, busca en la carpeta
                     String newpath = String.join("/", Arrays.copyOfRange(partes, 1, partes.length));
@@ -90,17 +89,16 @@ public class NodoCarpeta extends Nodo{
             // no lo encontro
             System.out.println("Error en el path. La carpeta no existe en el usuario");
             return carpetaError;
-        }
-        else{
+        } else {
             System.out.println("Error en el path.");
             return carpetaError;
         }
     }
-    
+
     public void agregarCarpeta(NodoCarpeta newCarpeta) {
         Carpetas.add(newCarpeta);
     }
-    
+
     public boolean existeCarpeta(String nombreCarpeta) {
         for (NodoCarpeta carpeta : Carpetas) {
             if (carpeta.getNombre().equals(nombreCarpeta)) {
@@ -109,34 +107,34 @@ public class NodoCarpeta extends Nodo{
         }
         return false; // El nombre de la carpeta no existe
     }
-    
+
     // para cuando se crea una carpeta, estando dentro de otra carpeta
     //   se llamaria a la funcion con un getPathCarpeta(), nuevacarpeta
-    public void crearNuevaCarpeta(String nombreCarpeta){
+    public void crearNuevaCarpeta(String nombreCarpeta) {
         // Verificar si el nombre de la carpeta ya existe
         if (existeCarpeta(nombreCarpeta)) {
             System.out.println("El nombre de la carpeta ya existe. No se puede crear.");
             return;
         }
-        
+
         // Crear un nuevo nodo carpeta
         NodoCarpeta nuevaCarpeta = new NodoCarpeta(nombreCarpeta);
-        
+
         // Establezco el nuevo path, añadiendo al padre
         //   este primer getPathCarpeta no estaria contaminado: nombre/
         String nuevoPath = getAbsolutePath() + getPathCarpeta();
         setPathCarpeta(nuevoPath);
-        
+
         // Agregar la nueva carpeta a la lista de carpetas
         agregarCarpeta(nuevaCarpeta);
 
         System.out.println("Carpeta creada exitosamente.");
     }
-    
+
     public void agregarArchivo(NodoArchivo newArchivo) {
         Archivos.add(newArchivo);
     }
-    
+
     public boolean existeArchivo(String nombreArchivo) {
         for (NodoArchivo archivo : Archivos) {
             if (archivo.getNombre().equals(nombreArchivo)) {
@@ -145,53 +143,54 @@ public class NodoCarpeta extends Nodo{
         }
         return false; // El nombre del archivo no existe
     }
-    
+
     // para cuando se crea un archivo, estando dentro de otra carpeta
     //   se llamaria a la funcion con un getPathCarpeta(), nuevoArchivo
-    public void crearNuevoArchivo(String nombreArchivo){
+    public void crearNuevoArchivo(String nombreArchivo) {
         // Verificar si el nombre del archivo ya existe
         if (existeArchivo(nombreArchivo)) {
             System.out.println("El nombre del archivo ya existe. No se puede crear.");
             return;
         }
-        
+
         // Crear un nuevo nodo archivo
         NodoArchivo nuevoArchivo = new NodoArchivo(nombreArchivo);
-        
+
         // Creo el path para el archivo
         String nuevoPath = getAbsolutePath() + nuevoArchivo.getPathArchivo();
         nuevoArchivo.setPathArchivo(nuevoPath);
-        
+
         // Agregar el nuevo archivo a la lista de carpetas
         agregarArchivo(nuevoArchivo);
 
         System.out.println("Archivo creado exitosamente.");
     }
-    
+
     public String getPathCarpeta() {
         return absolutePath;
     }
-    
-    public void setPathCarpeta(String pathCarp){
+
+    public void setPathCarpeta(String pathCarp) {
         this.absolutePath = pathCarp;
     }
-    
+
     public ArrayList<String> listarDirectorio() {
         ArrayList<String> contenido = new ArrayList<>();
         contenido.add("CARPETAS:");
-        
-        for(NodoCarpeta carpeta :Carpetas) {
+
+        for (NodoCarpeta carpeta : Carpetas) {
             contenido.add(carpeta.getNombre());
         }
-        
+
         contenido.add("ARCHIVOS:");
-        
-        for(NodoArchivo archivo :Archivos) {
+
+        for (NodoArchivo archivo : Archivos) {
             contenido.add(archivo.getNombre());
         }
-        
+
         return contenido;
     }
+
     
     public List<NodoCarpeta> getCarpetas() {
         return Carpetas;
@@ -199,5 +198,29 @@ public class NodoCarpeta extends Nodo{
     
     public List<NodoArchivo> getArchivos() {
         return Archivos;
+
+
+    public void borrarArchivo(String nombreArchivo) {
+        if (existeArchivo(nombreArchivo)) { //primero verifico que exista
+            for (int i = 0; i < this.Archivos.size(); i++) {
+                String nombreActual = this.Archivos.get(i).getNombre();
+                
+                if (nombreActual.equals(nombreArchivo)) {
+                    this.Archivos.remove(i);
+                }
+            }
+        }
+    }
+    
+    public void borrarCarpeta(String nombreCarpeta) {
+        if (existeCarpeta(nombreCarpeta)) {     // primero verifico que exista
+            for (int i = 0; i < this.Carpetas.size(); i++) {
+                String nombreActual = this.Carpetas.get(i).getNombre();
+                
+                if (nombreActual.equals(nombreCarpeta)) {
+                    this.Carpetas.remove(i);
+                }
+            }
+        }
     }
 }
