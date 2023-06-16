@@ -24,20 +24,35 @@ public class LoginServlet extends HttpServlet {
         String user = request.getParameter("user");
         String pass = request.getParameter("pass");
         
-        NodoRaiz raiz = NodoRaiz.getInstance();
+        NodoRaiz raiz = Globales.raiz;
+        
+        /*
         raiz.crearUsuario(user, pass);
         raiz.Usuarios.get(0).Carpetas.get(0).crearNuevaCarpeta("Docs");
         raiz.Usuarios.get(0).Carpetas.get(0).crearNuevaCarpeta("Desktop");
         raiz.Usuarios.get(0).Carpetas.get(0).Carpetas.get(0).crearNuevoArchivo("DocWord");
         
         NodoUsuario nodo = raiz.Usuarios.get(0);
-
+        */
 
         // Validar las credenciales aquí
-        boolean credentialsValid = true;
+        //NodoUsuario nodo = raiz.validarUsuario(user, pass);
+        
+        raiz.crearUsuario(user, pass);
+        raiz.Usuarios.get(0).Carpetas.get(0).crearNuevaCarpeta("Docs");
+        raiz.Usuarios.get(0).Carpetas.get(0).crearNuevaCarpeta("Desktop");
+        raiz.Usuarios.get(0).Carpetas.get(0).Carpetas.get(0).crearNuevoArchivo("DocWord");
+        
+        NodoUsuario nodo = raiz.Usuarios.get(0);
+        
+        
+        for (int i = 0; i < nodo.Carpetas.size(); i++) {
+            System.out.println(nodo.Carpetas.get(i).absolutePath);
+        }
+     
         
 
-        if (credentialsValid) {
+        if (nodo != null) {
             // Obtener la URL de redirección con el parámetro user en la URL
             //String redirectUrl = request.getContextPath() + "/explorador.jsp";
 

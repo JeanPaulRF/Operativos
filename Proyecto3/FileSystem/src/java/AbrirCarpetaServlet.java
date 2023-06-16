@@ -26,6 +26,8 @@ public class AbrirCarpetaServlet extends HttpServlet {
             throws ServletException, IOException {
         String carpetaSeleccionada = request.getParameter("carpeta");
         
+        System.out.println(carpetaSeleccionada);
+        
         NodoRaiz raiz = NodoRaiz.getInstance();
 
         // Obtén el nodo de carpeta correspondiente según el nombre seleccionado

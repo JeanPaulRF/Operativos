@@ -16,7 +16,6 @@ import java.util.List;
 public class NodoCarpeta extends Nodo{
     public List<NodoCarpeta> Carpetas;
     public List<NodoArchivo> Archivos;
-    private String absolutePath;
     //public NodoCarpeta Padre;
     
     public NodoCarpeta(String nombre){
@@ -192,5 +191,13 @@ public class NodoCarpeta extends Nodo{
         }
         
         return contenido;
+    }
+    
+    public List<NodoCarpeta> getCarpetas() {
+        return Carpetas;
+    }
+    
+    public List<NodoArchivo> getArchivos() {
+        return Archivos;
     }
 }

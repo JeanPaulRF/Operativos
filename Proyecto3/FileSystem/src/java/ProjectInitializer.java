@@ -22,7 +22,9 @@ public class ProjectInitializer implements ServletContextListener {
         // Puedes realizar cualquier acción que necesites al inicio del proyecto
         // Por ejemplo, inicializar tus datos o configuraciones
         // Aquí puedes inicializar el ArrayList de Usuarios en la clase Drive
-        //Drive drive = Drive.getInstance();
+        System.out.println("Pagina iniciada");
+        Globales.raiz = new NodoRaiz();
+        
         // Añade los usuarios que necesites a la lista de usuarios
         //drive.getUsuarios().add(new NodoUsuario("admin", "admin"));
         //drive.getUsuarios().add(new NodoUsuario("123", "123"));
@@ -33,6 +35,7 @@ public class ProjectInitializer implements ServletContextListener {
     public void contextDestroyed(ServletContextEvent sce) {
         // Esta función se ejecutará cuando el contexto del servlet se destruya
         // Puedes realizar cualquier acción que necesites antes de finalizar el proyecto
+        System.out.println("Pagina finalizada");
     }
 }
 

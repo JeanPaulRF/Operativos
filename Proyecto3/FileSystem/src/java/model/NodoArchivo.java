@@ -13,7 +13,6 @@ import java.util.List;
  * @author david
  */
 public class NodoArchivo extends Nodo {
-    private String absolutePath;
     private String contenido;
     private int cantidadbytes;
     private List<NodoUsuario> usuariosCompartido;

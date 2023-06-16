@@ -16,7 +16,7 @@ import java.util.List;
 
 public class NodoUsuario extends Nodo{
     public List<NodoCarpeta> Carpetas;
-    private String absolutePath;
+    public List<NodoArchivo> Archivos;
     public String password;
     
     public NodoUsuario(String user, String clave){
@@ -25,6 +25,7 @@ public class NodoUsuario extends Nodo{
         this.password = clave;
         this.absolutePath = user + "/"; 
         this.Carpetas = new ArrayList<>();
+        this.Archivos = new ArrayList<>();
     }
     
     // buscar el archivo, dentro del usuario
@@ -152,6 +153,10 @@ public class NodoUsuario extends Nodo{
 
     public List<NodoCarpeta> getCarpetas() {
         return Carpetas;
+    }
+    
+    public List<NodoArchivo> getArchivos() {
+        return Archivos;
     }
    
 }

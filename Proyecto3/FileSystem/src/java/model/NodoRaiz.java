@@ -17,18 +17,18 @@ public class NodoRaiz extends Nodo{
     private static NodoRaiz instance;
     public List<NodoUsuario> Usuarios;
     
-    private NodoRaiz(){
+    public NodoRaiz(){
         super("Origen", "Raiz");
         this.Usuarios = new ArrayList<>();
     }
     
     public static NodoRaiz getInstance() {
         if (instance == null) {
-            synchronized (NodoRaiz.class) {
-                if (instance == null) {
+            //synchronized (NodoRaiz.class) {
+                //if (instance == null) {
                     instance = new NodoRaiz();
-                }
-            }
+                //}
+            //}
         }
         return instance;
     }
@@ -109,5 +109,14 @@ public class NodoRaiz extends Nodo{
         // no lo encontro
         System.out.println("Error en el path. El usuario no existe.");
         return carpetaError;
+    }
+    
+    public NodoUsuario validarUsuario(String user, String pass){
+        for(NodoUsuario usuario : Usuarios){
+            if(usuario.getNombre() == user)
+                if (usuario.getPassword() == pass)
+                    return usuario;
+        }
+        return null;
     }
 }

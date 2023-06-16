@@ -369,7 +369,7 @@ body {
               <span class="file-name">${carpeta.nombre}</span>
             </div>
             <div class="file-actions">
-              <a href="abrirCarpeta?carpeta=${carpeta.nombre}">Abrir</a>
+              <a href="abrirCarpeta?carpeta=${carpeta.absolutePath}">Abrir</a>
               <a href="compartir" method="post">Compartir</a>
               <a href="#" onclick="mostrarFormularioCopiarCarpeta('${carpeta.getAbsolutePath()}')">Copiar</a>
               <a href="mover" method="post">Mover</a>

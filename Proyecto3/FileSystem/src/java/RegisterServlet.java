@@ -9,6 +9,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import model.Globales;
+import model.Nodo;
+import model.NodoRaiz;
 
 /**
  *
@@ -31,13 +34,21 @@ public class RegisterServlet extends HttpServlet {
         String user = request.getParameter("user");
         String pass = request.getParameter("pass");
         
-        // Crear el usuario
+        NodoRaiz raiz = Globales.raiz;
         
-        // Obtener la URL de redirección con el parámetro user en la URL
-        String redirectUrl = "/index.jsp";
-        
-        // Redirigir a la página explorador.html
-        response.sendRedirect(redirectUrl);
+        //if(raiz.existeUsuario(user) == false){
+            // Crear el usuario
+            raiz.crearUsuario(user, pass);
+
+            // Obtener la URL de redirección con el parámetro user en la URL
+            String redirectUrl = "/index.jsp";
+
+            // Redirigir a la página explorador.html
+            response.sendRedirect(redirectUrl);
+        //}
+        //else{
+        //    System.out.println("El usuario ya existe");
+        //}
     }
 
     /**
