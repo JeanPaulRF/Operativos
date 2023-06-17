@@ -155,8 +155,11 @@ public class NodoCarpeta extends Nodo{
             return;
         }
         
+        // le va a caer con extencion .txt
+        String[] partes = nombreArchivo.split(".");
+        
         // Crear un nuevo nodo archivo
-        NodoArchivo nuevoArchivo = new NodoArchivo(nombreArchivo);
+        NodoArchivo nuevoArchivo = new NodoArchivo(partes[0]);
         
         // Creo el path para el archivo
         String nuevoPath = getAbsolutePath() + nuevoArchivo.getPathArchivo();
