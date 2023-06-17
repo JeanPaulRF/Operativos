@@ -53,6 +53,7 @@ public class Nodo {
         String fechaString = formato.format(this.fechaCreacion);
         return fechaString;
     }         
+
     
     public Date getFechaModificacion() {
         return fechaMod;
