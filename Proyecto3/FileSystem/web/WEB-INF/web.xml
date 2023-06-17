@@ -44,6 +44,10 @@
         <servlet-name>AbrirArchivoServlet</servlet-name>
         <servlet-class>AbrirArchivoServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>GuardarServlet</servlet-name>
+        <servlet-class>GuardarServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>LoginServlet</servlet-name>
         <url-pattern>/login</url-pattern>
@@ -87,6 +91,10 @@
     <servlet-mapping>
         <servlet-name>AbrirArchivoServlet</servlet-name>
         <url-pattern>/abrirArchivo</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GuardarServlet</servlet-name>
+        <url-pattern>/guardar</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

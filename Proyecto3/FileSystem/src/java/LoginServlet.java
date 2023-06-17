@@ -32,23 +32,20 @@ public class LoginServlet extends HttpServlet {
         raiz.Usuarios.get(0).Carpetas.get(0).crearNuevaCarpeta("Desktop");
         raiz.Usuarios.get(0).Carpetas.get(0).Carpetas.get(0).crearNuevoArchivo("DocWord");
         
-        NodoUsuario nodo = raiz.Usuarios.get(0);
+        
         */
 
         // Validar las credenciales aquí
-        //NodoUsuario nodo = raiz.validarUsuario(user, pass);
+        NodoUsuario nodo = raiz.validarUsuario(user, pass);
         
+
         raiz.crearUsuario(user, pass);
-        raiz.Usuarios.get(0).Carpetas.get(0).crearNuevaCarpeta("Docs");
-        raiz.Usuarios.get(0).Carpetas.get(0).crearNuevaCarpeta("Desktop");
-        raiz.Usuarios.get(0).Carpetas.get(0).Carpetas.get(0).crearNuevoArchivo("DocWord");
+        //NodoUsuario nodo = raiz.Usuarios.get(0);
         
-        NodoUsuario nodo = raiz.Usuarios.get(0);
-        
-        
-        for (int i = 0; i < nodo.Carpetas.size(); i++) {
-            System.out.println(nodo.Carpetas.get(i).absolutePath);
-        }
+
+        //for (int i = 0; i < nodo.Carpetas.size(); i++) {
+        //    System.out.println(nodo.Carpetas.get(i).absolutePath);
+        //}
      
         
 

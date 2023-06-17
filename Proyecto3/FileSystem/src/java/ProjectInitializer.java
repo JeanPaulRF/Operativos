@@ -35,6 +35,7 @@ public class ProjectInitializer implements ServletContextListener {
     public void contextDestroyed(ServletContextEvent sce) {
         // Esta función se ejecutará cuando el contexto del servlet se destruya
         // Puedes realizar cualquier acción que necesites antes de finalizar el proyecto
+        XMLWriter.guardarEnXML(Globales.raiz, "FileSystem.xml");
         System.out.println("Pagina finalizada");
     }
 }

@@ -18,27 +18,20 @@ import model.*;
  */
 public class CrearArchivoServlet extends HttpServlet {
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
 
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String nombre = request.getParameter("nombre");
+        String nombre = request.getParameter("nombreCrear");
+        String path = request.getParameter("archivoPath");
 
-        // Obtén el nodo de carpeta correspondiente según el nombre seleccionado
-        //NodoCarpeta nodoSeleccionado = obtenerNodoCarpeta(nombre);
+        NodoRaiz raiz = Globales.raiz;
+        NodoCarpeta carpeta = raiz.buscarCarpeta(path);
+        carpeta.crearNuevoArchivo(nombre);
 
         // Agrega el nodo seleccionado como atributo en el objeto HttpServletRequest
-        request.setAttribute("nodo", nombre);   
+        request.setAttribute("nodo", carpeta);   
 
         // Redirige nuevamente a explorador.jsp
         RequestDispatcher dispatcher = request.getRequestDispatcher("explorador.jsp");

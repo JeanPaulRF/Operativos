@@ -5,6 +5,7 @@
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -36,19 +37,25 @@ public class RegisterServlet extends HttpServlet {
         
         NodoRaiz raiz = Globales.raiz;
         
-        //if(raiz.existeUsuario(user) == false){
-            // Crear el usuario
-            raiz.crearUsuario(user, pass);
-
+        // Crear el usuario
+        boolean result = raiz.crearUsuario(user, pass);
+        
+        if(result = true){
             // Obtener la URL de redirección con el parámetro user en la URL
-            String redirectUrl = "/index.jsp";
+            String redirectUrl = "index.jsp";
 
             // Redirigir a la página explorador.html
             response.sendRedirect(redirectUrl);
-        //}
-        //else{
-        //    System.out.println("El usuario ya existe");
-        //}
+        }
+        else{
+            // Los datos ingresados son incorrectos, mostrar alerta
+            String errorMessage = "El usuario ya existe. Ingrese uno nuevo";
+
+            // Agregar el mensaje de alerta como atributo en el request
+            request.setAttribute("errorMessage", errorMessage);
+            
+            request.getRequestDispatcher("register.jsp").forward(request, response);
+        }
     }
 
     /**
