@@ -129,23 +129,23 @@
             </div>
             <div class="file-list">
                 <div class="file-list-item">
-                    <span class="file-name">Nombre: </span>
+                    <span class="file-name">Nombre:&nbsp;&nbsp;</span>
                     <span>${nodo.getNombre()}</span>
                 </div>
                 <div class="file-list-item">
-                    <span class="file-name">Extensión: </span>
+                    <span class="file-name">Extensión:&nbsp;&nbsp;</span>
                     <span>${nodo.getExtencion()}</span>
                 </div>
                 <div class="file-list-item">
-                    <span class="file-name">Fecha de Creación: </span>
+                    <span class="file-name">Fecha de Creación:&nbsp;&nbsp;</span>
                     <span>${nodo.getFechaCreacion()}</span>
                 </div>
                 <div class="file-list-item">
-                    <span class="file-name">Fecha de Modificación: </span>
+                    <span class="file-name">Fecha de Modificación:&nbsp;&nbsp;</span>
                     <span>${nodo.getFechaMod()}</span>
                 </div>
                 <div class="file-list-item">
-                    <span class="file-name">Tamaño: </span>
+                    <span class="file-name">Tamaño:&nbsp;&nbsp;</span>
                     <span>${nodo.getBytes()} bytes</span>
                 </div>
             </div>

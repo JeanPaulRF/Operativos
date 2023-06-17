@@ -238,7 +238,7 @@ body {
           <h3>Nombre de la carpeta:</h3>
           <form action="crearCarpeta" method="post">
             <input type="hidden" id="carpetaPath" name="carpetaPath" value="">
-            <input type="text" name="nombreCrear" required>
+            <input type="text" name="nombreCrear" placeholder="Nombre" required>
             <button type="submit">Crear</button>
             <button type="button" onclick="ocultarFormularioCarpeta()">Cancelar</button>
           </form>
@@ -250,7 +250,7 @@ body {
           <h3>Nombre del archivo: </h3>
           <form action="crearArchivo" method="post">
             <input type="hidden" id="archivoPath" name="archivoPath" value="">
-            <input type="text" name="nombreCrear" required>
+            <input type="text" name="nombreCrear" placeholder="Nombre" required>
             <button type="submit">Crear</button>
             <button type="button" onclick="ocultarFormularioArchivo()">Cancelar</button>
           </form>
@@ -263,7 +263,7 @@ body {
           <form action="copiar" method="post">
             <input type="hidden" id="nombreCarpetaCopiar" name="nombreCopiar" value="">
             <input type="hidden" id="tipo" name="tipo" value="1">
-            <input type="text" name="pathCopiar" required>
+            <input type="text" name="pathCopiar" placeholder="Ruta destino" required>
             <button type="submit">Copiar</button>
             <button type="button" onclick="ocultarFormularioCopiarCarpeta()">Cancelar</button>
           </form>
@@ -276,7 +276,7 @@ body {
           <form action="copiar" method="post">
             <input type="hidden" id="nombreArchivoCopiar" name="nombreCopiar" value="">
             <input type="hidden" id="tipo" name="tipo" value="0">
-            <input type="text" name="pathCopiar" required>
+            <input type="text" name="pathCopiar" placeholder="Ruta destino" required>
             <button type="submit">Copiar</button>
             <button type="button" onclick="ocultarFormularioCopiarArchivo()">Cancelar</button>
           </form>
@@ -289,7 +289,7 @@ body {
           <form action="compartir" method="post">
             <input type="hidden" id="nombreCarpetaCompartir" name="nombreCompartir" value="">
             <input type="hidden" id="tipo" name="tipo" value="1">
-            <input type="text" name="pathCompartir" required>
+            <input type="text" name="pathCompartir" placeholder="Usuario destino" required>
             <button type="submit">Compartir</button>
             <button type="button" onclick="ocultarFormularioCompartirCarpeta()">Cancelar</button>
           </form>
@@ -302,7 +302,7 @@ body {
           <form action="compartir" method="post">
             <input type="hidden" id="nombreArchivoCompartir" name="nombreCompartir" value="">
             <input type="hidden" id="tipo" name="tipo" value="0">
-            <input type="text" name="pathCompartir" required>
+            <input type="text" name="pathCompartir" placeholder="Usuario destino" required>
             <button type="submit">Compartir</button>
             <button type="button" onclick="ocultarFormularioCompartirArchivo()">Cancelar</button>
           </form>
@@ -315,7 +315,7 @@ body {
           <form action="mover" method="post">
             <input type="hidden" id="nombreCarpetaMover" name="nombreMover" value="">
             <input type="hidden" id="tipo" name="tipo" value="1">
-            <input type="text" name="pathMover" required>
+            <input type="text" name="pathMover" placeholder="Ruta destino" required>
             <button type="submit">Mover</button>
             <button type="button" onclick="ocultarFormularioMoverCarpeta()">Cancelar</button>
           </form>
@@ -328,7 +328,7 @@ body {
           <form action="mover" method="post">
             <input type="hidden" id="nombreArchivoMover" name="nombreMover" value="">
             <input type="hidden" id="tipo" name="tipo" value="0">
-            <input type="text" name="pathMover" required>
+            <input type="text" name="pathMover" placeholder="Ruta destino" required>
             <button type="submit">Mover</button>
             <button type="button" onclick="ocultarFormularioMoverArchivo()">Cancelar</button>
           </form>
@@ -341,7 +341,6 @@ body {
           <form action="eliminar" method="post">
             <input type="hidden" id="nombreCarpetaEliminar" name="nombreEliminar" value="">
             <input type="hidden" id="tipo" name="tipo" value="1">
-            <input type="text" name="pathEliminar" required>
             <button type="submit">Eliminar</button>
             <button type="button" onclick="ocultarFormularioEliminarCarpeta()">Cancelar</button>
           </form>

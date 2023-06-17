@@ -25,29 +25,9 @@ public class LoginServlet extends HttpServlet {
         String pass = request.getParameter("pass");
         
         NodoRaiz raiz = Globales.raiz;
-        
-        /*
-        raiz.crearUsuario(user, pass);
-        raiz.Usuarios.get(0).Carpetas.get(0).crearNuevaCarpeta("Docs");
-        raiz.Usuarios.get(0).Carpetas.get(0).crearNuevaCarpeta("Desktop");
-        raiz.Usuarios.get(0).Carpetas.get(0).Carpetas.get(0).crearNuevoArchivo("DocWord");
-        
-        
-        */
 
         // Validar las credenciales aquí
         NodoUsuario nodo = raiz.validarUsuario(user, pass);
-        
-
-        raiz.crearUsuario(user, pass);
-        //NodoUsuario nodo = raiz.Usuarios.get(0);
-        
-
-        //for (int i = 0; i < nodo.Carpetas.size(); i++) {
-        //    System.out.println(nodo.Carpetas.get(i).absolutePath);
-        //}
-     
-        
 
         if (nodo != null) {
             // Obtener la URL de redirección con el parámetro user en la URL

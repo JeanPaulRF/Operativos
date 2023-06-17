@@ -5,6 +5,7 @@
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -24,7 +25,7 @@ public class CompartirServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String nombreCopiar = request.getParameter("nombreCompartir");
-        String pathCopiarCarpeta = request.getParameter("pathCompartir");
+        String pathCopiarCarpeta = request.getParameter("pathCompartir") + "/Compartido/";
         String tipo = request.getParameter("tipo");
        
         NodoRaiz raiz = Globales.raiz;
@@ -34,11 +35,29 @@ public class CompartirServlet extends HttpServlet {
             NodoCarpeta carpeta = raiz.buscarCarpeta(nombreCopiar);
             NodoCarpeta destino = raiz.buscarCarpeta(pathCopiarCarpeta);
             destino.agregarCarpeta(carpeta);
+            
+            NodoCarpeta padre = raiz.buscarCarpeta(carpeta.getPathPadre(nombreCopiar));
+            
+            // Agrega el nodo seleccionado como atributo en el objeto HttpServletRequest
+            request.setAttribute("nodo", padre);   
+
+            // Redirige nuevamente a explorador.jsp
+            RequestDispatcher dispatcher = request.getRequestDispatcher("explorador.jsp");
+            dispatcher.forward(request, response);
         }
         else{
             NodoArchivo archivo = raiz.buscarArchivo(nombreCopiar);
             NodoCarpeta destino = raiz.buscarCarpeta(pathCopiarCarpeta);
             destino.agregarArchivo(archivo);
+            
+            NodoCarpeta padre = raiz.buscarCarpeta(archivo.getPathPadre(nombreCopiar));
+            
+            // Agrega el nodo seleccionado como atributo en el objeto HttpServletRequest
+            request.setAttribute("nodo", padre);   
+
+            // Redirige nuevamente a explorador.jsp
+            RequestDispatcher dispatcher = request.getRequestDispatcher("explorador.jsp");
+            dispatcher.forward(request, response);
         }
     }
 

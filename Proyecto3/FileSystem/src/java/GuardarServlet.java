@@ -5,12 +5,14 @@
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import model.Globales;
 import model.NodoArchivo;
+import model.NodoCarpeta;
 import model.NodoRaiz;
 
 /**
@@ -35,6 +37,15 @@ public class GuardarServlet extends HttpServlet {
         archivo.escribir(contenido);
         
         raiz.corregirPathRaiz();
+        
+        NodoCarpeta padre = raiz.buscarCarpeta(archivo.getPathPadre(pathArchivo));
+            
+        // Agrega el nodo seleccionado como atributo en el objeto HttpServletRequest
+        request.setAttribute("nodo", padre);   
+
+        // Redirige nuevamente a explorador.jsp
+        RequestDispatcher dispatcher = request.getRequestDispatcher("explorador.jsp");
+        dispatcher.forward(request, response);
     }
 
     /**

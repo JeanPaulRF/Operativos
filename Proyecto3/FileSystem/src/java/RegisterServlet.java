@@ -40,7 +40,7 @@ public class RegisterServlet extends HttpServlet {
         // Crear el usuario
         boolean result = raiz.crearUsuario(user, pass);
         
-        if(result = true){
+        if(result == true){
             // Obtener la URL de redirección con el parámetro user en la URL
             String redirectUrl = "index.jsp";
 

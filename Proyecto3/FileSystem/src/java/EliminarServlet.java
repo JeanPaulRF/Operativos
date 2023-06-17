@@ -5,6 +5,7 @@
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -35,6 +36,13 @@ public class EliminarServlet extends HttpServlet {
             NodoCarpeta padre = raiz.buscarCarpeta(carpeta.getPathPadre(nombreCopiar));
             
             padre.borrarCarpeta(carpeta.nombre);
+            
+            // Agrega el nodo seleccionado como atributo en el objeto HttpServletRequest
+            request.setAttribute("nodo", padre);   
+
+            // Redirige nuevamente a explorador.jsp
+            RequestDispatcher dispatcher = request.getRequestDispatcher("explorador.jsp");
+            dispatcher.forward(request, response);
 
         }
         else{
@@ -43,6 +51,13 @@ public class EliminarServlet extends HttpServlet {
             NodoCarpeta padre = raiz.buscarCarpeta(archivo.getPathPadre(nombreCopiar));
             
             padre.borrarArchivo(archivo.nombre);
+            
+            // Agrega el nodo seleccionado como atributo en el objeto HttpServletRequest
+            request.setAttribute("nodo", padre);   
+
+            // Redirige nuevamente a explorador.jsp
+            RequestDispatcher dispatcher = request.getRequestDispatcher("explorador.jsp");
+            dispatcher.forward(request, response);
             
         }
     }

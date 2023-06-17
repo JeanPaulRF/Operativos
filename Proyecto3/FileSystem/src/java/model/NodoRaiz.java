@@ -14,23 +14,11 @@ import java.util.Arrays;
 import java.util.List;
 
 public class NodoRaiz extends Nodo{
-    private static NodoRaiz instance;
     public List<NodoUsuario> Usuarios;
     
     public NodoRaiz(){
         super("Origen", "Raiz");
         this.Usuarios = new ArrayList<>();
-    }
-    
-    public static NodoRaiz getInstance() {
-        if (instance == null) {
-            //synchronized (NodoRaiz.class) {
-                //if (instance == null) {
-                    instance = new NodoRaiz();
-                //}
-            //}
-        }
-        return instance;
     }
     
     public void agregarUsuario(NodoUsuario newUser) {
@@ -58,7 +46,9 @@ public class NodoRaiz extends Nodo{
         
         // Crear la carpeta inicial del nuevo usuario
         nuevoUsuario.crearCarpeta("V:");
+        nuevoUsuario.corregirPathGeneral();
         nuevoUsuario.crearCarpeta("Compartido");
+        nuevoUsuario.corregirPathGeneral();
         //nuevoUsuario.crearCarpeta();
 
         // Agregar el nuevo usuario a la lista de usuarios
@@ -117,11 +107,9 @@ public class NodoRaiz extends Nodo{
     public NodoUsuario validarUsuario(String user, String pass){
         for (int i = 0; i < Usuarios.size(); i++) {
             NodoUsuario get = Usuarios.get(i);
-            if(get.nombre == user)
-                System.out.println("HOLAAA");
-                if(get.password == pass)
-                    System.out.println("22222");
-                    return get;
+
+            if(get.nombre.equals(user) && get.password.equals(pass))
+                return get;
         }
         return null;
     }
