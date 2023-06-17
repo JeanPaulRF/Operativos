@@ -6,6 +6,7 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -72,4 +73,29 @@ public class NodoArchivo extends Nodo {
         // corregimos el actual
         setPathArchivo(newpath);
     }
+    
+    @Override
+    public String getNombre() {
+        return nombre;
+    }
+
+    public String getTipoNodo() {
+        return tipoNodo;
+    }
+
+    @Override
+    public Date getFechaCreacion() {
+        return fechaCreacion;
+    }
+
+    public Date getFechaMod() {
+        return fechaMod;
+    }
+
+    @Override
+    public String getAbsolutePath() {
+        return absolutePath;
+    }
+    
+    
 }

@@ -59,7 +59,6 @@ public class NodoRaiz extends Nodo{
         // Crear la carpeta inicial del nuevo usuario
         nuevoUsuario.crearCarpeta("V:");
         nuevoUsuario.crearCarpeta("Compartido");
-        nuevoUsuario.crearArchivo("archivo.txt");
         //nuevoUsuario.crearCarpeta();
 
         // Agregar el nuevo usuario a la lista de usuarios

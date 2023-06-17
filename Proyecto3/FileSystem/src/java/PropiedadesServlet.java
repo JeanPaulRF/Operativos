@@ -26,6 +26,8 @@ public class PropiedadesServlet extends HttpServlet {
         String archivoSeleccionado = request.getParameter("archivo");
         
         NodoRaiz raiz = Globales.raiz;
+        
+        System.out.println("ARCHIVO: " + archivoSeleccionado);
 
         // Obtén el nodo de carpeta correspondiente según el nombre seleccionado
         NodoArchivo nodoSeleccionado = raiz.buscarArchivo(archivoSeleccionado);

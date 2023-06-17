@@ -38,8 +38,15 @@ public class CrearCarpetaServlet extends HttpServlet {
         String path = request.getParameter("carpetaPath");
 
         NodoRaiz raiz = Globales.raiz;
+        
+        raiz.corregirPathRaiz();
+        
         NodoCarpeta carpeta = raiz.buscarCarpeta(path);
         carpeta.crearNuevaCarpeta(nombre);
+        
+        raiz.corregirPathRaiz();
+        
+        System.out.println("ABSOLUTEPATH: " + carpeta.getAbsolutePath());
 
         // Agrega el nodo seleccionado como atributo en el objeto HttpServletRequest
         request.setAttribute("nodo", carpeta);   

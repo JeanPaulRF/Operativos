@@ -130,25 +130,26 @@
             <div class="file-list">
                 <div class="file-list-item">
                     <span class="file-name">Nombre:</span>
-                    <span>${nodo.nombre}</span>
+                    <span>${nodo.getNombre()}</span>
                 </div>
                 <div class="file-list-item">
                     <span class="file-name">Extensión:</span>
-                    <span>${nodo.nombre}</span>
+                    <span>${nodo.getTipo()}</span>
                 </div>
                 <div class="file-list-item">
                     <span class="file-name">Fecha de Creación:</span>
-                    <span>${nodo.fechaCreacion}</span>
+                    <span>${nodo.getFechaCreacion()}</span>
                 </div>
                 <div class="file-list-item">
                     <span class="file-name">Fecha de Modificación:</span>
-                    <span>${nodo.fechaMod}</span>
+                    <span>${nodo.getFechaMod()}</span>
                 </div>
                 <div class="file-list-item">
                     <span class="file-name">Tamaño:</span>
-                    <span>${nodo.cantidadbytes} bytes</span>
+                    <span>${nodo.getBytes()} bytes</span>
                 </div>
             </div>
+                <button onclick="history.back()">Retroceder</button>
         </div>
         <div class="formulario-emergente">
             <div class="formulario-emergente-contenido">

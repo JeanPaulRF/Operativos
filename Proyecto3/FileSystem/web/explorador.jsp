@@ -364,7 +364,7 @@ body {
   <div class="container">
     <div class="file-explorer">
       <div class="file-explorer-header">
-        <h2>Drive: ${nodo.absolutePath}</h2>
+        <h2>Drive: ${nodo.getAbsolutePath()}</h2>
         <a href="#" onclick="mostrarFormularioCarpeta('${nodo.getAbsolutePath()}')" class="file-actions">Crear Carpeta</a>
         <a href="#" onclick="mostrarFormularioArchivo('${nodo.getAbsolutePath()}')" class="file-actions">Crear Archivo</a>
       </div>

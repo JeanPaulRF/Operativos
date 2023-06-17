@@ -27,8 +27,13 @@ public class CrearArchivoServlet extends HttpServlet {
         String path = request.getParameter("archivoPath");
 
         NodoRaiz raiz = Globales.raiz;
+        
+        raiz.corregirPathRaiz();
+        
         NodoCarpeta carpeta = raiz.buscarCarpeta(path);
         carpeta.crearNuevoArchivo(nombre);
+        
+        raiz.corregirPathRaiz();
 
         // Agrega el nodo seleccionado como atributo en el objeto HttpServletRequest
         request.setAttribute("nodo", carpeta);   
