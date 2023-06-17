@@ -14,13 +14,15 @@ import java.util.List;
  * @author david
  */
 public class NodoArchivo extends Nodo {
-    public String contenido;
-    public int cantidadbytes;
-    public List<NodoUsuario> usuariosCompartido;
+    private String contenido;
+    private int cantidadbytes;
+    private String extencion;
+    private List<NodoUsuario> usuariosCompartido;
     
     public NodoArchivo(String nombre) {
         super(nombre, "Archivo");
         this.absolutePath = nombre ;
+        this.extencion = "txt";
         this.contenido = "";
         this.cantidadbytes = 0;
         this.usuariosCompartido = new ArrayList<>();
@@ -37,6 +39,14 @@ public class NodoArchivo extends Nodo {
     public void calcularPesoBytes(){
         byte[] bytes = contenido.getBytes();
         this.cantidadbytes = bytes.length;
+    }
+    
+    public String getExtencion(){
+        return this.extencion;
+    }
+    
+    public void setExtencion(String ext){
+        this.extencion = ext;
     }
     
     public int getBytes(){
