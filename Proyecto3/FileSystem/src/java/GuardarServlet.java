@@ -28,10 +28,13 @@ public class GuardarServlet extends HttpServlet {
         String contenido = request.getParameter("editor");
         
         NodoRaiz raiz = Globales.raiz;
+        
+        raiz.corregirPathRaiz();
+        
         NodoArchivo archivo = raiz.buscarArchivo(pathArchivo);
         archivo.escribir(contenido);
         
-        System.out.println(archivo.nombre + " guardado");
+        raiz.corregirPathRaiz();
     }
 
     /**

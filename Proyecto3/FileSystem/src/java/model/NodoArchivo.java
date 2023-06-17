@@ -6,6 +6,7 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -50,6 +51,7 @@ public class NodoArchivo extends Nodo {
     }
     
     public int getBytes(){
+        calcularPesoBytes();
         return this.cantidadbytes;
     }
     
@@ -107,5 +109,13 @@ public class NodoArchivo extends Nodo {
         return absolutePath;
     }
     
+    
+    public String getPathPadre(String path){
+        String[] partes = path.split("/");
+        
+        String newpath = String.join("/", Arrays.copyOfRange(partes, 0, partes.length-1));
+        
+        return newpath;
+    }
     
 }

@@ -155,11 +155,8 @@ public class NodoCarpeta extends Nodo{
             return;
         }
         
-        // le va a caer con extencion .txt
-        String[] partes = nombreArchivo.split(".");
-        
         // Crear un nuevo nodo archivo
-        NodoArchivo nuevoArchivo = new NodoArchivo(partes[0]);
+        NodoArchivo nuevoArchivo = new NodoArchivo(nombreArchivo);
         
         // Creo el path para el archivo
         String nuevoPath = getAbsolutePath() + nuevoArchivo.getPathArchivo();
@@ -219,6 +216,78 @@ public class NodoCarpeta extends Nodo{
         
         for (NodoArchivo archivo :Archivos){
             archivo.corregirPath(newpath);
+        }
+    }
+    
+    public NodoArchivo borrarArchivo(String nombreArchivo) {
+        if (existeArchivo(nombreArchivo)) { //primero verifico que exista
+            for (int i = 0; i < this.Archivos.size(); i++) {
+                String nombreActual = this.Archivos.get(i).getNombre();
+                
+                if (nombreActual.equals(nombreArchivo)) {
+                    return this.Archivos.remove(i);
+                }
+            }
+        }
+        return null;
+    }
+    
+    public NodoCarpeta borrarCarpeta(String nombreCarpeta) {
+        if (existeCarpeta(nombreCarpeta)) {     // primero verifico que exista
+            for (int i = 0; i < this.Carpetas.size(); i++) {
+                String nombreActual = this.Carpetas.get(i).getNombre();
+                
+                if (nombreActual.equals(nombreCarpeta)) {
+                    return this.Carpetas.remove(i);
+                }
+            }
+        }
+        return null;
+    }
+    
+    public String getPathPadre(String path){
+        String[] partes = path.split("/");
+        
+        String newpath = String.join("/", Arrays.copyOfRange(partes, 0, partes.length-1));
+        
+        return newpath;
+    }
+    
+    public NodoCarpeta getPadre(String path){
+        NodoCarpeta carpetaError = new NodoCarpeta("No existe, error 102");
+        
+        // Primero partimos el path
+        String[] partes = path.split("/");
+        
+        // si el path es de uno ya estamos en el nivel
+        if (partes.length == 2){
+            
+            for (NodoCarpeta carpeta : Carpetas) {
+                if (carpeta.getNombre().equals(partes[1])) {
+                    return this;
+                }
+            }
+            
+            System.out.println("Error la carpeta no existe.");
+            return carpetaError; // En caso de que no exista
+        }
+        else if(partes.length > 2){
+            // Si es mayor que 1, la primera parte es la primera carpeta
+            for (NodoCarpeta carpeta :Carpetas){
+                if (carpeta.getNombre().equals(partes[0])) {
+                    // si encuentra una coincidencia, busca en la carpeta
+                    // aqui inicia la recursion, comiendose la priemra carpeta
+                    String newpath = String.join("/", Arrays.copyOfRange(partes, 1, partes.length));
+                    return carpeta.getPadre(newpath);
+                }
+            }
+            // no lo encontro
+            System.out.println("Error en el path. La carpeta no existe en el usuario");
+            return carpetaError;
+        }
+        else{
+            System.out.println("Error en el path.");
+            return carpetaError;
         }
     }
 }

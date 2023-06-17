@@ -9,6 +9,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import model.*;
 
 /**
  *
@@ -22,26 +23,22 @@ public class CopiarServlet extends HttpServlet {
             throws ServletException, IOException {
         String nombreCopiar = request.getParameter("nombreCopiar");
         String pathCopiarCarpeta = request.getParameter("pathCopiar");
+        String tipo = request.getParameter("tipo");
+       
+        NodoRaiz raiz = Globales.raiz;
         
-        /*
-        response.setContentType("text/html;charset=UTF-8");
-        try ( PrintWriter out = response.getWriter()) {
-
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet EliminarServlet</title>");            
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Carpeta at " + nombreCarpeta + "</h1>");
-            out.println("<h1>ruta at " + pathCopiarCarpeta + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
+        if(tipo.equals("1")){
+        
+            NodoCarpeta carpeta = raiz.buscarCarpeta(nombreCopiar);
+            NodoCarpeta destino = raiz.buscarCarpeta(pathCopiarCarpeta);
+            destino.agregarCarpeta(carpeta);
         }
-    */
-        //define el nodo padre para volver
-        //request.setAttribute("nodo", nodo);
-        //request.getRequestDispatcher("explorador.jsp").forward(request, response);
+        else{
+            NodoArchivo archivo = raiz.buscarArchivo(nombreCopiar);
+            NodoCarpeta destino = raiz.buscarCarpeta(pathCopiarCarpeta);
+            destino.agregarArchivo(archivo);
+        }
+        
     }
 
     /**

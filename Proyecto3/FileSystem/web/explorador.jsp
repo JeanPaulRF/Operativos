@@ -354,7 +354,6 @@ body {
           <form action="eliminar" method="post">
             <input type="hidden" id="nombreArchivoEliminar" name="nombreEliminar" value="">
             <input type="hidden" id="tipo" name="tipo" value="0">
-            <input type="text" name="pathEliminar" required>
             <button type="submit">Eliminar</button>
             <button type="button" onclick="ocultarFormularioEliminarArchivo()">Cancelar</button>
           </form>

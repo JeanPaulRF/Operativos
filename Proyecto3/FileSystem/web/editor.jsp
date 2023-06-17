@@ -69,7 +69,7 @@
     <div class="text-editor">
       <form action="guardar?archivo=${nodo.absolutePath}" method="post">
         <textarea id="editor" name="editor">${nodo.contenido}</textarea>
-        <button onclick="saveFile()">Guardar</button>
+        <button name="guardara">Guardar</button>
       </form>
       <button onclick="history.back()">Salir</button>
       <%-- a href="explorador.jsp">Salir</a --%>
