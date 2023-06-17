@@ -64,5 +64,13 @@ public class Nodo {
         String fechaString = formato.format(this.fechaMod);
         return fechaString;
     }
+
+    public void setFechaCreacion(Date fechaCreacion) {
+        this.fechaCreacion = fechaCreacion;
+    }
+
+    public void setAbsolutePath(String absolutePath) {
+        this.absolutePath = absolutePath;
+    }
     
 }
