@@ -132,4 +132,10 @@ public class NodoRaiz extends Nodo{
     }
     
     
+    
+    public void corregirPathRaiz(){
+        for(NodoUsuario usuario : Usuarios){
+            usuario.corregirPathGeneral();
+        }
+    }
 }

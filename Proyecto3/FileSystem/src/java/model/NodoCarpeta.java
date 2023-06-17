@@ -200,4 +200,22 @@ public class NodoCarpeta extends Nodo{
     public List<NodoArchivo> getArchivos() {
         return Archivos;
     }
+    
+    public void corregirPath(String path){
+        
+        // Establecer el nuevo path
+        String newpath = path + getNombre() + "/";
+        
+        // corregimos el actual
+        setPathCarpeta(newpath);
+        
+        // Para cada carpeta, le envia una correccion de path
+        for (NodoCarpeta carpeta :Carpetas){
+            carpeta.corregirPath(newpath);
+        }
+        
+        for (NodoArchivo archivo :Archivos){
+            archivo.corregirPath(newpath);
+        }
+    }
 }

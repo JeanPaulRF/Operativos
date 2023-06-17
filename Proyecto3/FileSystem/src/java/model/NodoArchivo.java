@@ -64,4 +64,12 @@ public class NodoArchivo extends Nodo {
     
         return propiedades;
     }
+    
+    public void corregirPath(String path){
+        // Establecer el nuevo path
+        String newpath = path + getNombre();
+        
+        // corregimos el actual
+        setPathArchivo(newpath);
+    }
 }

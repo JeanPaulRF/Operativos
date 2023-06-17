@@ -133,6 +133,14 @@ public class NodoUsuario extends Nodo{
         // añado el archivo
         Archivos.add(nuevoArchivo);
     }
+    */
+    
+    public void corregirPathGeneral(){
+        // Para cada nodo, le envia una correccion de path
+        for (NodoCarpeta carpeta :Carpetas){
+            carpeta.corregirPath(getPath());
+        }
+    }
     
     public void agregarCarpeta(NodoCarpeta newCarpeta) {
         Carpetas.add(newCarpeta);
