@@ -9,6 +9,7 @@ package model;
  *
  * @author david
  */
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Nodo {
@@ -38,9 +39,6 @@ public class Nodo {
         return fechaCreacion;
     }
     
-    public Date getFechaModificacion() {
-        return fechaMod;
-    }
     
     public void setFechaModificacion(Date fechaModif){
         this.fechaMod = fechaModif;
@@ -50,5 +48,20 @@ public class Nodo {
         return absolutePath;
     }
     
+    public String getFechaCreacionString() {
+        SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String fechaString = formato.format(this.fechaCreacion);
+        return fechaString;
+    }         
+    
+    public Date getFechaModificacion() {
+        return fechaMod;
+    }
+    
+    public String getFechaModificacionString() {
+        SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String fechaString = formato.format(this.fechaMod);
+        return fechaString;
+    }
     
 }

@@ -13,9 +13,9 @@ import java.util.List;
  * @author david
  */
 public class NodoArchivo extends Nodo {
-    private String contenido;
-    private int cantidadbytes;
-    private List<NodoUsuario> usuariosCompartido;
+    public String contenido;
+    public int cantidadbytes;
+    public List<NodoUsuario> usuariosCompartido;
     
     public NodoArchivo(String nombre) {
         super(nombre, "Archivo");

@@ -131,11 +131,6 @@ input[type=password]:hover {
 }
   </style>
   
-<script>
-    function mostrarMensaje() {
-      alert("Usuario creado con exito.");
-    }
-</script>
 
 </head>
 
@@ -146,12 +141,17 @@ input[type=password]:hover {
   <form action="register" method="post">
     <input type="text" name="user" placeholder="Username">
     <input type="password" name="pass" placeholder="Password">
-    <input type="submit" name="login" class="login login-submit" value="Registrar" onclick="mostrarMensaje(); return false;">
+    <input type="submit" name="log-in" class="login login-submit" value="Registrar">
   </form>
     
   <div class="login-help">
     <a href="index.jsp">Atras</a> 
   </div>
+    
+    <%-- Verificar si existe el atributo errorMessage --%>
+            <c:if test="${not empty errorMessage}">
+                <div class="alert alert-danger">${errorMessage}</div>
+            </c:if>
 
 </div>
 

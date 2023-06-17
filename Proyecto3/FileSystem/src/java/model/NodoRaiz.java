@@ -46,11 +46,11 @@ public class NodoRaiz extends Nodo{
         return false; // El nombre de usuario no existe
     }
     
-    public void crearUsuario(String nombreUser, String contrasena) {
+    public boolean crearUsuario(String nombreUser, String contrasena) {
         // Verificar si el nombre del usuario ya existe
         if (existeUsuario(nombreUser)) {
             System.out.println("El nombre de usuario ya existe. No se puede crear.");
-            return;
+            return false;
         }
 
         // Crear un nuevo NodoUsuario
@@ -59,12 +59,15 @@ public class NodoRaiz extends Nodo{
         // Crear la carpeta inicial del nuevo usuario
         nuevoUsuario.crearCarpeta("V:");
         nuevoUsuario.crearCarpeta("Compartido");
+        nuevoUsuario.crearArchivo("archivo.txt");
         //nuevoUsuario.crearCarpeta();
 
         // Agregar el nuevo usuario a la lista de usuarios
         agregarUsuario(nuevoUsuario);
 
         System.out.println("Usuario creado exitosamente.");
+        
+        return true;
     }
     
     //funcion para buscar un archivo o carpeta por el path
@@ -100,9 +103,10 @@ public class NodoRaiz extends Nodo{
         
         // Buscamos al usuario que coincida con el partes[0]
         for(NodoUsuario user :Usuarios){
-            if(user.getNombre().equals(partes[0])){
+            if(user.nombre.equals(partes[0])){
                 // si encuentra una coincidencia, busca en el usuario
                 String newpath = String.join("/", Arrays.copyOfRange(partes, 1, partes.length));
+                System.out.println("newPath: " + newpath);
                 return user.buscarCarpeta(newpath);
             }
         }
@@ -112,11 +116,20 @@ public class NodoRaiz extends Nodo{
     }
     
     public NodoUsuario validarUsuario(String user, String pass){
-        for(NodoUsuario usuario : Usuarios){
-            if(usuario.getNombre() == user)
-                if (usuario.getPassword() == pass)
-                    return usuario;
+        for (int i = 0; i < Usuarios.size(); i++) {
+            NodoUsuario get = Usuarios.get(i);
+            if(get.nombre == user)
+                System.out.println("HOLAAA");
+                if(get.password == pass)
+                    System.out.println("22222");
+                    return get;
         }
         return null;
     }
+
+    public List<NodoUsuario> getUsuarios() {
+        return Usuarios;
+    }
+    
+    
 }

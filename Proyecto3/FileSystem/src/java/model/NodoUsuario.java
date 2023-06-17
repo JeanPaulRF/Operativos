@@ -119,7 +119,7 @@ public class NodoUsuario extends Nodo{
         agregarCarpeta(nuevaCarpeta);
         
     }
-    /*
+    
     public void crearArchivo(String nombreArchivo){
         
         NodoArchivo nuevoArchivo = new NodoArchivo(nombreArchivo);
@@ -131,9 +131,9 @@ public class NodoUsuario extends Nodo{
         nuevoArchivo.setPathArchivo(nuevoPath);
         
         // añado el archivo
-        agregarArchivo(nuevoArchivo);
+        Archivos.add(nuevoArchivo);
     }
-    */
+    
     public void agregarCarpeta(NodoCarpeta newCarpeta) {
         Carpetas.add(newCarpeta);
     }

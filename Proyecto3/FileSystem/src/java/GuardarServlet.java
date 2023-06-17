@@ -5,47 +5,34 @@
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import model.Globales;
 import model.NodoArchivo;
-import model.NodoCarpeta;
 import model.NodoRaiz;
-import model.NodoUsuario;
 
 /**
  *
  * @author jeanp
  */
-public class AbrirCarpetaServlet extends HttpServlet {
-    
+public class GuardarServlet extends HttpServlet {
+
+
+
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String carpetaSeleccionada = request.getParameter("carpeta");
+        String pathArchivo = request.getParameter("archivo");
+        String contenido = request.getParameter("editor");
         
         NodoRaiz raiz = Globales.raiz;
-
-        // Obtén el nodo de carpeta correspondiente según el nombre seleccionado
-        NodoCarpeta nodoSeleccionado = raiz.buscarCarpeta(carpetaSeleccionada);
-
-        // Agrega el nodo seleccionado como atributo en el objeto HttpServletRequest
-        request.setAttribute("nodo", nodoSeleccionado);
-
-        // Redirige nuevamente a explorador.jsp
-        request.getRequestDispatcher("explorador.jsp").forward(request, response);
-    }
-    
-    
-
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        NodoArchivo archivo = raiz.buscarArchivo(pathArchivo);
+        archivo.escribir(contenido);
         
+        System.out.println(archivo.nombre + " guardado");
     }
-   
-
 
     /**
      * Returns a short description of the servlet.
