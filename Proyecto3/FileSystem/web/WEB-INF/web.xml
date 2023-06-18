@@ -48,6 +48,10 @@
         <servlet-name>GuardarServlet</servlet-name>
         <servlet-class>GuardarServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>CerrarServlet</servlet-name>
+        <servlet-class>CerrarServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>LoginServlet</servlet-name>
         <url-pattern>/login</url-pattern>
@@ -95,6 +99,10 @@
     <servlet-mapping>
         <servlet-name>GuardarServlet</servlet-name>
         <url-pattern>/guardar</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CerrarServlet</servlet-name>
+        <url-pattern>/cerrar</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

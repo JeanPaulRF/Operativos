@@ -408,6 +408,10 @@ body {
       
     </div>
       <button onclick="history.back()">Atras</button>
+      
+      <form action="cerrar" method="post">
+          <button>Cerrar Drive</button>
+      </form>
   </div>
       
 </body>

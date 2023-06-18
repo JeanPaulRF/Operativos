@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<NodoRaiz>
+    <NodoUsuario absolutePath="123/" fechaCreacion="2023-06-17 19:06:37" fechaMod="2023-06-17 19:06:37" nombre="123" password="123" tipoNodo="Usuario">
+        <NodoCarpeta absolutePath="123/V:/" fechaCreacion="2023-06-17 19:06:37" fechaMod="2023-06-17 19:06:37" nombre="V:" pathCarpeta="123/V:/" tipoNodo="Carpeta">
+            <NodoArchivo absolutePath="123/V:/No existe, error 101" fechaCreacion="2023-06-17 19:15:23" fechaMod="2023-06-17 19:15:23" nombre="No existe, error 101" pathArchivo="123/V:/No existe, error 101" tipoNodo="Archivo"/>
+            <NodoArchivo absolutePath="123/V:/asdf.txt" fechaCreacion="2023-06-17 19:17:27" fechaMod="2023-06-17 19:17:27" nombre="asdf.txt" pathArchivo="123/V:/asdf.txt" tipoNodo="Archivo"/>
+        </NodoCarpeta>
+        <NodoCarpeta absolutePath="123/Compartido/" fechaCreacion="2023-06-17 19:06:37" fechaMod="2023-06-17 19:06:37" nombre="Compartido" pathCarpeta="123/Compartido/" tipoNodo="Carpeta">
+            <NodoArchivo absolutePath="123/Compartido/asdf.txt" fechaCreacion="2023-06-17 19:17:27" fechaMod="2023-06-17 19:17:27" nombre="asdf.txt" pathArchivo="123/Compartido/asdf.txt" tipoNodo="Archivo"/>
+        </NodoCarpeta>
+    </NodoUsuario>
+    <NodoUsuario absolutePath="juan/" fechaCreacion="2023-06-17 19:12:07" fechaMod="2023-06-17 19:12:07" nombre="juan" password="juan" tipoNodo="Usuario">
+        <NodoCarpeta absolutePath="juan/V:/" fechaCreacion="2023-06-17 19:12:07" fechaMod="2023-06-17 19:12:07" nombre="V:" pathCarpeta="juan/V:/" tipoNodo="Carpeta">
+            <NodoArchivo absolutePath="juan/V:/asdf.txt" fechaCreacion="2023-06-17 19:17:27" fechaMod="2023-06-17 19:17:27" nombre="asdf.txt" pathArchivo="juan/V:/asdf.txt" tipoNodo="Archivo"/>
+        </NodoCarpeta>
+        <NodoCarpeta absolutePath="juan/Compartido/" fechaCreacion="2023-06-17 19:12:07" fechaMod="2023-06-17 19:12:07" nombre="Compartido" pathCarpeta="juan/Compartido/" tipoNodo="Carpeta"/>
+    </NodoUsuario>
+</NodoRaiz>
