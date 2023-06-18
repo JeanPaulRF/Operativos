@@ -107,6 +107,10 @@ public class XMLWriter {
             elementoArchivo.setAttribute("fechaMod", nodoHijo.getFechaModificacionString());
             elementoArchivo.setAttribute("absolutePath", nodoHijo.getAbsolutePath());
             elementoArchivo.setAttribute("pathArchivo", nodoHijo.getPathArchivo());
+            
+            elementoArchivo.setAttribute("contenido", nodoHijo.getContenido());
+            elementoArchivo.setAttribute("cantidadbytes", String.valueOf(nodoHijo.getBytes()));
+            elementoArchivo.setAttribute("extencion", nodoHijo.getExtencion());
      
             elementoUsuario.appendChild(elementoArchivo);          
         }
@@ -148,6 +152,10 @@ public class XMLWriter {
             elementoArchivo.setAttribute("fechaMod", nodoHijo.getFechaModificacionString());
             elementoArchivo.setAttribute("absolutePath", nodoHijo.getAbsolutePath());
             elementoArchivo.setAttribute("pathArchivo", nodoHijo.getPathArchivo());
+            
+            elementoArchivo.setAttribute("contenido", nodoHijo.getContenido());
+            elementoArchivo.setAttribute("cantidadbytes", String.valueOf(nodoHijo.getBytes()));
+            elementoArchivo.setAttribute("extencion", nodoHijo.getExtencion());           
             
             elementoUsuario.appendChild(elementoArchivo);          
         }

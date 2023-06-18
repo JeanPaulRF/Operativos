@@ -148,6 +148,10 @@ public class XMLReader {
         Date fechaCreDate = null;
         Date fechaModDate = null;
         
+        String contenido = elementoArchivo.getAttribute("contenido");
+        int bytes = Integer.parseInt(elementoArchivo.getAttribute("cantidadbytes"));
+        String extencion = elementoArchivo.getAttribute("extencion");        
+        
         try {
             fechaCreDate = formato.parse(fechaCreacion);
             fechaModDate = formato.parse(fechaMod);
@@ -159,6 +163,9 @@ public class XMLReader {
         nodoArchivo.setFechaCreacion(fechaCreDate);
         nodoArchivo.setFechaModificacion(fechaModDate);
         nodoArchivo.setAbsolutePath(absolutePath);
+        nodoArchivo.setContenido(contenido);
+        nodoArchivo.setExtencion(extencion);
+        nodoArchivo.setCantidadbytes(bytes);
         
         nodoArchivo.setPathArchivo(pathArchivo);
         return nodoArchivo;

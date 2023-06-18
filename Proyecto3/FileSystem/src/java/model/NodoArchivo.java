@@ -117,5 +117,14 @@ public class NodoArchivo extends Nodo {
         
         return newpath;
     }
+
+    public void setContenido(String contenido) {
+        this.contenido = contenido;
+    }
+
+    public void setCantidadbytes(int cantidadbytes) {
+        this.cantidadbytes = cantidadbytes;
+    }
     
+   
 }
