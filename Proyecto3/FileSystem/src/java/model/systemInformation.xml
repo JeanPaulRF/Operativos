@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <NodoRaiz>
-    <NodoUsuario absolutePath="123/" fechaCreacion="2023-06-17 19:06:37" fechaMod="2023-06-17 19:06:37" nombre="123" password="123" tipoNodo="Usuario">
-        <NodoCarpeta absolutePath="123/V:/" fechaCreacion="2023-06-17 19:06:37" fechaMod="2023-06-17 19:06:37" nombre="V:" pathCarpeta="123/V:/" tipoNodo="Carpeta">
-            <NodoArchivo absolutePath="123/V:/No existe, error 101" fechaCreacion="2023-06-17 19:15:23" fechaMod="2023-06-17 19:15:23" nombre="No existe, error 101" pathArchivo="123/V:/No existe, error 101" tipoNodo="Archivo"/>
-            <NodoArchivo absolutePath="123/V:/asdf.txt" fechaCreacion="2023-06-17 19:17:27" fechaMod="2023-06-17 19:17:27" nombre="asdf.txt" pathArchivo="123/V:/asdf.txt" tipoNodo="Archivo"/>
+    <NodoUsuario absolutePath="juan/" fechaCreacion="2023-06-17 21:37:53" fechaMod="2023-06-17 21:37:53" nombre="juan" password="123" tipoNodo="Usuario">
+        <NodoCarpeta absolutePath="juan/V:/" fechaCreacion="2023-06-17 21:37:53" fechaMod="2023-06-17 21:37:53" nombre="V:" pathCarpeta="juan/V:/" tipoNodo="Carpeta">
+            <NodoCarpeta absolutePath="juan/V:/Docs/" fechaCreacion="2023-06-17 21:38:08" fechaMod="2023-06-17 21:38:08" nombre="Docs" pathCarpeta="juan/V:/Docs/" tipoNodo="Carpeta">
+                <NodoArchivo absolutePath="juan/V:/Docs/cv.txt" cantidadbytes="10" contenido="CV de juan" extencion="txt" fechaCreacion="2023-06-17 21:38:25" fechaMod="2023-06-17 21:38:25" nombre="cv.txt" pathArchivo="juan/V:/Docs/cv.txt" tipoNodo="Archivo"/>
+            </NodoCarpeta>
+            <NodoCarpeta absolutePath="juan/V:/Descargas/" fechaCreacion="2023-06-17 21:38:16" fechaMod="2023-06-17 21:38:16" nombre="Descargas" pathCarpeta="juan/V:/Descargas/" tipoNodo="Carpeta"/>
         </NodoCarpeta>
-        <NodoCarpeta absolutePath="123/Compartido/" fechaCreacion="2023-06-17 19:06:37" fechaMod="2023-06-17 19:06:37" nombre="Compartido" pathCarpeta="123/Compartido/" tipoNodo="Carpeta">
-            <NodoArchivo absolutePath="123/Compartido/asdf.txt" fechaCreacion="2023-06-17 19:17:27" fechaMod="2023-06-17 19:17:27" nombre="asdf.txt" pathArchivo="123/Compartido/asdf.txt" tipoNodo="Archivo"/>
+        <NodoCarpeta absolutePath="juan/Compartido/" fechaCreacion="2023-06-17 21:37:53" fechaMod="2023-06-17 21:37:53" nombre="Compartido" pathCarpeta="juan/Compartido/" tipoNodo="Carpeta">
+            <NodoArchivo absolutePath="paco/V:/carta.txt" cantidadbytes="4" contenido="hola" extencion="txt" fechaCreacion="2023-06-17 21:40:03" fechaMod="2023-06-17 21:40:03" nombre="carta.txt" pathArchivo="paco/V:/carta.txt" tipoNodo="Archivo"/>
         </NodoCarpeta>
     </NodoUsuario>
-    <NodoUsuario absolutePath="juan/" fechaCreacion="2023-06-17 19:12:07" fechaMod="2023-06-17 19:12:07" nombre="juan" password="juan" tipoNodo="Usuario">
-        <NodoCarpeta absolutePath="juan/V:/" fechaCreacion="2023-06-17 19:12:07" fechaMod="2023-06-17 19:12:07" nombre="V:" pathCarpeta="juan/V:/" tipoNodo="Carpeta">
-            <NodoArchivo absolutePath="juan/V:/asdf.txt" fechaCreacion="2023-06-17 19:17:27" fechaMod="2023-06-17 19:17:27" nombre="asdf.txt" pathArchivo="juan/V:/asdf.txt" tipoNodo="Archivo"/>
+    <NodoUsuario absolutePath="paco/" fechaCreacion="2023-06-17 21:39:48" fechaMod="2023-06-17 21:39:48" nombre="paco" password="123" tipoNodo="Usuario">
+        <NodoCarpeta absolutePath="paco/V:/" fechaCreacion="2023-06-17 21:39:48" fechaMod="2023-06-17 21:39:48" nombre="V:" pathCarpeta="paco/V:/" tipoNodo="Carpeta">
+            <NodoArchivo absolutePath="paco/V:/carta.txt" cantidadbytes="4" contenido="hola" extencion="txt" fechaCreacion="2023-06-17 21:40:03" fechaMod="2023-06-17 21:40:03" nombre="carta.txt" pathArchivo="paco/V:/carta.txt" tipoNodo="Archivo"/>
         </NodoCarpeta>
-        <NodoCarpeta absolutePath="juan/Compartido/" fechaCreacion="2023-06-17 19:12:07" fechaMod="2023-06-17 19:12:07" nombre="Compartido" pathCarpeta="juan/Compartido/" tipoNodo="Carpeta"/>
+        <NodoCarpeta absolutePath="paco/Compartido/" fechaCreacion="2023-06-17 21:39:48" fechaMod="2023-06-17 21:39:48" nombre="Compartido" pathCarpeta="paco/Compartido/" tipoNodo="Carpeta"/>
     </NodoUsuario>
 </NodoRaiz>
